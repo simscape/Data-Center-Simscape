@@ -62,6 +62,6 @@
 ## To Get Started 
 * Clone the project repository.
 * Open DataCenterDesignSimscape.prj to get started with the project. 
-* Requires MATLAB&reg; release R2026a, Simulink&reg;, Simscape&trade;, Simscape Electrical&trade;, Simscape Fluids&trade;, and Stateflow&reg;.
+* Requires MATLAB&reg; release R2025b, Simulink&reg;, Simscape&trade;, Simscape Electrical&trade;, Simscape Fluids&trade;, and Stateflow&reg;.
  
 Copyright 2025 - 2026 The MathWorks, Inc.
