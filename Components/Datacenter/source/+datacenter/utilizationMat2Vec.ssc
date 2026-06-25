@@ -1,0 +1,34 @@
+component(Propagation=Blocks) utilizationMat2Vec
+    % Utilization Converter:2.5
+    % This block is used to specify server utilization matrix which it 
+    % converts into a vector data.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationUtilizationConverter.html">Documentation for Utilization Converter</a>
+    % <br/>
+
+    % Copyright 2026 The MathWorks, Inc.
+
+    annotations
+        u_in : Side=Left;
+        u_out : Side=Right;
+        Icon = "utilizationMat2VecIcon.png";
+    end
+
+    parameters
+        X = 2; % Number of server units in X
+        Y = 3; % Number of server units in Y
+    end
+
+    inputs
+        u_in = 0.6*ones(X,Y); % Ui
+    end
+
+    outputs
+        u_out = {0.6*ones(1,X*Y), "1"}; % Uo
+    end
+
+    equations
+        u_out == {reshape(u_in,[1,X*Y]),"1"};
+    end
+end

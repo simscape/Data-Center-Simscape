@@ -1,0 +1,55 @@
+% This component was automatically generated using 'subsystem2ssc'. 
+%   Subsystem: WallModel/WallSolar 
+%   MATLAB version: 24.1 
+%   Simulink version: 24.1 
+%   Simscape version: 24.1 
+%   Generated on: 12-Jun-2024 14:00:11
+
+component (Propagation = blocks) WallSolar
+  parameters
+    wallArea = {70, 'm^2'}; %Wall area
+    extToWallHTC = {5, 'W/(K*m^2)'}; %Effective heat transfer coefficient from ambient to wall surface
+    wallMaterialMass = {50400, 'kg'}; %Wall material mass
+    wallMaterialCp = {1870, 'J/(K*kg)'}; %Wall material heat capacity
+    wallAbsorptivity = .5; %Wall absorptivity
+    intToRoomHTC = {5, 'W/(K*m^2)'}; %Effective heat transfer coefficient from internal surface to the room
+    wallThermalK = {2, 'W/(K*m)'}; %Wall thermal conductivity
+    wallThickness = {.3, 'm'}; %Wall thickness
+  end
+  variables
+    wallTemperature = {value = {300, 'K'}, priority = priority.high}; %Wall initial temperature
+  end
+  inputs
+    SUN = {0, 'W/m^2'};
+  end
+  nodes
+    EXT = foundation.thermal.thermal;
+    INT = foundation.thermal.thermal;
+  end
+  components(ExternalAccess = observe)
+    WallHeatTransferInt = foundation.thermal.elements.conduction(thermal_type = int32(1), wall_geometry = int32(1), area = wallArea, th_cond = wallThermalK, thickness = wallThickness);
+    WallHeatTransferExt = foundation.thermal.elements.conduction(thermal_type = int32(1), wall_geometry = int32(1), area = wallArea, th_cond = wallThermalK, thickness = wallThickness);
+    WallHeatToRoom = foundation.thermal.elements.convection(thermal_type = int32(1), area = wallArea, heat_tr_coeff = intToRoomHTC);
+    WallArea = foundation.signal.functions.gain(gain = wallArea);
+    WallAbsorptivity = foundation.signal.functions.gain(gain = wallAbsorptivity);
+    SunlightWall = foundation.thermal.sources.controlled_heat_flow;
+    SolidWall = foundation.thermal.elements.mass(mass_type = int32(1), num_ports = int32(1), mass = wallMaterialMass, sp_heat = wallMaterialCp, T.priority = priority.none);
+    EnvHeatToWall = foundation.thermal.elements.convection(thermal_type = int32(1), area = wallArea, heat_tr_coeff = extToWallHTC);
+  end
+  connections
+    connect(WallArea.O,WallAbsorptivity.I);
+    connect(SUN,WallArea.I);
+    connect(WallAbsorptivity.O,SunlightWall.S);
+    connect(INT,WallHeatToRoom.B);
+    connect(WallHeatToRoom.A,WallHeatTransferInt.B);
+    connect(SolidWall.M,WallHeatTransferExt.B);
+    connect(SolidWall.M,WallHeatTransferInt.A);
+    connect(EnvHeatToWall.B,SunlightWall.B);
+    connect(EnvHeatToWall.B,WallHeatTransferExt.A);
+    connect(EXT,EnvHeatToWall.A);
+    connect(EXT,SunlightWall.A);
+  end
+  equations 
+    SolidWall.T == wallTemperature;
+  end
+end

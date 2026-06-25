@@ -1,0 +1,90 @@
+component(Propagation=Blocks) roomVolume
+    % Room Volume : 2.5
+    % This block is used to specify a block-shaped air volume inside a room.
+    % You can add heat to the air volume through the input port S. The node 
+    % M1 and M2 are the Thermal node attached to the thermal mass of air in the block. The
+    % output port T provides temperature of the air mass. You can use one
+    % Room Volume block to define a room or have multiple Room Volume
+    % blocks connected in a matrix (x-y) to represent a descritized room air
+    % volume. 
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationRoomVolume.html">Documentation for Room Volume</a>
+    % <br/>
+
+    % Copyright 2025 The MathWorks, Inc.
+
+    annotations
+        Icon = "roomVolume.png";
+        UILayout = [UIGroup("Thermal Nodes",N1,N2)
+                    UIGroup("Room Volume",length,width,height)];
+        M1 : Side=Top;
+        M2 : Side=Top;
+        S  : Side=Left;
+    end
+
+    inputs
+        S = {0,"W"}; % S
+    end
+
+    outputs
+        T = {300,"K"}; % T
+    end
+  
+    for i = 1:N1
+        nodes
+            M1(i) = foundation.thermal.thermal; % M1
+        end
+    end
+
+    for i = 1:N2
+        nodes
+            M2(i) = foundation.thermal.thermal; % M2
+        end
+    end
+
+    parameters
+        N1 = 1;              % Number of M1 thermal nodes
+        N2 = 1;              % Number of M2 thermal nodes
+        length = {5, "m"};   % Room length
+        width = {3, "m"};    % Room width
+        height = {2.5, "m"}; % Room height
+        iniT = {300, "K"};   % Initial temperature
+    end
+
+    parameters(ExternalAccess=none)
+        length_m = value(length,"m");
+        width_m = value(width,"m");
+        height_m = value(height,"m");
+        roomVolume = length_m*width_m*height_m;
+    end
+    components(ExternalAccess=observe)
+        roomAirVol = foundation.thermal.elements.mass(mass={roomVolume*1.225, "kg"}, ...
+                mass_type=int32(1), num_ports=int32(1), sp_heat={718, "J/(K*kg)"},...
+                T = iniT);
+        Tref = foundation.thermal.elements.reference;
+        AddQ = foundation.thermal.sources.controlled_heat_flow;
+    end
+
+    connections
+        connect(S,AddQ.S);
+        connect(AddQ.B,roomAirVol.M);
+        connect(AddQ.A,Tref.H);
+    end
+
+    for i = 1:N1
+        connections
+            connect(M1(i),roomAirVol.M);
+        end
+    end
+
+    for i = 1:N2
+        connections
+            connect(M2(i),roomAirVol.M);
+        end
+    end
+
+    equations
+        roomAirVol.T == T;
+    end
+end

@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><meta name="generator" content="MATLAB 2026a"><title>Data Center Utilities</title><style type="text/css">.rtcContent { padding: 30px; } .S0 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 28.8px; min-height: 0px; white-space: pre; color: rgb(192, 76, 11); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 24px; font-weight: 400; text-align: left;  }
+._richTextNode {white-space: break-spaces;}
+.S1 { margin: 2px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S2 { margin-bottom: 20px; padding-bottom: 4px;  }
+.S3 { margin: 0px; padding: 10px 0px 10px 5px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 700; text-align: start;  }
+.S4 { margin: -1px 0px 0px; padding: 10px 0px 10px 7px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: start;  }
+.S5 { margin: 20px 10px 5px 4px; padding: 0px; line-height: 25px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: 700; text-align: left;  }
+.S6 { margin: 15px 10px 5px 4px; padding: 0px; line-height: 20.4px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 17px; font-weight: 700; text-align: left;  }
+.S7 { border-left: 0px none rgb(33, 33, 33); border-right: 0px none rgb(33, 33, 33); border-top: 0px none rgb(33, 33, 33); border-bottom: 0px none rgb(33, 33, 33); border-radius: 0px; padding: 0px; line-height: 15.6px; min-height: 16px; white-space: pre; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 12px;  }
+.S8 { margin: 3px; border: 1px solid rgb(191, 191, 191); border-collapse: collapse;  }
+.S9 { background-color: rgba(0, 0, 0, 0);  }
+.S10 { border: 1px solid rgb(191, 191, 191); vertical-align: top;  }
+.S11 { margin: 2px 10px 2px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S12 { margin: 10px 0px 20px; padding-left: 0px; font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-size: 14px;  }
+.S13 { margin-left: 56px; line-height: 21px; min-height: 0px; text-align: left; white-space: pre-wrap;  }</style></head><body><div class = rtcContent><h1  class = 'S0' id = 'T_D6EF7CFB' ><span class="_richTextNode">Data Center Utilities</span></h1><div  class = 'S1'><span class="_richTextNode"></span></div><div  class = 'S1'><span class="_richTextNode">Copyright 2025 - 2026 The MathWorks, Inc.</span></div><div  class = 'S2'><div  class = 'S3'><span class="_richTextNode">Table of Contents</span></div><div  class = 'S4'><a href = "#TMP_7d96"><span class="_richTextNode">Utilities for Automated Build
+</span></a><span class="_richTextNode">    </span><a href = "#M_1eeb"><span class="_richTextNode">getDataCenterNamePlateRatingTable
+</span></a><span class="_richTextNode">    </span><a href = "#M_0f9a"><span class="_richTextNode">createDataCenterWithEnclosure
+</span></a><span class="_richTextNode">    </span><a href = "#TMP_412c"><span class="_richTextNode">getCompositeDataCenterRating
+</span></a><a href = "#TMP_9b5f"><span class="_richTextNode">Other Useful Utilities
+</span></a><span class="_richTextNode">    </span><a href = "#M_37f3"><span class="_richTextNode">buildDataCenter
+</span></a><span class="_richTextNode">    </span><a href = "#M_2833"><span class="_richTextNode">buildEnclosureForDataCenter</span></a></div></div><div  class = 'S1' id = 'H_00164D39' ><span class="_richTextNode">The functions listed below are used in the workflows described in this project. In this document, you will learn how to use these functions and specify their name-value-pairs.</span></div><h2  class = 'S5' id = 'TMP_7d96' ><span class="_richTextNode">Utilities for Automated Build</span></h2><h3  class = 'S6' id = 'M_1eeb' ><span class="_richTextNode">getDataCenterNamePlateRatingTable</span></h3><div  class = 'S1'><span class="_richTextNode">This function is used to modify parameters for server required by the data center build utilities like </span><a href = "#M_37f3"><span class="_richTextNode">buildDatacenter</span></a><span class="_richTextNode"> and </span><a href = "#M_0f9a"><span class="_richTextNode">createDatacenterWithEnclosure</span></a><span class="_richTextNode">. The function outputs a struct with two tables, one of size (6,2) and the other of size (5,1). The tables contain parameters for data center server like Server Idle Power, Power Supply Efficiency, Server Actual To Name Plate Ratio, Server Mass &amp; Specific Heat, Peak Power of CPU, Memory, Disk, PCI, Motherboard, and Fans.</span></div><div  class = 'S1'><span class="_richTextNode" style=' font-weight: bold;'>Example</span><span class="_richTextNode">:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >data = getDataCenterNamePlateRatingTable(</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    Mass=simscape.Value(30,</span><span style="color: rgb(167, 9, 245);">"kg"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    PeakPowerMotherboard=simscape.Value(34,</span><span style="color: rgb(167, 9, 245);">"W"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    IdlePower=simscape.Value(56,</span><span style="color: rgb(167, 9, 245);">"W"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span><span style="color: rgb(0, 128, 19);">)</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    Display=true);</span></span></div></div><table  class = 'S8'><col style="width: 663px;" /><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><span class="_richTextNode"></span></div></td></tr></table><h3  class = 'S6' id = 'M_0f9a' ><span class="_richTextNode">createDataCenterWithEnclosure</span></h3><div  class = 'S1'><span class="_richTextNode">This function executes </span><a href = "#M_37f3"><span class="_richTextNode" style=' font-family: monospace;'>buildDatacenter</span></a><span class="_richTextNode"> and </span><a href = "#M_2833"><span class="_richTextNode" style=' font-family: monospace;'>buildEnclosureForDatacenter</span></a><span class="_richTextNode">. The name value pair for this function is a combined list of name value pair for these two functions. This utility also lets you save the model files generated at your specified location (name-value-pair of </span><span class="_richTextNode" style=' font-family: monospace;'>SaveAtFullPath</span><span class="_richTextNode">) and also specify the type of file you want to save it as (name-value-pair of </span><span class="_richTextNode" style=' font-family: monospace;'>SaveModelAs</span><span class="_richTextNode">).</span></div><div  class = 'S1'><span class="_richTextNode" style=' font-weight: bold;'>Example</span><span class="_richTextNode">:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >data = getDataCenterNamePlateRatingTable(</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    Mass=simscape.Value(30,</span><span style="color: rgb(167, 9, 245);">"kg"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    PeakPowerMotherboard=simscape.Value(34,</span><span style="color: rgb(167, 9, 245);">"W"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    IdlePower=simscape.Value(56,</span><span style="color: rgb(167, 9, 245);">"W"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span><span style="color: rgb(0, 128, 19);">)</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    Display=true);</span></span></div><div  class = 'S7'>&nbsp;</div><div  class = 'S7'><span style="white-space: pre"><span >createDataCenterWithEnclosure(NumPDUunitsX=3,NumPDUunitsY=4,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    ModelName=</span><span style="color: rgb(167, 9, 245);">"ModelDatacenterLiquidCooling"</span><span >,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    ModelOption=</span><span style="color: rgb(167, 9, 245);">"Thermal"</span><span >,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    ModelEnclosure=false,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    RatingDatacenter=simscape.Value(6000,</span><span style="color: rgb(167, 9, 245);">"kW"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    ServerNamePlateRating=data.nameplateRating,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    ServerPowerSystemSpec=data.powerSystemSpecs,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    ThermalRes=simscape.Value(1e-6,</span><span style="color: rgb(167, 9, 245);">"K/W"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    Diagnostics=true);</span></span></div></div><div  class = 'S1'><span class="_richTextNode">Additionally, you may find the block </span><span class="_richTextNode" style=' font-weight: bold;'>Utilization Converter</span><span class="_richTextNode"> custom library block useful in converting a 2D matrix of server utilization data (based on </span><span class="_richTextNode" style=' font-weight: bold;'>NumPDUunitsX</span><span class="_richTextNode"> and </span><span class="_richTextNode" style=' font-weight: bold;'>NumPDUunitsY</span><span class="_richTextNode"> values required by </span><span class="_richTextNode" style=' font-family: monospace;'>createDatacenterWithEnclosure</span><span class="_richTextNode">) into a vector form required by the large data center created above.</span></div><table  class = 'S8'><col style="width: 663px;" /><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><span class="_richTextNode"></span></div></td></tr></table><h3  class = 'S6' id = 'TMP_412c' ><span class="_richTextNode">getCompositeDataCenterRating</span></h3><div  class = 'S1'><span class="_richTextNode">The utilties in this project help create a large data center with multiple </span><span class="_richTextNode" style=' font-weight: bold;'>Datacenter Server Unit</span><span class="_richTextNode"> custom library block. Use this function to determine or confirm the rating of (composite) data center created using such utilities.</span></div><div  class = 'S1'><span class="_richTextNode" style=' font-weight: bold;'>Arguments</span><span class="_richTextNode">:</span></div><ul  class = 'S12'><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>BlockPath</span><span class="_richTextNode">: Specified as a string and denotes the path to the composite data center model.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>Display</span><span class="_richTextNode">: Specified as a logical value to enable or disable display of result.</span></li></ul><div  class = 'S1'><span class="_richTextNode" style=' font-weight: bold;'>Example</span><span class="_richTextNode">:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">% If in a SLX model DataCenterCooling, you have a subsystem called 'Datacenter', </span></span></div><div  class = 'S7'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">% that contains the 'Datacenter Server Unit' library blocks, then specify the </span></span></div><div  class = 'S7'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">% path as shown below.</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >getCompositeDataCenterRating(BlockPath=</span><span style="color: rgb(167, 9, 245);">"DataCenterCooling/Datacenter"</span><span >,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             Display=true);</span></span></div></div><table  class = 'S8'><col style="width: 663px;" /><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><span class="_richTextNode"></span></div></td></tr></table><h2  class = 'S5' id = 'TMP_9b5f' ><span class="_richTextNode">Other Useful Utilities</span></h2><h3  class = 'S6' id = 'M_37f3' ><span class="_richTextNode">buildDataCenter</span></h3><div  class = 'S1'><span class="_richTextNode">This function is used to connect multiple data center servers in a certain topology. There a 3 different variants available, </span><span class="_richTextNode" style=' font-weight: bold;'>thermal</span><span class="_richTextNode">, </span><span class="_richTextNode" style=' font-weight: bold;'>electrical</span><span class="_richTextNode">, and </span><span class="_richTextNode" style=' font-weight: bold;'>electrothermal</span><span class="_richTextNode">. </span></div><div  class = 'S1'><span class="_richTextNode" style=' font-weight: bold;'>Parameters</span><span class="_richTextNode">:</span></div><ul  class = 'S12'><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>NumPDUunitsX</span><span class="_richTextNode">: Number of power distribution units (PDU) of data center in X direction.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>NumPDUunitsY</span><span class="_richTextNode">: Number of power distribution units (PDU) of data center in Y direction.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>ModelName</span><span class="_richTextNode">: Name of Simscape model.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>ModelOption</span><span class="_richTextNode">: Model fidelity; 3 different options available - </span><span class="_richTextNode" style=' font-weight: bold;'>thermal</span><span class="_richTextNode">, </span><span class="_richTextNode" style=' font-weight: bold;'>electrical</span><span class="_richTextNode">, and </span><span class="_richTextNode" style=' font-weight: bold;'>electrothermal</span><span class="_richTextNode">.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>RatingDatacenter</span><span class="_richTextNode">: A simscape value to specify desired power rating of the data center.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>ServerNamePlateRating</span><span class="_richTextNode">: A table of size (6,2) to specify server name plate rating parameters. Default values can be edited using function </span><a href = "#M_1eeb"><span class="_richTextNode" style=' font-family: monospace;'>getDataCenterNamePlateRatingTable</span></a><span class="_richTextNode">.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>ServerPowerSystemSpec</span><span class="_richTextNode">: A table of size (5,1) to specify data center parameters. Default values can be edited using function </span><a href = "#M_1eeb"><span class="_richTextNode" style=' font-family: monospace;'>getDataCenterNamePlateRatingTable</span></a><span class="_richTextNode">.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>PowerSupplyEff</span><span class="_richTextNode">: A scalar to specify the percentage efficiency of power supply. This is an optional argument required for </span><span class="_richTextNode" style=' font-weight: bold;'>Electrical</span><span class="_richTextNode"> and </span><span class="_richTextNode" style=' font-weight: bold;'>Electrothermal</span><span class="_richTextNode"> model fidelities.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>ThermalRes</span><span class="_richTextNode">: A scalar to specify the thermal resistance of the data center stack bottom rack and the ground.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>Diagnostics</span><span class="_richTextNode">: A logical, when set to </span><span class="_richTextNode" style=' font-style: italic;'>true</span><span class="_richTextNode">, outputs key updates from the function/utility.</span></li></ul><div  class = 'S1'><span class="_richTextNode" style=' font-weight: bold;'>Example</span><span class="_richTextNode">:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >data = getDataCenterNamePlateRatingTable(</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    Mass=simscape.Value(30,</span><span style="color: rgb(167, 9, 245);">"kg"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    PeakPowerMotherboard=simscape.Value(34,</span><span style="color: rgb(167, 9, 245);">"W"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    IdlePower=simscape.Value(56,</span><span style="color: rgb(167, 9, 245);">"W"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span><span style="color: rgb(0, 128, 19);">)</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >    Display=true);</span></span></div><div  class = 'S7'>&nbsp;</div><div  class = 'S7'><span style="white-space: pre"><span >datacenter = buildDataCenter(NumPDUunitsX=5,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             NumPDUunitsY=6,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             ModelName=</span><span style="color: rgb(167, 9, 245);">"MyModel"</span><span >,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             ModelOption=</span><span style="color: rgb(167, 9, 245);">"Electrothermal"</span><span >,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             RatingDatacenter=simscape.Value(50,</span><span style="color: rgb(167, 9, 245);">"kW"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             ServerNamePlateRating=data.nameplateRating,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             ServerPowerSystemSpec=data.powerSystemSpecs,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             ThermalRes=simscape.Value(5,</span><span style="color: rgb(167, 9, 245);">"K/W"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                             Diagnostics=true);</span></span></div></div><table  class = 'S8'><col style="width: 663px;" /><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><span class="_richTextNode"></span></div></td></tr></table><h3  class = 'S6' id = 'M_2833' ><span class="_richTextNode">buildEnclosureForDataCenter</span></h3><div  class = 'S1'><span class="_richTextNode">This function helps build a rectangular enclosure or room around the data center.</span></div><div  class = 'S1'><span class="_richTextNode" style=' font-weight: bold;'>Arguments</span><span class="_richTextNode">:</span></div><ul  class = 'S12'><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>ModelName</span><span class="_richTextNode">: Specified as a string and denotes the name for the Simscape model.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>EnclosureName</span><span class="_richTextNode">: Specified as a string and denotes the name for the room/enclosure subsystem.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>DatacenterModel</span><span class="_richTextNode">: A struct specifying data center properties.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>Diagnostics</span><span class="_richTextNode">: When set to </span><span class="_richTextNode" style=' font-style: italic;'>true</span><span class="_richTextNode">, outputs key updates from the build process.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>RoomLength</span><span class="_richTextNode">, </span><span class="_richTextNode" style=' font-family: monospace;'>RoomWidth</span><span class="_richTextNode">, </span><span class="_richTextNode" style=' font-family: monospace;'>RoomHeight</span><span class="_richTextNode">: Simscape values for room/enclosure length, width, and height.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>WallThickness</span><span class="_richTextNode">: Simscape value to specify the wall thickness for the room/enclosure.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>RoomRotate</span><span class="_richTextNode">: Simscape value for the value of which the room is to be rotated.</span></li><li  class = 'S13'><span class="_richTextNode" style=' font-family: monospace;'>PercentAirVolInRoom</span><span class="_richTextNode">: Percent volume of room that is empty or has stagnant air.</span></li></ul><div  class = 'S1'><span class="_richTextNode" style=' font-weight: bold;'>Example</span><span class="_richTextNode">:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >roomModel = buildEnclosureForDataCenter(ModelName=NameValueArgs.ModelName,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            DatacenterModel=datacenter,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            EnclosureName=NameValueArgs.EnclosureName,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            PercentAirVolInRoom=8,</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            RoomLength=simscape.Value(4,</span><span style="color: rgb(167, 9, 245);">"m"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            RoomWidth=simscape.Value(3.5,</span><span style="color: rgb(167, 9, 245);">"m"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            RoomHeight=simscape.Value(2.5,</span><span style="color: rgb(167, 9, 245);">"m"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            WallThickness=simscape.Value(1e-1,</span><span style="color: rgb(167, 9, 245);">"m"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            RoomRotate=simscape.Value(15,</span><span style="color: rgb(167, 9, 245);">"deg"</span><span >),</span><span style="color: rgb(14, 0, 255);">...</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >                                            Diagnostics=false);</span></span></div></div><table  class = 'S8'><col style="width: 663px;" /><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><span class="_richTextNode"></span></div></td></tr></table><h2  class = 'S5' id = 'TMP_0802' ><span class="_richTextNode"></span></h2><div  class = 'S1'><span class="_richTextNode"></span></div><div  class = 'S1' id = 'TMP_1480' ><span class="_richTextNode"></span></div><div  class = 'S1'></div>
+<br>
+<!-- 
+##### SOURCE BEGIN #####
+%% Data Center Utilities
+% 
+% 
+% Copyright 2025 - 2026 The MathWorks, Inc.
+%% 
+% The functions listed below are used in the workflows described in this project. 
+% In this document, you will learn how to use these functions and specify their 
+% name-value-pairs.
+%% Utilities for Automated Build
+% getDataCenterNamePlateRatingTable
+% This function is used to modify parameters for server required by the data 
+% center build utilities like buildDatacenter and createDatacenterWithEnclosure. 
+% The function outputs a struct with two tables, one of size (6,2) and the other 
+% of size (5,1). The tables contain parameters for data center server like Server 
+% Idle Power, Power Supply Efficiency, Server Actual To Name Plate Ratio, Server 
+% Mass & Specific Heat, Peak Power of CPU, Memory, Disk, PCI, Motherboard, and 
+% Fans.
+% 
+% *Example*:
+%%
+% 
+%   data = getDataCenterNamePlateRatingTable(...
+%       Mass=simscape.Value(30,"kg"),...
+%       PeakPowerMotherboard=simscape.Value(34,"W"),...
+%       IdlePower=simscape.Value(56,"W"),...)
+%       Display=true);
+%
+%% 
+% 
+% createDataCenterWithEnclosure
+% This function executes |buildDatacenter| and |buildEnclosureForDatacenter|. 
+% The name value pair for this function is a combined list of name value pair 
+% for these two functions. This utility also lets you save the model files generated 
+% at your specified location (name-value-pair of |SaveAtFullPath|) and also specify 
+% the type of file you want to save it as (name-value-pair of |SaveModelAs|).
+% 
+% *Example*:
+%%
+% 
+%   data = getDataCenterNamePlateRatingTable(...
+%       Mass=simscape.Value(30,"kg"),...
+%       PeakPowerMotherboard=simscape.Value(34,"W"),...
+%       IdlePower=simscape.Value(56,"W"),...)
+%       Display=true);
+%   
+%   createDataCenterWithEnclosure(NumPDUunitsX=3,NumPDUunitsY=4,...
+%       ModelName="ModelDatacenterLiquidCooling",...
+%       ModelOption="Thermal",...
+%       ModelEnclosure=false,...
+%       RatingDatacenter=simscape.Value(6000,"kW"),...
+%       ServerNamePlateRating=data.nameplateRating,...
+%       ServerPowerSystemSpec=data.powerSystemSpecs,...
+%       ThermalRes=simscape.Value(1e-6,"K/W"),...
+%       Diagnostics=true);
+%
+%% 
+% Additionally, you may find the block *Utilization Converter* custom library 
+% block useful in converting a 2D matrix of server utilization data (based on 
+% *NumPDUunitsX* and *NumPDUunitsY* values required by |createDatacenterWithEnclosure|) 
+% into a vector form required by the large data center created above.
+%% 
+% 
+% getCompositeDataCenterRating
+% The utilties in this project help create a large data center with multiple 
+% *Datacenter Server Unit* custom library block. Use this function to determine 
+% or confirm the rating of (composite) data center created using such utilities.
+% 
+% *Arguments*:
+%% 
+% * |BlockPath|: Specified as a string and denotes the path to the composite 
+% data center model.
+% * |Display|: Specified as a logical value to enable or disable display of 
+% result.
+%% 
+% *Example*:
+%%
+% 
+%   % If in a SLX model DataCenterCooling, you have a subsystem called 'Datacenter', 
+%   % that contains the 'Datacenter Server Unit' library blocks, then specify the 
+%   % path as shown below.
+%   getCompositeDataCenterRating(BlockPath="DataCenterCooling/Datacenter",...
+%                                Display=true);
+%
+%% 
+% 
+%% Other Useful Utilities
+% buildDataCenter
+% This function is used to connect multiple data center servers in a certain 
+% topology. There a 3 different variants available, *thermal*, *electrical*, and 
+% *electrothermal*. 
+% 
+% *Parameters*:
+%% 
+% * |NumPDUunitsX|: Number of power distribution units (PDU) of data center 
+% in X direction.
+% * |NumPDUunitsY|: Number of power distribution units (PDU) of data center 
+% in Y direction.
+% * |ModelName|: Name of Simscape model.
+% * |ModelOption|: Model fidelity; 3 different options available - *thermal*, 
+% *electrical*, and *electrothermal*.
+% * |RatingDatacenter|: A simscape value to specify desired power rating of 
+% the data center.
+% * |ServerNamePlateRating|: A table of size (6,2) to specify server name plate 
+% rating parameters. Default values can be edited using function |getDataCenterNamePlateRatingTable|.
+% * |ServerPowerSystemSpec|: A table of size (5,1) to specify data center parameters. 
+% Default values can be edited using function |getDataCenterNamePlateRatingTable|.
+% * |PowerSupplyEff|: A scalar to specify the percentage efficiency of power 
+% supply. This is an optional argument required for *Electrical* and *Electrothermal* 
+% model fidelities.
+% * |ThermalRes|: A scalar to specify the thermal resistance of the data center 
+% stack bottom rack and the ground.
+% * |Diagnostics|: A logical, when set to _true_, outputs key updates from the 
+% function/utility.
+%% 
+% *Example*:
+%%
+% 
+%   data = getDataCenterNamePlateRatingTable(...
+%       Mass=simscape.Value(30,"kg"),...
+%       PeakPowerMotherboard=simscape.Value(34,"W"),...
+%       IdlePower=simscape.Value(56,"W"),...)
+%       Display=true);
+%   
+%   datacenter = buildDataCenter(NumPDUunitsX=5,...
+%                                NumPDUunitsY=6,...
+%                                ModelName="MyModel",...
+%                                ModelOption="Electrothermal",...
+%                                RatingDatacenter=simscape.Value(50,"kW"),...
+%                                ServerNamePlateRating=data.nameplateRating,...
+%                                ServerPowerSystemSpec=data.powerSystemSpecs,...
+%                                ThermalRes=simscape.Value(5,"K/W"),...
+%                                Diagnostics=true);
+%
+%% 
+% 
+% buildEnclosureForDataCenter
+% This function helps build a rectangular enclosure or room around the data 
+% center.
+% 
+% *Arguments*:
+%% 
+% * |ModelName|: Specified as a string and denotes the name for the Simscape 
+% model.
+% * |EnclosureName|: Specified as a string and denotes the name for the room/enclosure 
+% subsystem.
+% * |DatacenterModel|: A struct specifying data center properties.
+% * |Diagnostics|: When set to _true_, outputs key updates from the build process.
+% * |RoomLength|, |RoomWidth|, |RoomHeight|: Simscape values for room/enclosure 
+% length, width, and height.
+% * |WallThickness|: Simscape value to specify the wall thickness for the room/enclosure.
+% * |RoomRotate|: Simscape value for the value of which the room is to be rotated.
+% * |PercentAirVolInRoom|: Percent volume of room that is empty or has stagnant 
+% air.
+%% 
+% *Example*:
+%%
+% 
+%   roomModel = buildEnclosureForDataCenter(ModelName=NameValueArgs.ModelName,...
+%                                               DatacenterModel=datacenter,...
+%                                               EnclosureName=NameValueArgs.EnclosureName,...
+%                                               PercentAirVolInRoom=8,...
+%                                               RoomLength=simscape.Value(4,"m"),...
+%                                               RoomWidth=simscape.Value(3.5,"m"),...
+%                                               RoomHeight=simscape.Value(2.5,"m"),...
+%                                               WallThickness=simscape.Value(1e-1,"m"),...
+%                                               RoomRotate=simscape.Value(15,"deg"),...
+%                                               Diagnostics=false);
+%
+%% 
+% 
+%% 
+% 
+% 
+% 
+% 
+%
+##### SOURCE END #####
+-->
+</div></body></html>

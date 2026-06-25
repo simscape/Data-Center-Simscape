@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:d="http://www.mathworks.com/blockgraphics" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svg" width="50" height="51" viewBox="0 0 50 51" fill="none">
+	<defs>
+		<clipPath id="clip0_251_47">
+			<rect width="50" height="50" fill="white" transform="translate(0 0.0322266)"/>
+		</clipPath>
+	</defs>
+	<g id="part" title="part_0" ie-ports="left:,top:simulink,right:,bottom:simulink">
+		<g id="group" clip-path="url(#clip0_251_47)">
+			<rect id="rect" fill="white" transform="matrix(1,0,0,1,0,0.0322266035)" x="0" y="0" width="50" height="50" rx="0" ry="0"/>
+			<path id="path" stroke="black" style="stroke:#1171be;" d=" M 0.5,16.53 C 3.51,15.93 12.14,13.16 20.85,10.01 C 31.43,6.18 42.12,1.79 43,0.03"/>
+			<rect id="rect_1" stroke="black" style="stroke:#1171be;" x="6" y="16.53" width="17" height="2" rx="1" ry="1"/>
+			<rect id="rect_2" stroke="black" style="stroke:#1171be;" x="28" y="8.53" width="17" height="2" rx="1" ry="1"/>
+			<rect id="rect_3" fill="white" stroke="black" style="stroke:#1171be;" x="13" y="11.03" width="3" height="36" rx="1" ry="1"/>
+			<path id="rect_4" fill="white" stroke="black" style="fill:rgb(255, 255, 255);stroke:#1171be;" d=" M 35,3.03 L 38,3.03 L 38,39.03 L 35,39.03 L 35,22.03 L 35,3.03 Z"/>
+			<rect id="rect_5" fill="#D9D9D9" stroke="black" style="fill:#ffffff;stroke:#1171be;" x="6" y="14.53" width="3" height="1" rx="0.5" ry="0.5"/>
+			<rect id="rect_6" fill="#D9D9D9" stroke="black" style="stroke:#1171be;fill:#ffffff;" x="28" y="6.53" width="3" height="1" rx="0.5" ry="0.5"/>
+			<rect id="rect_7" fill="#D9D9D9" stroke="black" style="stroke:#1171be;fill:#ffffff;" x="20" y="14.53" width="3" height="1" rx="0.5" ry="0.5"/>
+			<rect id="rect_8" fill="#D9D9D9" stroke="black" style="fill:#ffffff;stroke:#1171be;" x="42" y="6.53" width="3" height="1" rx="0.5" ry="0.5"/>
+			<path id="path_9" stroke="black" style="stroke:#1171be;" d=" M 1.5,20.03 C 7.5,19.37 46.8,7.83 50,3.03"/>
+		</g>
+	</g>
+</svg>

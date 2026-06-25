@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Component Library</title>
+    <!--
+    ============================================================
+    COMPONENT LIBRARY TABLE - MathWorks Style
+    ============================================================
+
+    PURPOSE:
+    Lists all custom Simscape components in this project with
+    clickable links to open their Documentation (via web()) or
+    Test Harness (via open_system()) directly in MATLAB.
+
+    HOW TO ADD A NEW COMPONENT:
+    1. Add a new entry to the COMPONENT DATA array in the <script>
+       section at the bottom of this file.
+    2. Each entry is an array with 4 elements:
+       ["ComponentName", "Library", "DocFile.html", "TestHarnessName"]
+    3. The table (including row numbers) is auto-generated from
+       the data array — no manual HTML editing needed.
+
+    EXAMPLE — Adding a component called "My New Block":
+       In the componentData array, add:
+       ["My New Block", "Datacenter", "DocumentationMyNewBlock.html", "TestMyNewBlock"],
+
+    AVAILABLE LIBRARIES:
+    - Datacenter
+    - Building Energy Management
+    - Energy Storage and Generation
+    - Microgrid and Renewables
+
+    HYPERLINK BEHAVIOR:
+    - Documentation links call: matlab:web('DocFile.html')
+    - Test Harness links call:  matlab:open_system('TestHarnessName')
+
+    STYLE REFERENCE (matches projectDocumentationPage.html):
+    - Page title:  28px, orange (#c04c0b)
+    - Headings h1: 20px, bold, orange (#c04c0b)
+    - Body text:   12px, dark (#212121)
+    - Links:       blue (#0076a8), hover (#004c6d)
+    - Code block:  12px monospace, gray bg (#f5f5f5), blue left border
+    - Table header: blue bg (#0076a8), white text
+
+    ============================================================
+    -->
+    <style>
+        /* ──────────────────────────────────────────────────────────
+           BASE STYLES (reusable across project documentation pages)
+           ────────────────────────────────────────────────────────── */
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #212121; }
+        a { color: #0076a8; text-decoration: none; }
+        a:hover { color: #004c6d; text-decoration: underline; }
+
+        /* ──────────────────────────────────────────────────────────
+           TITLE BAR (fixed, full-width)
+           ────────────────────────────────────────────────────────── */
+        .page-title {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: #fff; border-bottom: 1px solid #e0e0e0;
+            margin: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .page-title .title-text {
+            font-size: 28px; font-weight: 400; color: #c04c0b;
+            padding: 14px 20px;
+        }
+        .page-title .title-logo { padding: 6px 20px; }
+        .page-title .title-logo img { height: 50px; width: auto; }
+
+        /* ──────────────────────────────────────────────────────────
+           CONTENT AREA
+           ────────────────────────────────────────────────────────── */
+        .content {
+            padding: 90px 40px 30px;
+            max-width: 1100px;
+        }
+        h1 { font-size: 20px; font-weight: 700; color: #c04c0b; margin: 30px 0 8px;
+             border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
+        p { margin: 8px 0; line-height: 1.6; color: #212121; }
+        .code {
+            background: #f5f5f5; border-left: 3px solid #0076a8;
+            padding: 10px 14px; margin: 10px 0 20px;
+            font-family: 'Courier New', monospace; font-size: 12px; color: #212121;
+        }
+
+        /* ──────────────────────────────────────────────────────────
+           TABLE STYLES
+           ────────────────────────────────────────────────────────── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 12px;
+        }
+        th {
+            background: #0076a8;
+            color: #fff;
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 12px;
+        }
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        tr:hover td { background: #f0f8fc; }
+        td:first-child { font-weight: 500; }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     TITLE BAR
+     ============================================================ -->
+<div class="page-title">
+    <span class="title-text">Component Library</span>
+    <span class="title-logo"><img src="Images/MATLAB_VERSION.png" alt="MATLAB Version"></span>
+</div>
+
+<!-- ============================================================
+     CONTENT
+     ============================================================ -->
+<main class="content">
+
+    <h1>List of Components</h1>
+    <p>
+        The table below lists all custom components available in this project.In the
+        list below, you will find components that are required for analysis of 
+        renewables, microgrids, or building energy systems. These components and their 
+        specific application can also be found in other projects on the MathWorks File Exchange like 
+        <a href="matlab:web('https://mathworks.com/matlabcentral/fileexchange/123870-renewable-energy-integration-design-with-simscape?s_tid=prof_contriblnk')">Renewable Energy Integration Design with Simscape</a>, &nbsp
+        <a href="matlab:web('https://mathworks.com/matlabcentral/fileexchange/123865-microgrid-design-with-simscape?s_tid=prof_contriblnk')">​​Microgrid Design with Simscape</a>, and &nbsp
+        <a href="matlab:web('https://mathworks.com/matlabcentral/fileexchange/175604-building-energy-management-system-with-simscape?s_tid=prof_contriblnk')">​​Building Energy Management System with Simscape</a>.
+
+
+        Click on the <b>Documentation</b> link to view the component documentation,
+        or the <b>Test Harness</b> link to open the component test model.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Component Name</th>
+                <th>Library</th>
+                <th>Documentation</th>
+                <th>Test Harness</th>
+            </tr>
+        </thead>
+        <tbody id="component-table-body">
+        </tbody>
+    </table>
+
+    <p>
+        <br> <br>
+        <i>Copyright 2025 - 2026 The MathWorks, Inc.</i>
+    </p>
+    
+</main>
+
+<!-- ============================================================
+     COMPONENT DATA & TABLE GENERATION SCRIPT
+
+     HOW TO ADD A NEW COMPONENT:
+     Append a new entry to the componentData array below.
+     Format: ["ComponentName", "Library", "DocFile.html", "TestHarnessName"]
+
+     - ComponentName: display name shown in the table
+     - Library: top-level library folder name
+     - DocFile.html: documentation HTML filename (opened via web())
+     - TestHarnessName: Simulink model name without .slx (opened via open_system())
+
+     The script auto-generates table rows with correct row numbers
+     and matlab: hyperlinks. No other changes needed.
+     ============================================================ -->
+<script>
+var componentData = [
+    // Format: ["ComponentName", "Library", "DocFile.html", "TestHarnessName"]
+
+    // ── Datacenter Components ──────────────────────────────────────────────
+    ["Custom Dynamic Load (3-phase) block",     "Datacenter",                       "DocumentationDynLoadPQ3ph.html",               "TestDatacenter"],
+    ["Datacenter Server Unit",                  "Datacenter",                       "DocumentationDatacenter.html",                 "TestDatacenter"],
+    ["Utilization Converter",                   "Datacenter",                       "DocumentationUtilizationConverter.html",       "TestDatacenter"],
+
+    // ── Building Energy Management ─────────────────────────────────────────
+    ["Room Volume (HVAC)",                      "Building Energy Management",       "DocumentationRoomVolumeHVAC.html",             "TestRoomVolumeHVAC"],
+    ["Room Volume",                             "Building Energy Management",       "DocumentationRoomVolume.html",                 "TestRoomVolume"],
+    ["Wall External",                           "Building Energy Management",       "DocumentationExternalWall.html",               "TestExternalWall"],
+    ["Wall Selector",                           "Building Energy Management",       "DocumentationWallSelector.html",               "TestWallSelector"],
+    ["Room with Air Volume",                    "Building Energy Management",       "DocumentationCompositeRoom.html",              "TestCompositeRoomAirVol"],
+    ["Room, Radiator, and Under-floor Piping",  "Building Energy Management",       "DocumentationCompositeRoomRadiatorUFP.html",   "TestCompositeRoomRadUFP"],
+    ["Room with Under-floor Piping",            "Building Energy Management",       "DocumentationCompositeRoomUFP.html",           "TestCompositeRoomUFP"],
+    ["Room with Radiator",                      "Building Energy Management",       "DocumentationCompositeRoomRadiator.html",      "TestCompositeRoomRad"],
+    ["Air Water Heat Pump",                     "Building Energy Management",       "DocumentationAirWaterHeatPump.html",           "TestCompositeAWHP"],
+    ["Air Water Heat Pump (TL)",                "Building Energy Management",       "DocumentationAirWaterHeatPumpTL.html",         "TestCompositeAWHP"],
+    ["Room Underfloor Piping",                  "Building Energy Management",       "DocumentationRoomUnderFloorPiping.html",       "TestRoomUnderFloorPiping"],
+    ["Room Wall Radiator",                      "Building Energy Management",       "DocumentationRoomRadiator.html",               "TestRoomRadiator"],
+    ["Heat Source Control",                     "Building Energy Management",       "DocumentationCompositeHeatSourceControl.html", "TestCompositeAWHP"],
+    ["Solar Radiation (LUT)",                   "Building Energy Management",       "DocumentationSolarRadiationAtLocation.html",   "TestSolarRadiationAtLocation"],
+    ["Solar Radiation On Surface",              "Building Energy Management",       "DocumentationSolarRadiationOnSurface.html",    "TestSolarRadiationOnSurface"],
+    ["Temperature Source (LUT)",                "Building Energy Management",       "DocumentationTemperatureSourceLUT.html",       "TestTemperatureSource"],
+    ["Day Scheduler",                           "Building Energy Management",       "DocumentationDayScheduler.html",               "TestTemperatureSource"],
+
+    // ── Energy Storage and Generation ──────────────────────────────────────
+    ["Vanadium Redox Flow Battery",             "Energy Storage and Generation",    "DocumentationVaRedoxFlowBattery.html",         "VaRedoxFlowBattery"],
+
+    // ── Microgrid and Renewables ───────────────────────────────────────────
+    ["Generator Integrated",                    "Microgrid and Renewables",         "Generator.html",                               "Diesel_Generator_Harness"],
+    ["Solar Plant Integrated",                  "Microgrid and Renewables",         "SolarPlantSimplified.html",                    "Solar_Plant_Harness"],
+    ["Solar Plant",                             "Microgrid and Renewables",         "SolarPlant.html",                              "Solar_Plant_Harness"],
+    ["Wind Plant Integrated",                   "Microgrid and Renewables",         "WindFarmSimplified.html",                      "Wind_Harness"],
+    ["Wind Plant",                              "Microgrid and Renewables",         "WindFarm.html",                                "Wind_Harness"],
+    ["solar_plant (behavioral)",                "Microgrid and Renewables",         "SolarPlant.html",                              "Solar_Plant_Harness"],
+    ["wind_farm (behavioral)",                  "Microgrid and Renewables",         "WindFarm.html",                                "Wind_Harness"],
+    ["BESS Integrated",                         "Microgrid and Renewables",         "BESS.html",                                    "BESS_Harness"],
+    ["BESS Plant",                              "Microgrid and Renewables",         "BESS.html",                                    "BESS_Harness"],
+    ["BESS GFL Simplified",                     "Microgrid and Renewables",         "BESSGFLSimplified.html",                       "BESS_Harness"],
+    ["BESS GFM Simplified",                     "Microgrid and Renewables",         "BESSGFMSimplified.html",                       "BESS_Harness"],
+    ["Black Start",                             "Microgrid and Renewables",         "BlackStart.html",                              "BlackStart_Harness"],
+    ["PlannedIslanding",                        "Microgrid and Renewables",         "PlannedIslanding.html",                        "PlannedIsland_Harness"],
+    ["Resynchronization",                       "Microgrid and Renewables",         "Resynchronization.html",                       "ReSynchronization_Harness"],
+    ["Grid Following Control",                  "Microgrid and Renewables",         "GFLController.html",                           "BESS_Harness"],
+    ["Grid Forming Control",                    "Microgrid and Renewables",         "GFMController.html",                           "BESS_Harness"],
+    ["Governor and Prime Mover",                "Microgrid and Renewables",         "Generator.html",                               "Diesel_Generator_Harness"],
+    ["Solar PV Controller",                     "Microgrid and Renewables",         "SolarPlant.html",                              "Solar_Plant_Harness"],
+    ["Power Reference Controller",              "Microgrid and Renewables",         "PowerReferenceController.html",                "Solar_Plant_Harness"],
+    ["Wind Controller",                         "Microgrid and Renewables",         "WindController.html",                          "Wind_Harness"]
+
+    // ── ADD NEW COMPONENTS HERE ────────────────────────────────────────────
+    // ["New Component Name", "Library", "DocFile.html", "TestHarnessName"],
+];
+
+/* ──────────────────────────────────────────────────────────────────────────
+   buildTable()  — Generates table rows from componentData.
+   Called once on page load. Row numbers are auto-incremented.
+   - Documentation links use:  matlab:web('DocFile.html')
+   - Test Harness links use:   matlab:open_system('TestHarnessName')
+   ────────────────────────────────────────────────────────────────────────── */
+function buildTable() {
+    var tbody = document.getElementById('component-table-body');
+    var html = '';
+    for (var i = 0; i < componentData.length; i++) {
+        var name       = componentData[i][0];
+        var library    = componentData[i][1];
+        var docFile    = componentData[i][2];
+        var testModel  = componentData[i][3];
+        html += '<tr>'
+            + '<td>' + (i + 1) + '</td>'
+            + '<td>' + name + '</td>'
+            + '<td>' + library + '</td>'
+            + '<td><a href="matlab:web(\'' + docFile + '\')">' + docFile + '</a></td>'
+            + '<td><a href="matlab:open_system(\'' + testModel + '\')">' + testModel + '</a></td>'
+            + '</tr>';
+    }
+    tbody.innerHTML = html;
+}
+
+buildTable();
+</script>
+
+</body>
+</html>

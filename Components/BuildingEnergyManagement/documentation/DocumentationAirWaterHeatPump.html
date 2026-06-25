@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>Air Water Heat Pump</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-01-22">
+<meta name="DC.source" content="DocumentationAirWaterHeatPump.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>Air Water Heat Pump</h1>
+<!--introduction-->
+<p>This block is used for abstract representation of an air-water heat pump. The parameters on the block are based on EN14511 test data. The block outputs the amount of heating or cooling provided under the specified operating conditions. The operating conditions are determined from the values entered through the input ports of the block.</p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">Heating and Cooling Data (EN14511)</a>
+</li>
+<li>
+<a href="#3">Heat Pump</a>
+</li>
+</ul>
+</div>
+<p>The ports for this block include:</p>
+<div>
+<ul>
+<li>Input port <b>Fw</b> specifies the flow rate of liquid from the heat pump.</li>
+<li>Input port <b>Op</b> specifies the operation mode of the heat pump. Set this input to -1 for heating applications and to +1 for cooling applications. You can choose to add no heat to the water by setting this port value to 0.</li>
+<li>Input port <b>Ep</b> specifies if an additional electric heater has to be used to add heat to water. Set the value of this input to 1 when you want to add more heat, using inbuilt electrical heater in the heat pump, or 0 when you do not wish to add any additional heat. The value of the <b>Ep</b> port is multiplied by the value of the <b>Additional electric heater rating</b> parameter to compute the additional heat to be added to water.</li>
+<li>Input port <b>Ta</b> specifies the inlet air dry bulb temperature.</li>
+<li>Output port <b>ePow</b> and <b>COP</b> to to output the actual electrical power consumed in the heat pump and the real COP value realized during the heat pump operation.</li>
+<li>Input port <b>Tl</b> specifies the water inlet temperature.</li>
+<li>Input port <b>Tw</b> specifies the water outlet temperature.</li>
+<li>Input port <b>Nd</b> specified as a sclar value to represent operation deviation from the normal.</li>
+</ul>
+</div>
+<h2 id="2">Heating and Cooling Data (EN14511)</h2>
+<p>You must specify parameters for Air Water Heat Pump based on EN14511 test protocol. The convention used for parameter names is:</p>
+<div>
+<ul>
+<li>
+<b>A</b> for air, followed by its dry bulb temperature in degree centigrade.</li>
+<li>
+<b>W</b> for water, followed by its outlet temperature in degree centigrade.</li>
+</ul>
+</div>
+<p>For example: A-2W55 is the test case where inlet air dry bulb temperature is -2 degree centigrade and the outlet water temperature is 55 degree centigrade.</p>
+<p>For all test conditions, you must specify heat pump capacity and the estimated COP or SCOP, the seasonal COP values.</p>
+<div>
+<ul>
+<li>
+<b>A-2W55, estimated heating capacity</b>, <tt>nominalCapacityA</tt>, specified as a scalar value.</li>
+<li>
+<b>A-2W55, COP (or SCOP)</b>, <tt>seasonalCOPvalA</tt>, specified as a scalar value.</li>
+<li>
+<b>A-2W65, estimated heating capacity</b>, <tt>nominalCapacityB</tt>, specified as a scalar value.</li>
+<li>
+<b>A-2W65, COP (or SCOP)</b>, <tt>seasonalCOPvalB</tt>, specified as a scalar value.</li>
+<li>
+<b>A7W35, estimated heating capacity</b>, <tt>nominalCapacityC</tt>, specified as a scalar value.</li>
+<li>
+<b>A7W35, COP (or SCOP)</b>, <tt>seasonalCOPvalC</tt>, specified as a scalar value.</li>
+<li>
+<b>A7W45, estimated heating capacity</b>, <tt>nominalCapacityD</tt>, specified as a scalar value.</li>
+<li>
+<b>A7W45, COP (or SCOP)</b>, <tt>seasonalCOPvalD</tt>, specified as a scalar value.</li>
+<li>
+<b>A35W18, estimated cooling capacity</b>, <tt>nominalCapacityE</tt>, specified as a scalar value.</li>
+<li>
+<b>A35W18 COP (or SCOP)</b>, <tt>seasonalCOPvalE</tt>, specified as a scalar value.</li>
+<li>
+<b>A35W7, estimated cooling capacity</b>, <tt>nominalCapacityF</tt>, specified as a scalar value.</li>
+<li>
+<b>A35W7 COP (or SCOP)</b>, <tt>seasonalCOPvalF</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="3">Heat Pump</h2>
+<div>
+<ul>
+<li>
+<b>Minimum operational water temperature</b>, <tt>wInletOpRangeUpp</tt>, specified as a scalar value.</li>
+<li>
+<b>Maximum operational water temperature</b>, <tt>wInletOpRangeLow</tt>, specified as a scalar value.</li>
+<li>
+<b>Backup electric heater rating</b>, <tt>backupElecHeater</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<p class="footer">Copyright 2025 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% Air Water Heat Pump
+% 
+% This block is used for abstract representation of an air-water heat pump.
+% The parameters on the block are based on EN14511 test data. The block
+% outputs the amount of heating or cooling provided under the specified
+% operating conditions. The operating conditions are determined from the
+% values entered through the input ports of the block.
+
+% Copyright 2025 The MathWorks, Inc.
+
+%%
+% The ports for this block include:
+%
+% * Input port *Fw* specifies the flow rate of liquid from the heat pump.
+% * Input port *Op* specifies the operation mode of the heat pump. Set 
+% this input to -1 for heating applications and to +1 for cooling 
+% applications. You can choose to add no heat to the water by setting this 
+% port value to 0.
+% * Input port *Ep* specifies if an additional electric heater has to be 
+% used to add heat to water. Set the value of this input to 1 when you want 
+% to add more heat, using inbuilt electrical heater in the heat pump, or 0 
+% when you do not wish to add any additional heat. The value of the *Ep* 
+% port is multiplied by the value of the *Additional electric heater 
+% rating* parameter to compute the additional heat to be added to water.
+% * Input port *Ta* specifies the inlet air dry bulb temperature.
+% * Output port *ePow* and *COP* to to output the actual electrical power 
+% consumed in the heat pump and the real COP value realized during the heat 
+% pump operation.
+% * Input port *Tl* specifies the water inlet temperature.
+% * Input port *Tw* specifies the water outlet temperature.
+% * Input port *Nd* specified as a sclar value to represent operation 
+% deviation from the normal.
+%
+%% Heating and Cooling Data (EN14511)
+% You must specify parameters for Air Water Heat Pump based on EN14511 test
+% protocol. The convention used for parameter names is:
+%
+% * *A* for air, followed by its dry bulb temperature in degree centigrade.
+% * *W* for water, followed by its outlet temperature in degree centigrade.
+%
+% For example: A-2W55 is the test case where inlet air dry bulb temperature
+% is -2 degree centigrade and the outlet water temperature is 55 degree
+% centigrade.
+%
+% For all test conditions, you must specify heat pump capacity and the 
+% estimated COP or SCOP, the seasonal COP values.
+%
+% * *A-2W55, estimated heating capacity*, |nominalCapacityA|, specified as 
+% a scalar value.
+% * *A-2W55, COP (or SCOP)*, |seasonalCOPvalA|, specified as a scalar value.
+% * *A-2W65, estimated heating capacity*, |nominalCapacityB|, specified as 
+% a scalar value.
+% * *A-2W65, COP (or SCOP)*, |seasonalCOPvalB|, specified as a scalar value.
+% * *A7W35, estimated heating capacity*, |nominalCapacityC|, specified as 
+% a scalar value.
+% * *A7W35, COP (or SCOP)*, |seasonalCOPvalC|, specified as a scalar value.
+% * *A7W45, estimated heating capacity*, |nominalCapacityD|, specified as 
+% a scalar value.
+% * *A7W45, COP (or SCOP)*, |seasonalCOPvalD|, specified as a scalar value.
+% * *A35W18, estimated cooling capacity*, |nominalCapacityE|, specified as 
+% a scalar value.
+% * *A35W18 COP (or SCOP)*, |seasonalCOPvalE|, specified as a scalar value.
+% * *A35W7, estimated cooling capacity*, |nominalCapacityF|, specified as 
+% a scalar value.
+% * *A35W7 COP (or SCOP)*, |seasonalCOPvalF|, specified as a scalar value.
+%
+%% Heat Pump
+% * *Minimum operational water temperature*, |wInletOpRangeUpp|, specified as 
+% a scalar value.
+% * *Maximum operational water temperature*, |wInletOpRangeLow|, specified as 
+% a scalar value.
+% * *Backup electric heater rating*, |backupElecHeater|, specified as a
+% scalar value.
+
+##### SOURCE END #####
+-->
+</body>
+</html>

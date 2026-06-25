@@ -1,0 +1,13 @@
+function cosineAngleOfIncidence = getCosineAngleOfIncidenceOnSurface(phi,delta,beta,gamma,omega)
+% Function to calculate the cosine of angle of incidence on a flat surface.
+
+% Copyright 2024 - 2025 The MathWorks, Inc.
+
+    cosineAngleOfIncidence = sin(phi)*sin(delta)*cos(beta) - ...
+                             cos(phi)*sin(delta)*sin(beta)*cos(gamma) + ...
+                             cos(phi)*cos(delta)*cos(omega)*cos(beta) + ...
+                             sin(phi)*cos(delta)*cos(omega)*sin(beta)*cos(gamma) + ...
+                             cos(delta)*sin(omega)*sin(beta)*sin(gamma);
+    cosineAngleOfIncidence = max(0,cosineAngleOfIncidence);
+    cosineAngleOfIncidence = cosineAngleOfIncidence*(phi>0); % Between sunrise and sunset
+end

@@ -1,0 +1,100 @@
+component(Propagation=Blocks) solarRadiationAtLocation
+    % Solar Radiation (LUT) : 2.5
+    % This block provides value of solar radiation at the specified location. 
+    % The solar radiation computation is based on the solar angles computed 
+    % based on the location and datetime parameters. The block outputs solar 
+    % radiation values based on the computed lookup table data.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationSolarRadiationAtLocation.html">Documentation for Solar Radiation (LUT)</a>
+    % <br/>
+
+    % Copyright 2025 The MathWorks, Inc.
+
+    annotations
+        Icon = "solarRadiationAtLocation.png";
+        UILayout = [UIGroup("Location",latitude,longitude,localTime,dayLightS)
+                    UIGroup("Solar Data Parameterization",startYear,startMonth,...
+                            startDay,startHr,numHrsData,cloudData,cloudCoverVal,...
+                            interp_method,extrap_method)];
+        S : Side=Right;
+    end
+
+    parameters
+        startYear = {2025, "1"};   % Year for start time
+        startMonth = {1, "1"};     % Month for start time
+        startDay = {1, "1"};       % Day for start time
+        startHr = {1,"1"};         % Hour of the day for start time
+        numHrsData = {24, "1"};    % Number of hours of solar data
+        latitude = {5, "1"};       % Latitude of the location
+        longitude = {5, "1"};      % Longitude of the location
+        localTime = {5, "1"};      % Longitude reference for local time calculations
+        dayLightS = {0, "1"};      % Daylight hour savings
+        cloudData = cloudCoverLibOption.none;                % Cloud cover data option
+        cloudCoverVal = zeros(1,24);                         % Cloud cover value
+        interp_method = simscape.enum.interpolation.linear;  % Interpolation method
+        extrap_method = simscape.enum.extrapolation.nearest; % Extrapolation method
+    end
+
+    parameters(ExternalAccess=none)
+        startYearVal = value(startYear,"1");
+        startMonthVal = value(startMonth,"1");
+        startDayVal = value(startDay,"1");
+        startHrVal = value(startHr,"1");
+        numHrsDataVal = value(numHrsData,"1");
+        latitudeVal = value(latitude,"1");
+        longitudeVal = value(longitude,"1");
+        localTimeVal = value(localTime,"1");
+        dayLightSVal = value(dayLightS,"1");
+        solarRadWattPerMeterSqVec = getSolarRadiationAtLocation(startYearVal,...
+            startMonthVal,startDayVal,startHrVal,numHrsDataVal,latitudeVal,...
+            longitudeVal,localTimeVal,dayLightSVal);
+        cloudCoverTime = 1:length(cloudCoverHourly);
+    end
+
+    if cloudData == cloudCoverLibOption.daily
+        parameters(Access=private)
+            cloudCoverHourly = repelem(cloudCoverVal,24);
+        end
+        equations
+            assert(ceil((startHrVal+numHrsDataVal)/24)==length(cloudCoverVal))
+        end
+    elseif cloudData == cloudCoverLibOption.hourly
+        parameters(Access=private)
+            cloudCoverHourly = cloudCoverVal;
+        end
+        equations
+            assert(numHrsDataVal==length(cloudCoverVal))
+        end
+    else % cloudCoverLibOption.none
+        % Do nothing
+        annotations
+            cloudCoverVal : ExternalAccess=none;
+        end
+        parameters(Access=private)
+            cloudCoverHourly = cloudCoverVal;
+        end
+    end
+
+    outputs
+        S = {0, "W/m^2"}; % Rad
+    end
+
+    intermediates
+        currentTimeHr = value(time,"s")/3600 + startHrVal;
+    end
+
+    if cloudData == cloudCoverLibOption.none
+        equations
+            S == {tablelookup(1:numHrsDataVal,solarRadWattPerMeterSqVec,max(1,min(numHrsDataVal,currentTimeHr)),...
+                  interpolation=interp_method,extrapolation=extrap_method),"W/m^2"};
+        end
+    else
+        equations
+            S == {tablelookup(1:numHrsDataVal,solarRadWattPerMeterSqVec,max(1,min(numHrsDataVal,currentTimeHr)),...
+                  interpolation=interp_method,extrapolation=extrap_method),"W/m^2"}*...
+                 {min(1,max(0,1-tablelookup(cloudCoverTime,cloudCoverHourly,max(1,min(numHrsDataVal,currentTimeHr)),...
+                  interpolation=interp_method,extrapolation=extrap_method))),"1"};
+        end
+    end
+end

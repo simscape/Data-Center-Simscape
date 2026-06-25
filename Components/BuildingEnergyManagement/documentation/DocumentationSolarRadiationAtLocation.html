@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>Solar Radiation (LUT)</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-01-22">
+<meta name="DC.source" content="DocumentationSolarRadiationAtLocation.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>Solar Radiation (LUT)</h1>
+<!--introduction-->
+<p>This block provides value of solar radiation, through output port <i>Rad</i>, at the specified location. The solar radiation computation is based on the solar angles computed from the location and datetime parameters. The solar radiation is computed using the formula:</p>
+<pre class="language-matlab">solar_rad = Gsc*(1+0.033*cos(day)*(cos(lat)*cos(delta)*cos(omega)+sin(lat)*sin(delta))
+</pre>
+<p>where: <b>delta</b> denotes the <i>Declination Angle</i>, <b>lat</b> denotes the <i>Latitude of the location</i>, <b>omega</b> denotes the <i>Solar hour angle</i>, <b>day</b> denotes the <i>Day of the year representation</i>, and <b>Gsc</b> is equal to 1367 W/m^2.</p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">Location</a>
+</li>
+<li>
+<a href="#2">Start Date and Time</a>
+</li>
+</ul>
+</div>
+<h2 id="1">Location</h2>
+<div>
+<ul>
+<li>
+<b>Latitude of the location</b>, <tt>latitude</tt>, specified as a positive or negative value. If the value is set to be positive, then the value corrosponds to the Northern Hemisphere. If the value is set to be negative, then it corrosponds to the Southern Hemisphere.</li>
+<li>
+<b>Longitude of the location</b>, <tt>longitude</tt>, specified as a positive or negative value. If the value is set to be positive, then the value corrosponds to the Eastern Hemisphere. If the value is set to be negative, then it corrosponds to the Western Hemisphere.</li>
+<li>
+<b>Longitude reference for local time calculations</b>, <tt>localTime</tt>, specified as a positive or negative value. If the value is set to be positive, then the value corrosponds to the Eastern Hemisphere. If the value is set to be negative, then it corrosponds to the Western Hemisphere.</li>
+<li>
+<b>Daylight hour savings</b>, <tt>dayLightS</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="2">Start Date and Time</h2>
+<div>
+<ul>
+<li>
+<b>Year for start time</b>, <tt>startYear</tt>, defines the start year for time calculation, specified as a scalar value.</li>
+<li>
+<b>Month for start time</b>, <tt>startMonth</tt>, defines the start month for time calculation, specified as a scalar value.</li>
+<li>
+<b>Day for start time</b>, <tt>startDay</tt>, defines the start day for time calculation, specified as a scalar value.</li>
+<li>
+<b>Hour for start time</b>, <tt>startHr</tt>, defines the start time in hour for time calculation, specified as a scalar value.</li>
+<li>
+<b>Number of hours of solar data</b>, <tt>numHrsData</tt>, defines the number of hours for which solar radiation values are computed, specified as a scalar value.</li>
+<li>
+<b>Cloud cover data option</b>, <tt>cloudData</tt>, specifed as a drop-down list for the cloud cover option. You may choose from <tt>none</tt>, <tt>hourly</tt>, or <tt>daily</tt> options. If you select <tt>none</tt>, effect of cloud cover is not modeled.</li>
+<li>
+<b>Cloud cover value</b>, <tt>cloudCoverVal</tt>, specified as a vector of values between 0 and 1. If you select <b>Cloud cover data option</b> as <tt>daily</tt> or <tt>hourly</tt>, this parameter will appear and you will need to specify a vector of values equal to the number of days or the number of hours in the simulation. The vector values range between 0 to 1. A value of 0 indicates no cloud cover and all solar radiation is reaching the location. A value of 1 indicates a cloudy sky and no solar radiation reaches the location.</li>
+</ul>
+</div>
+<p class="footer">Copyright 2025 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% Solar Radiation (LUT)
+% 
+% This block provides value of solar radiation, through output port _Rad_, at the 
+% specified location. The solar radiation computation is based on the solar 
+% angles computed from the location and datetime parameters. The solar 
+% radiation is computed using the formula:
+%
+%   solar_rad = Gsc*(1+0.033*cos(day)*(cos(lat)*cos(delta)*cos(omega)+sin(lat)*sin(delta))
+%
+% where: *delta* denotes the _Declination Angle_, *lat* denotes the _Latitude 
+% of the location_, *omega* denotes the _Solar hour angle_, *day* denotes the 
+% _Day of the year representation_, and *Gsc* is equal to 1367 W/m^2.
+
+% Copyright 2025 The MathWorks, Inc.
+
+%% Location
+% * *Latitude of the location*, |latitude|, specified as a positive or
+% negative value. If the value is set to be positive, then the value
+% corrosponds to the Northern Hemisphere. If the value is set to be
+% negative, then it corrosponds to the Southern Hemisphere.
+% * *Longitude of the location*, |longitude|, specified as a positive or
+% negative value. If the value is set to be positive, then the value
+% corrosponds to the Eastern Hemisphere. If the value is set to be
+% negative, then it corrosponds to the Western Hemisphere.
+% * *Longitude reference for local time calculations*, |localTime|, 
+% specified as a positive or negative value. If the value is set to be 
+% positive, then the value corrosponds to the Eastern Hemisphere. If the 
+% value is set to be negative, then it corrosponds to the Western Hemisphere.
+% * *Daylight hour savings*, |dayLightS|, specified as a scalar value.
+%
+%% Start Date and Time
+% * *Year for start time*, |startYear|, defines the start year for time 
+% calculation, specified as a scalar value. 
+% * *Month for start time*, |startMonth|, defines the start month for time 
+% calculation, specified as a scalar value.
+% * *Day for start time*, |startDay|, defines the start day for time 
+% calculation, specified as a scalar value.
+% * *Hour for start time*, |startHr|, defines the start time in hour for time 
+% calculation, specified as a scalar value.
+% * *Number of hours of solar data*, |numHrsData|, defines the number of 
+% hours for which solar radiation values are computed, specified as a scalar 
+% value.
+% * *Cloud cover data option*, |cloudData|, specifed as a drop-down list
+% for the cloud cover option. You may choose from |none|, |hourly|, or
+% |daily| options. If you select |none|, effect of cloud cover is not
+% modeled. 
+% * *Cloud cover value*, |cloudCoverVal|, specified as a vector of values
+% between 0 and 1. If you select *Cloud cover data option* as |daily| or 
+% |hourly|, this parameter will appear and you will need to specify a
+% vector of values equal to the number of days or the number of hours in
+% the simulation. The vector values range between 0 to 1. A value of 0
+% indicates no cloud cover and all solar radiation is reaching the
+% location. A value of 1 indicates a cloudy sky and no solar radiation
+% reaches the location.
+##### SOURCE END #####
+-->
+</body>
+</html>

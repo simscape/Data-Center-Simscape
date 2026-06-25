@@ -1,0 +1,71 @@
+% This component was automatically generated using 'subsystem2ssc'. 
+%   Subsystem: RoomModel/RoomHVAC 
+%   MATLAB version: 25.1 
+%   Simulink version: 25.1 
+%   Simscape version: 25.1 
+%   Generated on: 25-Aug-2025 12:56:09
+
+component (Propagation = blocks) RoomHVAC
+  parameters
+    breathT = {0, 'K'}; %Breath temperature
+    perPersonCO2 = {0, 'g/s'}; %CO2 per person
+    perPersonMoisture = {0, 'g/s'}; %Moisture per person
+    perPersonQ = {0, 'W'}; %Heat load per person
+    relHumidityAirVol = 0; %Initial relative humidity of moist air volume
+    relHumidity = 1; %Relative humidity at saturation
+    temperatureAirVol = {293, 'K'}; %Initial temperature of most air volume
+    airInletCrossSection = {.01, 'm^2'}; %Area inlet for HVAC
+    airOutletCrossSection = {.01, 'm^2'}; %Area outlet for HVAC
+    entrainedFrac = 1; %Fraction of condensate entrained as water droplets
+    pressureAirVol = {.101325, 'MPa'}; %Initial pressure of moist air volume
+    mfWaterDroplets = 0; %Initial mass ratio of water droplets to moist air
+    tauCondensation = {.001, 's'}; %Condensation time constant
+    roomVolume = {100, 'm^3'}; %Room volume
+    traceGasMassFrac = 0; %Initial trace gas mass fraction of moist air volume
+  end
+  inputs
+    N = 0;
+    S = {0, 'J/s'};
+  end
+  nodes
+    B = foundation.moist_air.moist_air;
+    A = foundation.moist_air.moist_air;
+    H = foundation.thermal.thermal;
+  end
+  components(ExternalAccess = observe)
+    Tref = foundation.thermal.elements.reference;
+    T2 = foundation.signal.sinks.terminator;
+    T1 = foundation.signal.sinks.terminator;
+    RoomVolume = foundation.moist_air.elements.constant_volume_chamber(RH_init_priority = int32(0), T_init_priority = int32(0), humidity_spec = int32(1), moisture_trace_gas_source = int32(2), num_ports = int32(2), p_init_priority = int32(0), r_d_init_priority = int32(0), trace_gas_spec = int32(1), x_g_init_priority = int32(0), area_B = airOutletCrossSection, p_init = pressureAirVol, area_A = airInletCrossSection, volume = roomVolume, fraction_entrained = entrainedFrac, x_g_init = traceGasMassFrac, r_d_init = mfWaterDroplets, time_constant_evap = tauCondensation, RH_ws = relHumidity, RH_init = relHumidityAirVol, T_init = temperatureAirVol, time_constant_cond = tauCondensation);
+    QperPerson = foundation.signal.functions.gain(gain = perPersonQ);
+    Qgain = foundation.thermal.sources.controlled_heat_flow;
+    Qadd = foundation.thermal.sources.controlled_heat_flow;
+    MoistureGain = foundation.moist_air.sources.moisture_trace_gas.moisture_source(moisture_source_spec = int32(1), source_type = int32(2), vapor_from_liquid = logical(0));
+    H2OperPerson = foundation.signal.functions.gain(gain = perPersonMoisture);
+    CO2perPerson = foundation.signal.functions.gain(gain = perPersonCO2);
+    CO2gain = foundation.moist_air.sources.moisture_trace_gas.trace_gas_source(source_type = int32(2));
+    BreathT = foundation.signal.sources.constant(constant = breathT);
+  end
+  connections
+    connect(BreathT.O,CO2gain.T);
+    connect(BreathT.O,MoistureGain.T);
+    connect(N,CO2perPerson.I);
+    connect(N,H2OperPerson.I);
+    connect(N,QperPerson.I);
+    connect(CO2perPerson.O,CO2gain.M);
+    connect(H2OperPerson.O,MoistureGain.M);
+    connect(S,Qadd.S);
+    connect(QperPerson.O,Qgain.S);
+    connect(RoomVolume.F,T1.I);
+    connect(RoomVolume.W,T2.I);
+    connect(CO2gain.S,MoistureGain.S);
+    connect(CO2gain.S,RoomVolume.S);
+    connect(Qadd.A,Qgain.A);
+    connect(Qadd.A,Tref.H);
+    connect(H,Qadd.B);
+    connect(H,Qgain.B);
+    connect(H,RoomVolume.H);
+    connect(A,RoomVolume.A);
+    connect(B,RoomVolume.B);
+  end
+end

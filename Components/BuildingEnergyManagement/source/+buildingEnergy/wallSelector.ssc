@@ -1,0 +1,179 @@
+component(Propagation = blocks) wallSelector
+    % Wall Selector:2.5
+    % This block is used to specify a solid wall, or a solid wall with vent 
+    % and/or windows. The wall and the window glass properties are also set 
+    % using this block. This block can also be used to build composite 
+    % walls. One node, Thermal node A, is connected to the ambient and the 
+    % other node, Thermal node B, to the room. The optional port S is 
+    % used to specify the solar radiation falling on the wall. This port is 
+    % only visible for Wall Type values of Solid Wall with Solar Load, 
+    % Solid Wall with Window/Door and Solar Load, Solid Wall with 
+    % Window/Door, Vent, and Solar Load, and Solid Wall with Vent and 
+    % Solar Load. 
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationWallSelector.html">Documentation for Wall Selector</a>
+    % <br/>
+
+    % Copyright 2025 The MathWorks, Inc.
+
+    annotations
+        A : Side=Left;
+        B : Side=Right;
+        S : Side=Left;
+        UILayout = [UIGroup("Wall", optWall, wallLength, wallHeight, wallThickness, ...
+                            wallMaterialDen, wallMaterialCp, wallAbsorptivity, wallThermalK)
+                    UIGroup("Window", winLength, winHeight, winThickness, ...
+                            winMaterialDen, winMaterialCp, winAbsorptivity, ...
+                            winThermalK, winTransmissivity)
+                    UIGroup("Vent", ventLength, ventHeight)
+                    UIGroup("Heat Transfer", extToWallHTC, intToRoomHTC, iniT)];
+    end
+
+    parameters
+        optWall = wallModelOption.wallSolarWinVent; % Select wall type
+        % Wall properties
+        wallLength = {5, "m"};                      % Wall length
+        wallHeight = {3, "m"};                      % Wall height
+        wallThickness = {0.3, "m"};                 % Wall thickness
+        wallMaterialDen = {4000, "kg/m^3"};         % Wall material density
+        wallMaterialCp = {1870, "J/(K*kg)"};        % Wall material heat capacity
+        wallAbsorptivity = 0.5;                     % Wall absorptivity
+        wallThermalK = {2, "W/(K*m)"};              % Wall thermal conductivity
+        % Vent properties
+        ventLength = {0.1, "m"};                    % Vent length
+        ventHeight = {0.1, "m"};                    % Vent height
+        % Window properties
+        winLength = {1, "m"};                       % Window length
+        winHeight = {0.5, "m"};                     % Window height
+        winThickness = {0.007, "m"};                % Window glass thickness
+        winMaterialDen = {2500, "kg/m^3"};          % Window glass material density
+        winMaterialCp = {787, "J/(K*kg)"};          % Window glass material heat capacity
+        winAbsorptivity = 0.35;                     % Window glass Absorptivity
+        winThermalK = {1, "W/(K*m)"};               % Window glass thermal conductivity
+        winTransmissivity = 0.45;                   % Window glass transmissivity
+        extToWallHTC = {5, "W/(K*m^2)"};            % Effective heat transfer coefficient from ambient to wall surface
+        intToRoomHTC = {5, "W/(K*m^2)"};            % Effective heat transfer coefficient from internal surface to the room
+        iniT = {300, "K"};                          % Initial temperature
+    end
+
+    parameters(ExternalAccess=none)
+        wallArea = wallLength*wallHeight;
+        wallMaterialMass = wallArea*wallThickness*wallMaterialDen;
+        ventArea = ventLength*ventHeight;
+        winArea = winLength*winHeight;
+        winMaterialMass = winArea*winThickness*winMaterialDen;
+    end
+
+    inputs
+        S = {0, 'W/m^2'}; % S
+    end
+
+    nodes
+        A = foundation.thermal.thermal; % A
+        B = foundation.thermal.thermal; % B
+    end
+
+    if optWall == wallModelOption.wallOnly
+        annotations
+            Icon = "wallOnly.png";
+            [winLength, winHeight,ventLength,ventHeight,wallAbsorptivity,winMaterialDen,...
+                winMaterialCp,winAbsorptivity,winThermalK,winThickness,...
+                winTransmissivity,S] : ExternalAccess=none;
+        end
+        components(ExternalAccess=observe)
+            wallModel = WallWithVents(wallArea=wallArea, extToWallHTC=extToWallHTC,...
+                wallMaterialMass=wallMaterialMass, wallMaterialCp=wallMaterialCp,...
+                intToRoomHTC=intToRoomHTC, wallThermalK=wallThermalK,...
+                wallThickness=wallThickness,...
+                wallTemperature=iniT);
+        end
+    elseif optWall == wallModelOption.wallWinVent
+        annotations
+            Icon = "wallWinVent.png";
+            [winLength,winHeight,wallAbsorptivity,winMaterialDen,winMaterialCp,...
+                winAbsorptivity,winThermalK,winThickness,...
+                winTransmissivity,S] : ExternalAccess=none;
+        end
+        components(ExternalAccess=observe)
+            wallModel = WallWithVents(wallArea=wallArea, extToWallHTC=extToWallHTC,...
+                wallMaterialMass=wallMaterialMass, wallMaterialCp=wallMaterialCp,...
+                ventArea=ventArea, intToRoomHTC=intToRoomHTC, wallThermalK=wallThermalK,...
+                wallThickness=wallThickness, wallTemperature=iniT);
+        end
+    elseif optWall == wallModelOption.wallSolar
+        annotations
+            Icon = "wallSolar.png";
+            [winLength,winHeight,ventLength,ventHeight,winMaterialDen,winMaterialCp,winAbsorptivity,...
+                winThermalK,winThickness,winTransmissivity] : ExternalAccess=none;
+        end
+        components(ExternalAccess=observe)
+            wallModel = WallSolar(wallArea=wallArea, extToWallHTC=extToWallHTC,...
+                wallMaterialMass=wallMaterialMass, wallMaterialCp=wallMaterialCp,...
+                wallAbsorptivity=wallAbsorptivity, intToRoomHTC=intToRoomHTC,...
+                wallThermalK=wallThermalK, wallThickness=wallThickness,...
+                wallTemperature=iniT);
+        end
+        equations
+            S == wallModel.SUN;
+        end
+    elseif optWall == wallModelOption.wallSolarWin
+        annotations
+            Icon = "wallSolarWin.png";
+            [ventLength,ventHeight] : ExternalAccess=none;
+        end
+        components(ExternalAccess=observe)
+            wallModel = WallSolarWithWindows(wallArea=wallArea, extToWallHTC=extToWallHTC,...
+                winArea=winArea, wallMaterialMass=wallMaterialMass, wallMaterialCp=wallMaterialCp,...
+                wallAbsorptivity=wallAbsorptivity, intToRoomHTC=intToRoomHTC,...
+                wallThermalK=wallThermalK, wallThickness=wallThickness,...
+                winMaterialMass=winMaterialMass, winMaterialCp=winMaterialCp,...
+                winAbsorptivity=winAbsorptivity, winThermalK=winThermalK,...
+                winThickness=winThickness, winTransmissivity=winTransmissivity,...
+                wallTemperature=iniT);
+        end
+        equations
+            S == wallModel.SUN;
+        end
+    elseif optWall == wallModelOption.wallSolarVent
+        annotations
+            Icon = "wallSolarVent.png";
+            [winLength,winHeight,winMaterialDen,winMaterialCp,winAbsorptivity,winThermalK,...
+                winThickness,winTransmissivity] : ExternalAccess=none;
+        end
+        components(ExternalAccess=observe)
+            wallModel = WallSolarWithVents(wallArea=wallArea, extToWallHTC=extToWallHTC,...
+                wallMaterialMass=wallMaterialMass, wallMaterialCp=wallMaterialCp,...
+                ventArea=ventArea, wallAbsorptivity=wallAbsorptivity,...
+                intToRoomHTC=intToRoomHTC, wallThermalK=wallThermalK,...
+                wallThickness=wallThickness,wallTemperature=iniT);
+        end
+        equations
+            S == wallModel.SUN;
+        end
+    else % optWall == wallModelOption.wallSolarWinVent
+        annotations
+            Icon = "wallSolarWinVent.png";
+        end
+        components(ExternalAccess=observe)
+            wallModel = WallSolarWithWindowsAndVents(wallArea=wallArea,...
+                extToWallHTC=extToWallHTC, winArea=winArea, wallMaterialMass=wallMaterialMass,...
+                wallMaterialCp=wallMaterialCp, ventArea=ventArea,...
+                wallAbsorptivity=wallAbsorptivity, intToRoomHTC=intToRoomHTC,...
+                wallThermalK=wallThermalK, wallThickness=wallThickness,...
+                winMaterialMass=winMaterialMass, winMaterialCp=winMaterialCp,...
+                winAbsorptivity=winAbsorptivity, winThermalK=winThermalK,...
+                winThickness=winThickness, winTransmissivity=winTransmissivity,...
+                wallTemperature=iniT);
+        end
+        equations
+            S == wallModel.SUN;
+        end
+    end
+
+    connections
+        connect(wallModel.EXT,A);
+        connect(wallModel.INT,B);
+    end
+
+ end

@@ -1,0 +1,47 @@
+component(Propagation=Blocks) dynLoadPQ3ph
+    % Custom Dynamic Load (3-phase) block:2.5
+    % This block is used in conjunction with the Dynamic Load (3-phase) 
+    % library block in Simscape Electrical. It adds the impact of harmonic 
+    % distortion and the input P and Q values for the Dynamic Load (3-phase) 
+    % block. The computation of the values is based on the approach cited in 
+    % "IEEE Standard Definitions for the Measurement of Electric 
+    % Power Quantities Under Sinusoidal, Nonsinusoidal, Balanced, or 
+    % Unbalanced Conditions," in IEEE Std 1459-2010 (Revision of IEEE Std 
+    % 1459-2000) , vol., no., pp.1-50, 19 March 2010.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationDynLoadPQ3ph.html">Documentation for Custom Dynamic Load (3-phase)</a>
+    % <br/>
+
+    % Copyright 2025 - 2026 The MathWorks, Inc.
+
+    annotations
+        Pw : Side=Left;
+        Q  : Side=Right;
+        Icon = "smpsHarmonics.png";
+    end
+
+    parameters
+        Pf = {0.98, "1"}; % Fundamental power factor
+        THD = {0, "1"};   % Total harmonic distortion value
+        N = 10;           % Number of datacenter units
+    end
+
+    intermediates
+        powFac = Pf/sqrt(1+THD*THD);
+    end
+
+    inputs
+        Pw = {100*ones(1,N), "W"}; % Pvec
+    end
+
+    outputs
+        P = {0, "W"}; % P
+        Q = {0, "W"}; % Q
+    end
+
+    equations
+        P == sum(Pw);
+        Q == sign(Pf)*P*tan(acos(powFac));
+    end
+end

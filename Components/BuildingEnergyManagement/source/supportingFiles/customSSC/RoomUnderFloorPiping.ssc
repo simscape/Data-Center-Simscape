@@ -1,0 +1,64 @@
+% This component was automatically generated using 'subsystem2ssc'. 
+%   Subsystem: RoomModel/RoomUnderFloorPiping 
+%   MATLAB version: 26.1 
+%   Simulink version: 26.1 
+%   Simscape version: 26.1 
+%   Generated on: 22-May-2026 12:57:49
+
+component (Propagation = blocks) RoomUnderFloorPiping
+  parameters
+    gateValveBypassOrificeDia = {.012, 'm'}; %Gate valve orifice diameter for bypass
+    maxGateValveBypassOrificeDia = {.012, 'm'}; %Maximum opening diameter of the gate valve for bypass
+    UFPipeHTArea = {.9424777960769379, 'm^2'}; %Under floor pipe effective heat transfer area
+    UFPipeHTC = {5, 'W/(K*m^2)'}; %Under floor pipe effective heat transfer coefficient
+    gateValveOrificeDia = {.012, 'm'}; %Gate valve orifice diameter
+    maxGateValveOrificeDia = {.012, 'm'}; %Maximum opening diameter of the gate valve
+    UFBypassPipeHydrDia = {.012, 'm'}; %Under floor bypass pipe hydraulic diameter
+    UFBypassPipeT = {299.8, 'K'}; %Under floor bypass pipe initial temperature
+    UFBypassPipeArea = {.00011309733552923255, 'm^2'}; %Under floor bypass pipe cross-sectional area
+    UFBypassPipeLen = {25, 'm'}; %Under floor bypass pipe length
+    UFBypassPipeRoughness = {1e-06, 'm'}; %Under floor bypass pipe surface roughness
+    UFPipeHydrDia = {.012, 'm'}; %Under floor pipe hydraulic diameter
+    UFPipeT = {299.8, 'K'}; %Under floor pipe initial temperature
+    UFPipeArea = {.00011309733552923255, 'm^2'}; %Under floor pipe cross-sectional area
+    UFPipeLen = {25, 'm'}; %Under floor pipe length
+    UFPipeRoughness = {1e-06, 'm'}; %Under floor pipe surface roughness
+  end
+  inputs
+    TL_V = 0;
+  end
+  nodes
+    TL_B = foundation.thermal_liquid.thermal_liquid;
+    M = foundation.thermal.thermal;
+    TL_A = foundation.thermal_liquid.thermal_liquid;
+  end
+  components(ExternalAccess = observe)
+    UnderFloorPipe = foundation.thermal_liquid.elements.pipe(Nu_lam = 3.66, Re_lam = 2000, Re_tur = 4000, dynamic_compressibility = logical(1), inertia = logical(0), length_add = {0, 'm'}, p0 = {.101325, 'MPa'}, shape_factor = 64, Dh = UFPipeHydrDia, T0 = UFPipeT, area = UFPipeArea, length = UFPipeLen, roughness = UFPipeRoughness);
+    UnderFloorBypassPipe = foundation.thermal_liquid.elements.pipe(Nu_lam = 3.66, Re_lam = 2000, Re_tur = 4000, dynamic_compressibility = logical(1), inertia = logical(0), length_add = {0, 'm'}, p0 = {.101325, 'MPa'}, shape_factor = 64, Dh = UFBypassPipeHydrDia, T0 = UFBypassPipeT, area = UFBypassPipeArea, length = UFBypassPipeLen, roughness = UFBypassPipeRoughness);
+    Subtract = foundation.signal.functions.subtract;
+    One = foundation.signal.sources.constant(constant = 1);
+    Ins = foundation.thermal.elements.perfect_insulator;
+    GateValveOp = foundation.signal.functions.gain(gain = maxGateValveOrificeDia);
+    GateValve = fluids.thermal_liquid.valves.flow_control_valves.gate_valve(Cd = .64, Re_c = 150, S_min = {0, 'm'}, area = {.01, 'm^2'}, area_leak = {1e-08, 'm^2'}, smoothing_factor = .01, diam_orifice = gateValveOrificeDia);
+    FloorToRoomHeatTransfer = foundation.thermal.elements.convection(thermal_type = int32(1), area = UFPipeHTArea, heat_tr_coeff = UFPipeHTC);
+    BypassGateValveOp = foundation.signal.functions.gain(gain = maxGateValveBypassOrificeDia);
+    BypassGateValve = fluids.thermal_liquid.valves.flow_control_valves.gate_valve(Cd = .64, Re_c = 150, S_min = {0, 'm'}, area = {.01, 'm^2'}, area_leak = {1e-08, 'm^2'}, smoothing_factor = .01, diam_orifice = gateValveBypassOrificeDia);
+  end
+  connections
+    connect(BypassGateValveOp.O,BypassGateValve.S);
+    connect(TL_V,GateValveOp.I);
+    connect(TL_V,Subtract.I2);
+    connect(GateValveOp.O,GateValve.S);
+    connect(One.O,Subtract.I1);
+    connect(Subtract.O,BypassGateValveOp.I);
+    connect(TL_A,BypassGateValve.A);
+    connect(TL_A,GateValve.A);
+    connect(BypassGateValve.B,UnderFloorBypassPipe.A);
+    connect(FloorToRoomHeatTransfer.A,UnderFloorPipe.H);
+    connect(M,FloorToRoomHeatTransfer.B);
+    connect(GateValve.B,UnderFloorPipe.A);
+    connect(Ins.A,UnderFloorBypassPipe.H);
+    connect(TL_B,UnderFloorBypassPipe.B);
+    connect(TL_B,UnderFloorPipe.B);
+  end
+end

@@ -1,0 +1,48 @@
+component(Propagation=Blocks) dayScheduler
+    % Day Scheduler:2.5
+    % This block is used to specify daily pattern of heat source in every room
+    % of the building. The output port S connects to the building custom
+    % library port S. The parameters for this block must be set using the 
+    % utilities provided in the project, namely initialize24HrRoomData and
+    % set24HrRoomDataSystemModel.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationDayScheduler.html">Documentation for Day Scheduler</a>
+    % <br/>
+
+    % Copyright 2025 The MathWorks, Inc.
+
+    parameters
+        numRoom = 30;                        % Number of rooms in the building
+        roomIndex = [1:30];                  % Room index
+        heatSource = {ones(30,24), "W"};     % Heat source matrix for all rooms
+    end
+
+    equations
+        assert(numRoom==length(roomIndex));
+        assert(numRoom==size(heatSource,1));
+    end
+
+    annotations
+        Icon = "dayScheduler.png";
+    end
+
+    parameters(ExternalAccess=none)
+        t = 1:24;
+        oneHr = 3600;
+    end
+
+    outputs
+        S = {zeros(1,numRoom), "W"}; % S
+    end
+    
+    intermediates(ExternalAccess=none)
+        chkTime = mod(value(time,"s"),24*oneHr)/oneHr;
+    end
+    
+    for i = 1:numRoom
+        equations
+            S(1,roomIndex(1,i)) == {tablelookup(t,value(heatSource(i,:),"W"),chkTime,interpolation=linear,extrapolation=linear),"W"};
+        end
+    end
+end

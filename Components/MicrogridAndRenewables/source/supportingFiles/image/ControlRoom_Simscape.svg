@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:d="http://www.mathworks.com/blockgraphics" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+	<g id="part" title="part_0" ie-ports="left:,top:,right:simulink,bottom:">
+		<rect id="rect" fill="white" style="stroke: #ffffff;" x="0" y="0" width="50" height="50" rx="0" ry="0"/>
+		<rect id="rect_1" stroke="black" style="stroke:#1171be;" x="5.5" y="2.5" width="12" height="9" rx="0" ry="0"/>
+		<rect id="rect_2" stroke="black" style="stroke:#1171be;" x="5.5" y="13.5" width="12" height="9" rx="0" ry="0"/>
+		<rect id="rect_3" stroke="black" style="stroke:#1171be;" x="32.5" y="2.5" width="11" height="9" rx="0" ry="0"/>
+		<rect id="rect_4" stroke="black" style="stroke:#1171be;" x="32.5" y="13.5" width="11" height="9" rx="0" ry="0"/>
+		<rect id="rect_5" stroke="black" style="stroke:#1171be;" x="19.5" y="2.5" width="11" height="9" rx="0" ry="0"/>
+		<rect id="rect_6" stroke="black" style="stroke:#1171be;" x="19.5" y="13.5" width="11" height="9" rx="0" ry="0"/>
+		<path id="path" stroke="black" stroke-linejoin="round" style="stroke:#1171be;" d=" M 40,29 H 9 L 3.23,34 H 47 L 40,29 Z"/>
+		<path id="path_7" fill="white" stroke="black" stroke-linejoin="round" style="stroke:#1171be;" d=" M 31,26 H 19 L 19.19,41 H 31.19 L 31,26 Z"/>
+		<ellipse id="ellipse" stroke="black" style="stroke:#1171be;" cx="25" cy="19.5" rx="3" ry="3"/>
+		<path id="path_8" fill="white" stroke="black" stroke-linejoin="round" style="stroke:#1171be;" d=" M 30.08,26 H 20 C 20.53,25 22.28,23 25.08,23 C 27.88,23 29.58,25 30.08,26 Z"/>
+		<path id="path_9" stroke="black" stroke-linejoin="round" style="stroke:#1171be;" d=" M 25,41 V 45 L 20.24,46"/>
+		<path id="path_10" stroke="black" stroke-linejoin="round" style="stroke:#1171be;" d=" M 25,45 V 47"/>
+		<path id="path_11" stroke="black" stroke-linejoin="round" style="stroke:#1171be;" d=" M 25,45 L 30,46"/>
+		<ellipse id="ellipse_12" fill="black" style="stroke:#1171be;" cx="20.5" cy="46.5" rx="0.5" ry="0.5"/>
+		<ellipse id="ellipse_13" fill="black" style="stroke:#1171be;" cx="29.5" cy="46.5" rx="0.5" ry="0.5"/>
+		<ellipse id="ellipse_14" fill="black" style="stroke:#1171be;" cx="25" cy="47.5" rx="0.5" ry="0.5"/>
+	</g>
+</svg>

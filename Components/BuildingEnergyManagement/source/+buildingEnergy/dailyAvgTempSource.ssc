@@ -1,0 +1,88 @@
+component(Propagation=Blocks) dailyAvgTempSource
+    % Temperature Source (LUT) : 2.5
+    % This block provides temperature variation at a location using the 
+    % average day & night temperature values. You must specify the average 
+    % day temperature vector and the night temperature vector. The vector 
+    % size is equal to the number of days for which you specify temperature 
+    % data. The block uses this information, along with additional information 
+    % on percentage variation in average day and night temperatures, location 
+    % of interest, and the start date-time values. The location and the start 
+    % date-time value is used to calculate the sunrise and sunset time. The 
+    % average temperature data values for each day are used to reconstruct 
+    % an approximate hourly temperature profile for the day. Multiple such 
+    % profiles, for all the days specified, are joined together to form the 
+    % time varying temperature profile lookup table. The block provides value 
+    % of temperature at a given time based on that lookup table calculated 
+    % internally, at the Thermal node H. 
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationTemperatureSourceLUT.html">Documentation for Temperature Source (LUT)</a>
+    % <br/>
+
+    % Copyright 2025 The MathWorks, Inc.
+
+    annotations
+        Icon = "TemperatureSourceFromDailyTavg.png";
+        H : Side=Right;
+        UILayout = [UIGroup("Location", latitude, longitude, localTime, dayLightS)
+                    UIGroup("Start Date and Time", startYear, startMonth, startDay, startHr, numDaysData, interp_method,extrap_method)
+                    UIGroup("Daily Average Temperature",avgDayTvec,pcDayTvar,avgNightTvec,pcNightTvar)];
+    end
+
+    nodes
+        H = foundation.thermal.thermal; % H
+    end
+
+    variables (Access=private)
+        Q = {0, 'W'}; % Heat flow rate
+    end
+    
+    branches
+        Q : H.Q -> *;
+    end
+
+    parameters
+        startYear = {2025, "1"};   % Year for start time
+        startMonth = {1, "1"};     % Month for start time
+        startDay = {1, "1"};       % Day for start time
+        startHr = {1, "1"};        % Hour for start time
+        numDaysData = {10, "1"};   % Number of days
+        latitude = {5, "1"};       % Latitude of the location
+        longitude = {5, "1"};      % Longitude of the location
+        localTime = {5, "1"};      % Longitude reference for local time calculations
+        dayLightS = {0, "1"};      % Daylight hour savings
+        interp_method = simscape.enum.interpolation.linear; % Interpolation method
+        extrap_method = simscape.enum.extrapolation.error; % Extrapolation method
+        avgDayTvec = {300*ones(1,10),'K'};   % Average day temperature vector
+        pcDayTvar = 5;                       % Percent variation in day temperature
+        avgNightTvec = {300*ones(1,10),'K'}; % Average night temperature vector
+        pcNightTvar = 5;                     % Percent variation in night temperature
+    end
+
+    parameters(ExternalAccess=none)
+        startYearVal = value(startYear,"1");
+        startMonthVal = value(startMonth,"1");
+        startDayVal = value(startDay,"1");
+        startHrVal = value(startHr,"1");
+        numDaysDataVal = value(numDaysData,"1");
+        latitudeVal = abs(value(latitude,"1"));
+        longitudeVal = abs(value(longitude,"1"));
+        localTimeVal = abs(value(localTime,"1"));
+        dayLightSVal = value(dayLightS,"1");
+    end
+
+    parameters(Access=private)
+        [t,Tamb] = getHourlyTemperatureVectorData(startYearVal,...
+            startMonthVal,startDayVal,numDaysDataVal,startHrVal,latitudeVal,...
+            longitudeVal,localTimeVal,dayLightSVal,value(avgDayTvec,'K'),...
+            pcDayTvar/100,value(avgNightTvec,'K'),pcNightTvar/100);
+    end
+
+    intermediates(ExternalAccess=none)
+        currentTime = value(time,'s')+startHrVal*3600;
+    end
+
+    equations
+        H.T == {tablelookup(t,Tamb,currentTime,interpolation=interp_method,extrapolation=extrap_method),'K'};
+    end
+end

@@ -1,0 +1,112 @@
+component (Propagation = blocks) airWaterHeatPump
+    % Air Water Heat Pump: 2.5
+    % Heat pump for cooling and heating applications based on EN 14511 test 
+    % data. You must specify data for:
+    % Heating
+    % (a) Heating, A-2W55, Ambient -2 deg C dry bulb with water exit at 55 deg C.
+    % (b) Heating, A-2W65, Ambient -2 deg C dry bulb with water exit at 65 deg C.
+    % (c) Heating, A7W35, Ambient 7 deg C dry bulb with water exit at 35 deg C.
+    % (d) Heating, A7W45, Ambient 7 deg C dry bulb with water exit at 45 deg C.
+    % Cooling
+    % (e) Cooling, A35W18, Ambient 35 deg C dry bulb with water exit at 18 deg C.
+    % (f) Cooling, A35W7, Ambient 35 deg C dry bulb with water exit at 7 deg C. 
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationAirWaterHeatPump.html">Documentation for Air Water Heat Pump</a>
+    % <br/>
+
+    % Copyright 2024 The MathWorks, Inc.
+
+    inputs
+        Tl = {300, 'K'}; % Tl
+        Ta = {273, 'K'}; % Ta
+        Tw = {300, 'K'}; % Tw
+        Fw = {0, 'kg/s'};% Fw
+        Op = {0, '1'};   % Op
+        Ep = {0, '1'};   % Ep
+        Nd = {1, '1'};   % Nd
+    end
+
+    parameters
+        nominalCapacityA = {200,'kW'}; % A-2W55, estimated heating capacity
+        seasonalCOPvalA = {3.1,'1'};   % A-2W55, estimated COP (or SCOP)
+        nominalCapacityB = {200,'kW'}; % A-2W65, estimated heating capacity
+        seasonalCOPvalB = {3.1,'1'};   % A-2W65, estimated COP (or SCOP)
+        nominalCapacityC = {200,'kW'}; % A7W35, estimated heating capacity
+        seasonalCOPvalC = {3.1,'1'};   % A7W35, estimated COP (or SCOP)
+        nominalCapacityD = {200,'kW'}; % A7W45, estimated heating capacity
+        seasonalCOPvalD = {3.1,'1'};   % A7W45, estimated COP (or SCOP)
+        nominalCapacityE = {200,'kW'}; % A35W18, estimated cooling capacity
+        seasonalCOPvalE = {3.1,'1'};   % A35W18, estimated COP (or SCOP)
+        nominalCapacityF = {200,'kW'}; % A35W7, estimated cooling capacity
+        seasonalCOPvalF = {3.1,'1'};   % A35W7, estimated COP (or SCOP)
+        backupElecHeater = {0, 'kW'};  % Backup electric heater rating
+        wInletOpRangeUpp = {330, 'K'}; % Maximum operational water inlet temperature to heat pump
+        wInletOpRangeLow = {278, 'K'}; % Minimum operational water inlet temperature to heat pump
+    end
+
+    annotations
+        Icon = "airWaterHeatPump.png";
+        Tl : Side=Left;
+        Ta : Side=Bottom;
+        Tw : Side=Bottom;
+        Op : Side=Left;
+        Fw : Side=Left;
+        Ep : Side=Left;
+        calcCOP : Side=Right;
+        calcCap : Side=Right;
+        UILayout = [UIGroup("Heating Data (EN14511)",nominalCapacityA,seasonalCOPvalA,...
+                                       nominalCapacityB,seasonalCOPvalB,...
+                                       nominalCapacityC,seasonalCOPvalC,...
+                                       nominalCapacityD,seasonalCOPvalD) ...
+                    UIGroup("Cooling Data (EN14511)",nominalCapacityE,seasonalCOPvalE,...
+                                       nominalCapacityF,seasonalCOPvalF) ...
+                    UIGroup("Heat Pump",backupElecHeater,wInletOpRangeUpp,wInletOpRangeLow)];
+    end
+
+    parameters(ExternalAccess=none)
+        backupElecHeaterWatts = {value(backupElecHeater,'W'), 'W'};
+        coeffOfPerformanceVector = {[value(seasonalCOPvalA,'1'), ...
+                                     value(seasonalCOPvalB,'1'), ...
+                                     value(seasonalCOPvalC,'1'), ...
+                                     value(seasonalCOPvalD,'1'), ...
+                                     value(seasonalCOPvalE,'1'), ...
+                                     value(seasonalCOPvalF,'1')],'1'};
+        capacityVector = {[value(nominalCapacityA,'W'), ...
+                           value(nominalCapacityB,'W'), ...
+                           value(nominalCapacityC,'W'), ...
+                           value(nominalCapacityD,'W'), ...
+                           value(nominalCapacityE,'W'), ...
+                           value(nominalCapacityF,'W')], 'W'};
+        airTemperatureVector = 273 + [-2 -2 7 7 35 35];
+        waterTemperatureVector = 273 + [55 65 35 45 18 7];
+        waterSpHeat = {4186, 'J/kg/K'};
+        smallPower = {1e-3, 'W'};
+    end
+
+    outputs
+        calcCap = {1, 'kW'}; % Q
+        calcCOP = {3, '1'};  % COP
+        ePower  = {0, 'kW'}; % ePow
+    end
+
+    variables(ExternalAccess=none)
+        maxCOP = {8, '1'};
+    end
+
+    intermediates(ExternalAccess=none)
+        preHeatCoolPower = Fw*waterSpHeat*(max({0,'K'},Tl-wInletOpRangeUpp) + (-1)*max({0,'K'},wInletOpRangeLow-Tl));
+        % (-1) is multiplied above as that much energy is needed for heating.
+    end
+
+    equations
+        calcCap == {scatteredlookup(airTemperatureVector, waterTemperatureVector, ...
+            value(capacityVector,'W'), value(Ta,'K'), value(Tw,'K'), ...
+            extrapolation=linear), 'W'}*Op + preHeatCoolPower;
+        ePower == Nd*abs(calcCap)/{scatteredlookup(airTemperatureVector, waterTemperatureVector, value(coeffOfPerformanceVector,'1'), value(Ta,'K'), value(Tw,'K'), extrapolation=nearest),'1'} ...
+                + backupElecHeater*abs(Op)*abs(Ep);
+        maxCOP == 1/(1-min(Ta,Tw)/max(Ta,Tw)+{1e-4,'1'});
+        calcCOP == abs(Op)*min(maxCOP, abs(calcCap)/(smallPower+ePower));
+    end
+
+end

@@ -1,0 +1,19 @@
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="50" height="50" fill="white"/>
+<rect x="5.5" y="2.5" width="12" height="9" stroke="black"/>
+<rect x="5.5" y="13.5" width="12" height="9" stroke="black"/>
+<rect x="32.5" y="2.5" width="11" height="9" stroke="black"/>
+<rect x="32.5" y="13.5" width="11" height="9" stroke="black"/>
+<rect x="19.5" y="2.5" width="11" height="9" stroke="black"/>
+<rect x="19.5" y="13.5" width="11" height="9" stroke="black"/>
+<path d="M40 29H9L3.23353 34H47L40 29Z" stroke="black" stroke-linejoin="round"/>
+<path d="M31 26H19L19.1852 41H31.1852L31 26Z" fill="white" stroke="black" stroke-linejoin="round"/>
+<circle cx="25" cy="19.5" r="3" stroke="black"/>
+<path d="M30.079 26H20C20.5263 25 22.279 23 25.079 23C27.879 23 29.579 25 30.079 26Z" fill="white" stroke="black" stroke-linejoin="round"/>
+<path d="M25 41V45L20.2359 46" stroke="black" stroke-linejoin="round"/>
+<path d="M25 45V47" stroke="black" stroke-linejoin="round"/>
+<path d="M25 45L30 46" stroke="black" stroke-linejoin="round"/>
+<circle cx="20.5" cy="46.5" r="0.5" fill="black"/>
+<circle cx="29.5" cy="46.5" r="0.5" fill="black"/>
+<circle cx="25" cy="47.5" r="0.5" fill="black"/>
+</svg>

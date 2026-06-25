@@ -1,0 +1,89 @@
+% This component was automatically generated using 'subsystem2ssc'. 
+%   Subsystem: WallModel/WallSolarWithWindows 
+%   MATLAB version: 24.1 
+%   Simulink version: 24.1 
+%   Simscape version: 24.1 
+%   Generated on: 12-Jun-2024 14:00:06
+
+component (Propagation = blocks) WallSolarWithWindows
+  parameters
+    wallArea = {70, 'm^2'}; %Wall area
+    extToWallHTC = {5, 'W/(K*m^2)'}; %Effective heat transfer coefficient from ambient to wall surface
+    winArea = {25, 'm^2'}; %Window area
+    wallMaterialMass = {50400, 'kg'}; %Wall material mass
+    wallMaterialCp = {1870, 'J/(K*kg)'}; %Wall material heat capacity
+    wallAbsorptivity = .5; %Wall absorptivity
+    intToRoomHTC = {5, 'W/(K*m^2)'}; %Effective heat transfer coefficient from internal surface to the room
+    wallThermalK = {2, 'W/(K*m)'}; %Wall thermal conductivity
+    wallThickness = {.3, 'm'}; %Wall thickness
+    winMaterialMass = {437.5, 'kg'}; %Window material mass
+    winMaterialCp = {787, 'J/(K*kg)'}; %Window material heat capacity
+    winAbsorptivity = .35; %Window Absorptivity
+    winThermalK = {1, 'W/(K*m)'}; %Window thermal conductivity
+    winThickness = {.007, 'm'}; %Window thickness
+    winTransmissivity = .45; %Window transmissivity
+  end
+  variables
+    winTemperature = {value = {300, 'K'}, priority = priority.high}; %Window initial temperature
+    wallTemperature = {value = {300, 'K'}, priority = priority.high}; %Wall initial temperature
+  end
+  inputs
+    SUN = {0, 'W/m^2'};
+  end
+  nodes
+    EXT = foundation.thermal.thermal;
+    INT = foundation.thermal.thermal;
+  end
+  components(ExternalAccess = observe)
+    WindowTransmissivity = foundation.signal.functions.gain(gain = winTransmissivity);
+    WindowHeatTransferInt = foundation.thermal.elements.conduction(thermal_type = int32(1), wall_geometry = int32(1), area = winArea, th_cond = winThermalK, thickness = winThickness);
+    WindowHeatTransferExt = foundation.thermal.elements.conduction(thermal_type = int32(1), wall_geometry = int32(1), area = winArea, th_cond = winThermalK, thickness = winThickness);
+    WindowHeatToRoom = foundation.thermal.elements.convection(thermal_type = int32(1), area = winArea, heat_tr_coeff = intToRoomHTC);
+    WindowArea = foundation.signal.functions.gain(gain = winArea);
+    WindowAbsorptivity = foundation.signal.functions.gain(gain = winAbsorptivity);
+    Window = foundation.thermal.elements.mass(mass_type = int32(1), num_ports = int32(1), mass = winMaterialMass, sp_heat = winMaterialCp, T.priority = priority.none);
+    WallHeatTransferInt = foundation.thermal.elements.conduction(thermal_type = int32(1), wall_geometry = int32(1), area = wallArea, th_cond = wallThermalK, thickness = wallThickness);
+    WallHeatTransferExt = foundation.thermal.elements.conduction(thermal_type = int32(1), wall_geometry = int32(1), area = wallArea, th_cond = wallThermalK, thickness = wallThickness);
+    WallHeatToRoom = foundation.thermal.elements.convection(thermal_type = int32(1), area = wallArea, heat_tr_coeff = intToRoomHTC);
+    WallArea = foundation.signal.functions.gain(gain = wallArea);
+    WallAbsorptivity = foundation.signal.functions.gain(gain = wallAbsorptivity);
+    SunlightWindow = foundation.thermal.sources.controlled_heat_flow;
+    SunlightWall = foundation.thermal.sources.controlled_heat_flow;
+    SunlightToRoom = foundation.thermal.sources.controlled_heat_flow;
+    SolidWall = foundation.thermal.elements.mass(mass_type = int32(1), num_ports = int32(1), mass = wallMaterialMass, sp_heat = wallMaterialCp, T.priority = priority.none);
+    EnvHeatToWindow = foundation.thermal.elements.convection(thermal_type = int32(1), area = winArea, heat_tr_coeff = extToWallHTC);
+    EnvHeatToWall = foundation.thermal.elements.convection(thermal_type = int32(1), area = wallArea, heat_tr_coeff = extToWallHTC);
+  end
+  connections
+    connect(WindowArea.O,WindowAbsorptivity.I);
+    connect(WindowArea.O,WindowTransmissivity.I);
+    connect(WindowTransmissivity.O,SunlightToRoom.S);
+    connect(WallArea.O,WallAbsorptivity.I);
+    connect(WindowAbsorptivity.O,SunlightWindow.S);
+    connect(SUN,WallArea.I);
+    connect(SUN,WindowArea.I);
+    connect(WallAbsorptivity.O,SunlightWall.S);
+    connect(Window.M,WindowHeatTransferExt.B);
+    connect(Window.M,WindowHeatTransferInt.A);
+    connect(WindowHeatToRoom.A,WindowHeatTransferInt.B);
+    connect(WallHeatToRoom.A,WallHeatTransferInt.B);
+    connect(INT,SunlightToRoom.B);
+    connect(INT,WallHeatToRoom.B);
+    connect(INT,WindowHeatToRoom.B);
+    connect(EnvHeatToWindow.B,SunlightWindow.B);
+    connect(EnvHeatToWindow.B,WindowHeatTransferExt.A);
+    connect(SolidWall.M,WallHeatTransferExt.B);
+    connect(SolidWall.M,WallHeatTransferInt.A);
+    connect(EnvHeatToWall.B,SunlightWall.B);
+    connect(EnvHeatToWall.B,WallHeatTransferExt.A);
+    connect(EXT,EnvHeatToWall.A);
+    connect(EXT,EnvHeatToWindow.A);
+    connect(EXT,SunlightToRoom.A);
+    connect(EXT,SunlightWall.A);
+    connect(EXT,SunlightWindow.A);
+  end
+  equations 
+    SolidWall.T == wallTemperature;
+    Window.T == winTemperature;
+  end
+end

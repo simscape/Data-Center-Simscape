@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Data Center Design with Simscape</title>
+    <!--
+    ============================================================
+    DOCUMENTATION TEMPLATE - MathWorks Style
+    ============================================================
+    Enhanced: Card grids preserve original size on browser resize.
+    A page-level horizontal scrollbar appears when the viewport
+    is too narrow to fit the content at its natural width.
+    Changes from original:
+      - .card-grid and .example-grid use fixed-width columns (no shrinking)
+      - .content has a min-width so the entire page scrolls horizontally
+      - Cards stay readable at all browser widths
+    ============================================================
+    -->
+    <style>
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #212121; }
+        a { color: #0076a8; text-decoration: none; }
+        a:hover { color: #004c6d; text-decoration: underline; }
+
+        /* Fixed title bar */
+        .page-title {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: #fff; border-bottom: 1px solid #e0e0e0;
+            margin: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .page-title .title-text {
+            font-size: 28px; font-weight: 400; color: #c04c0b;
+            padding: 14px 20px;
+        }
+        .page-title .title-logo {
+            padding: 6px 20px;
+        }
+        .page-title .title-logo img {
+            height: 50px; width: auto;
+        }
+
+        /* Left sidebar */
+        .sidebar {
+            position: fixed; top: 60px; left: 0;
+            width: 160px; height: calc(100vh - 60px);
+            background: #f7f7f7; border-right: 1px solid #e0e0e0;
+            padding: 20px 12px; overflow-y: auto;
+        }
+        .sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar li { margin: 6px 0; }
+        .sidebar li.sub { padding-left: 14px; }
+
+        /* Right content area - min-width prevents shrinking below card grid width */
+        .content {
+            margin-left: 160px;
+            padding: 90px 40px 30px;
+            max-width: 800px;
+            min-width: 760px;
+        }
+
+        h1 { font-size: 20px; font-weight: 700; color: #c04c0b; margin: 30px 0 8px; scroll-margin-top: 90px;
+             border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
+        h2 { font-size: 16px; font-weight: 700; color: #212121; margin: 22px 0 6px; scroll-margin-top: 90px; }
+        p { margin: 8px 0; line-height: 1.6; color: #212121; }
+
+        .code {
+            background: #f5f5f5; border-left: 3px solid #0076a8;
+            padding: 10px 14px; margin: 10px 0 20px;
+            font-family: 'Courier New', monospace; font-size: 12px; color: #212121;
+        }
+
+
+        /* Collapsible sub-headings */
+        .collapsible {
+            cursor: pointer; display: flex; align-items: center; user-select: none;
+        }
+        .collapsible::before {
+            content: '\25B6'; font-size: 10px; color: #0076a8;
+            margin-right: 8px; transition: transform 0.2s;
+        }
+        .collapsible.open::before { transform: rotate(90deg); }
+        .collapse-body { display: none; padding-left: 18px; }
+        .collapse-body.open { display: block; }
+
+        /* Example cards - 3 column grid with fixed-width cards */
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 200px);
+            gap: 16px;
+            min-width: max-content;
+        }
+        .example-card {
+            border: 1px solid #e0e0e0; border-radius: 3px;
+            padding: 12px; background: #fff;
+            width: 200px;
+        }
+        .example-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .example-card .thumb {
+            display: block; width: 100%; height: 80px; margin-bottom: 8px;
+            border: 1px solid #d0e4ef; object-fit: cover;
+        }
+        .example-card .card-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+        .example-card .card-title a { color: #0076a8; }
+        .example-card .card-desc { font-size: 11px; color: #555; line-height: 1.5; }
+
+        /* Model cards (workflow cards) - fixed-width cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 220px);
+            gap: 1.5rem;
+            min-width: max-content;
+        }
+        .model-card {
+            background: #fff; border: 1px solid #0076a8;
+            border-radius: 4px; overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.15s;
+            width: 220px;
+        }
+        .model-card:hover {
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+        }
+        .card-header-bar {
+            height: 3px; background: #0076a8;
+        }
+        .card-image {
+            width: 100%; height: 100px; object-fit: contain;
+            background: #f0f4f8; border-bottom: 1px solid #e0e0e0; padding: 6px;
+            box-sizing: border-box;
+        }
+        .card-content {
+            padding: 0.8rem;
+        }
+        .card-content h3 {
+            margin: 0 0 0.3rem 0; font-size: 12px; font-weight: 600;
+            color: #212121; line-height: 1.4;
+        }
+        .card-content p {
+            margin: 0 0 0.6rem 0; font-size: 11px;
+            color: #555; line-height: 1.5;
+        }
+        .card-actions {
+            display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem;
+        }
+        .btn-load {
+            padding: 6px 12px; border: none; border-radius: 4px;
+            font-size: 11px; font-weight: 500; cursor: pointer;
+            transition: background 0.2s; text-decoration: none;
+            display: inline-block; white-space: nowrap;
+        }
+        .btn-load.btn-primary {
+            background: #0076a8; color: #fff;
+        }
+        .btn-load.btn-primary:hover {
+            background: #005a7c; text-decoration: none; color: #fff;
+        }
+        .btn-load.btn-secondary {
+            background: #f5f5f5; color: #0076a8; border: 1px solid #e0e0e0;
+        }
+        .btn-load.btn-secondary:hover {
+            background: #e8f4f8;
+        }
+        .card-code {
+            margin-top: 0.5rem; padding: 0.4rem 0.6rem;
+            background: #f5f5f5; border: 1px solid #e0e0e0;
+            border-radius: 4px; font-family: 'Courier New', monospace;
+            font-size: 11px; color: #212121;
+            word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     TITLE: Edit text below
+     ============================================================ -->
+<div class="page-title">
+    <span class="title-text">Data Center Design with Simscape</span>
+    <span class="title-logo"><img src="Images/MATLAB_VERSION.png" alt="MATLAB Version"></span>
+</div>
+
+<!-- ============================================================
+     SIDEBAR: Add/remove <li> entries to match your content sections.
+     Use class="sub" for indented sub-section links.
+     ============================================================ -->
+<nav class="sidebar">
+    <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#get-started">Get Started</a></li>
+        <li><a href="#Workflow">Workflow</a></li>
+        <li class="sub"><a href="#app-CreatePlantModels">Create Plant Models</a></li>
+        <li class="sub"><a href="#app-ElectricalAnalysis">Electrical Analysis</a></li>
+        <li class="sub"><a href="#app-HVACAnalysis">HVAC Analysis</a></li>
+        <li><a href="#components">Components</a></li>
+        <li><a href="#test">Testing</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+    </ul>
+</nav>
+
+<!-- ============================================================
+     CONTENT: Main scrollable area. Edit sections below.
+     ============================================================ -->
+<main class="content">
+
+    <!-- Section: Overview -->
+    <h1 id="overview">Overview</h1>
+    <p>
+        In this project, you learn how to design modern data centers by
+        specifying server rack layouts and power ratings. The project
+        shows how to design and validate double-conversion UPS control
+        systems, including low-voltage ride-through compliance, mains-loss
+        scenarios, and N+1 redundancy analysis for critical workloads. You
+        also learn how to estimate HVAC loads based on server utilization
+        and analyze liquid cooling system power requirements for MW-scale
+        facilities.
+    </p>
+
+    <!-- Section: Get Started -->
+    <h1 id="get-started">Get Started</h1>
+    <p>
+        Double-click on the <a href="matlab:openProject('DataCenterDesignSimscape.prj')">
+        DataCenterDesignSimscape PRJ</a> file (in the root folder) to setup the
+        project and get started.
+    </p>
+
+    <!-- Section: Workflow (parent for collapsible sub-sections) -->
+    <h1 id="Workflow">Workflow</h1>
+    <p>
+        Click on the hyperlinks to navigate to the application workflows or
+        live-scripts.
+    </p>
+
+    <!-- Sub-section: CreatePlantModels (collapsible, with example grid) -->
+    <h2 id="app-CreatePlantModels" class="collapsible" onclick="toggle(this)">Create Plant Models</h2>
+    <div class="collapse-body">
+        <div class="card-grid">
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/createPlantModels.png" alt="Create Data Center Model">
+                <div class="card-content">
+                    <h3>Create Data Center Model</h3>
+                    <p>Learn how to create a cluster of server-racks of three different fidilities: electrical, thermal, and electrothermal.</p>
+                    <div class="card-actions">
+                        <a href="matlab:edit('CreateDataCenterModel.m')" class="btn-load btn-primary">Open Live Script</a>
+                        <button class="btn-load btn-secondary" onclick="copyCommand(this, &quot;edit('CreateDataCenterModel.m')&quot;)">Copy Command</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sub-section: ElectricalAnalysis (collapsible, with example grid) -->
+    <h2 id="app-ElectricalAnalysis" class="collapsible" onclick="toggle(this)">Electrical Analysis</h2>
+    <div class="collapse-body">
+        <div class="card-grid">
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/UPSexampleThumbnail.png" alt="Data Center UPS Control">
+                <div class="card-content">
+                    <h3>UPS Control Design</h3>
+                    <p>Learn how to build and control a UPS for data center application, compare to Grid Codes.</p>
+                    <div class="card-actions">
+                        <a href="matlab:edit('UPSControlDesign.m')" class="btn-load btn-primary">Open Live Script</a>
+                        <button class="btn-load btn-secondary" onclick="copyCommand(this, &quot;edit('UPSControlDesign.m')&quot;)">Copy Command</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sub-section: HVACAnalysis (collapsible, with example grid) -->
+    <h2 id="app-HVACAnalysis" class="collapsible" onclick="toggle(this)">HVAC Analysis</h2>
+    <div class="collapse-body">
+        <div class="card-grid">
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/datacenterSchematic01.png" alt="Utilization Analysis">
+                <div class="card-content">
+                    <h3>Data Center Utilization Analysis</h3>
+                    <p>Learn how to estimate HVAC requirements for a typical data center consisting of cluster of server-racks.</p>
+                    <div class="card-actions">
+                        <a href="matlab:edit('CreateDatacenterForUtilizationAnalysis.m')" class="btn-load btn-primary">Open Live Script</a>
+                        <button class="btn-load btn-secondary" onclick="copyCommand(this, &quot;edit('CreateDatacenterForUtilizationAnalysis.m')&quot;)">Copy Command</button>
+                    </div>
+                </div>
+            </div>
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/CDUexampleThumbnail.png" alt="Datacenter Liquid Cooling">
+                <div class="card-content">
+                    <h3>Data Center Liquid Cooling</h3>
+                    <p>Learn how to estimate cooling power requirements for a typical MW-scale liquid cooled data center.</p>
+                    <div class="card-actions">
+                        <a href="matlab:edit('DatacenterLiquidCooling.m')" class="btn-load btn-primary">Open Live Script</a>
+                        <button class="btn-load btn-secondary" onclick="copyCommand(this, &quot;edit('DatacenterLiquidCooling.m')&quot;)">Copy Command</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Components -->
+    <h1 id="components">Components</h1>
+    <!-- Sub-section: Data Center Related Components (collapsible, with example grid) -->
+    <p>
+        The project utilizes library components available in Simscape&trade;, Simscape Electrical&trade;, 
+        and Simscape Fluids&trade; libraries. There are a few Simscape custom components used in this project, 
+        a list of which you will find below. All such custom components, their documentation, source code, 
+        and test harness can be viewed by natigating to the <b>Components</b> folder in the project root 
+        directory.
+    </p>
+    <h2 id="app-DataCenterComponents" class="collapsible" onclick="toggle(this)">Data Center</h2>
+    <div class="collapse-body">
+        <div class="card-grid">
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/datacenterLibIcon.png" alt="Data Center Lib">
+                <div class="card-content">
+                    <h3>Server Unit</h3>
+                    <p>The custom component models a server power requirements and heat load based on it's utilization.</p>
+                    <div class="card-actions">
+                        <a href="matlab:web('DocumentationDatacenter.html')" class="btn-load btn-primary">Open Documentation</a>
+                        <a href="matlab:open_system('TestDatacenter')" class="btn-load btn-primary">Open Test Harness</a>
+                    </div>
+                </div>
+            </div>
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/utilitiesIcon.png" alt="Data Center Utilities">
+                <div class="card-content">
+                    <h3>Utilities</h3>
+                    <p>Learn how to use functions provided in the project to automate build for large Data Center models.</p>
+                    <div class="card-actions">
+                        <a href="matlab:web('DocumentationDataCenterUtilities.html')" class="btn-load btn-primary">Open Documentation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 id="app-OtherComponents" class="collapsible" onclick="toggle(this)">Other</h2>
+    <div class="collapse-body">
+        <p>
+            Click <a href="matlab:web('ListOfComponents.html')">Component Documentation</a>
+            to learn more about all the different custom components available in this project. You
+            can also view these components in the <a href="matlab:run('showSimscapeCustomComponents.m')">
+            Simulink Browser</a> by navigating to the Simscape Custom Components section.
+        </p>
+    </div>
+
+
+    <!-- Section: Testing -->
+    <h1 id="test">Testing</h1>
+    <p>
+        To learn more about the testing used in this projct for components and
+        workflows, see <a href="matlab:web('TestFrameworkHome.html')">
+        Testing Framework Documentation</a>. You can run different built in tests
+        by going to MATLAB project tool strip and selecting Run Build.
+    </p>
+
+    <!-- Section: Requirements -->
+    <h1 id="requirements">Requirements</h1>
+    <p>This project requires:</p>
+    <p style="margin-left: 20px;">
+        1. MATLAB&reg;<br>
+        2. Simulink&reg;<br>
+        3. Simscape&trade;<br>
+        4. Simscape Electrical&trade;<br>
+        5. Simscape Fluids&trade;<br>
+        6. Stateflow&reg;
+    </p>
+
+    <p>
+        <br> <br>
+        <i>Copyright 2025 - 2026 The MathWorks, Inc.</i>
+    </p>
+
+</main>
+
+<!-- Toggle script for collapsible sub-headings (do not remove) -->
+<script>
+function toggle(el) {
+    el.classList.toggle('open');
+    el.nextElementSibling.classList.toggle('open');
+}
+
+function copyCommand(btn, cmd) {
+    navigator.clipboard.writeText(cmd).then(function() {
+        var original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = original; }, 1500);
+    });
+}
+</script>
+
+</body>
+</html>

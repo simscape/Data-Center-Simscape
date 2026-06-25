@@ -1,0 +1,19 @@
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="50" height="50" fill="white"/>
+<rect x="6.5" y="39.5" width="37" height="2" stroke="black"/>
+<rect x="15.2059" y="34.8888" width="11.5444" height="2" transform="rotate(-41.721 15.2059 34.8888)" stroke="black"/>
+<rect x="24.2059" y="34.8888" width="11.5444" height="2" transform="rotate(-41.721 24.2059 34.8888)" stroke="black"/>
+<rect x="33.2059" y="34.8888" width="11.5444" height="2" transform="rotate(-41.721 33.2059 34.8888)" stroke="black"/>
+<path d="M21.5 39.5V32" stroke="black"/>
+<path d="M30.5 39.5V32" stroke="black"/>
+<path d="M39.5 39.5V32" stroke="black"/>
+<circle cx="12.5" cy="15.5" r="7" stroke="black"/>
+<path d="M12.5 7V4.5V4" stroke="black"/>
+<path d="M18.4393 9.56067L20.2071 7.7929L20.5607 7.43935" stroke="black"/>
+<path d="M4.43934 23.5607L6.20711 21.7929L6.56066 21.4393" stroke="black"/>
+<path d="M6.56066 9.56067L4.79289 7.7929L4.43934 7.43935" stroke="black"/>
+<path d="M21.0607 23.0607L19.2929 21.2929L18.9393 20.9393" stroke="black"/>
+<path d="M4 15.5H1.5H1" stroke="black"/>
+<path d="M24 15.5H21.5H21" stroke="black"/>
+<path d="M12.5 27V24.5V24" stroke="black"/>
+</svg>

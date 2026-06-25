@@ -1,0 +1,64 @@
+% This component was automatically generated using 'subsystem2ssc'. 
+%   Subsystem: RoomHeaterModel/RoomRadiatorPiping 
+%   MATLAB version: 24.1 
+%   Simulink version: 24.1 
+%   Simscape version: 24.1 
+%   Generated on: 05-Sep-2024 14:04:12
+
+component (Propagation = blocks) RoomRadiatorPiping
+  parameters
+    gateValveBypassOrificeDia = {.012, 'm'}; %Gate valve orifice diameter for bypass line
+    maxGateValveBypassOrificeDia = {.012, 'm'}; %Maximum opening diameter of the gate valve for bypass line
+    radiatorConvArea = {.03, 'm^2'}; %Radiator area for convective heat transfer
+    radiatorConvHTC = {5, 'W/(K*m^2)'}; %Radiator surface convective heat transfer coefficient
+    gateValveOrificeDia = {.012, 'm'}; %Gate valve orifice diameter
+    maxGateValveOrificeDia = {.012, 'm'}; %Maximum opening diameter of the gate valve
+    radiatorBypassPipeHydrDia = {.025, 'm'}; %Radiator bypass pipe hydraulic diameter
+    radiatorBypassPipeT = {300, 'K'}; %Radiator bypass pipe initial temperature
+    radiatorBypassPipeArea = {.0004908738521234052, 'm^2'}; %Radiator bypass pipe cross sectional area
+    radiatorBypassPipeLen = {2, 'm'}; %Radiator bypass pipe length
+    radiatorBypassPipeRoughness = {1e-06, 'm'}; %Radiator bypass pipe surface roughness
+    radiatorPipeHydrDia = {.025, 'm'}; %Radiator pipe hydraulic diameter
+    radiatorPipeT = {300, 'K'}; %Radiator pipe initial temperature
+    radiatorPipeArea = {.0004908738521234052, 'm^2'}; %Radiator pipe cross sectional area
+    radiatorPipeLen = {2, 'm'}; %Radiator pipe length
+    radiatorPipeRoughness = {1e-06, 'm'}; %Radiator pipe surface roughness
+  end
+  inputs
+    TL_V = 0;
+  end
+  nodes
+    TL_A = foundation.thermal_liquid.thermal_liquid;
+    M = foundation.thermal.thermal;
+    TL_B = foundation.thermal_liquid.thermal_liquid;
+  end
+  components(ExternalAccess = observe)
+    Subtract = foundation.signal.functions.subtract;
+    RadiatorPipe = foundation.thermal_liquid.elements.pipe(Nu_lam = 3.66, Re_lam = 2000, Re_tur = 4000, dynamic_compressibility = logical(1), inertia = logical(0), length_add = {0, 'm'}, p0 = {.101325, 'MPa'}, shape_factor = 64, Dh = radiatorPipeHydrDia, length = radiatorPipeLen, roughness = radiatorPipeRoughness, T0 = radiatorPipeT, area = radiatorPipeArea);
+    RadiatorBypassPipe = foundation.thermal_liquid.elements.pipe(Nu_lam = 3.66, Re_lam = 2000, Re_tur = 4000, dynamic_compressibility = logical(1), inertia = logical(0), length_add = {0, 'm'}, p0 = {.101325, 'MPa'}, shape_factor = 64, Dh = radiatorBypassPipeHydrDia, T0 = radiatorBypassPipeT, length = radiatorBypassPipeLen, area = radiatorBypassPipeArea, roughness = radiatorBypassPipeRoughness);
+    One = foundation.signal.sources.constant(constant = 1);
+    Ins = foundation.thermal.elements.perfect_insulator;
+    GateValveOp = foundation.signal.functions.gain(gain = maxGateValveOrificeDia);
+    GateValve = fluids.thermal_liquid.valves.flow_control_valves.gate_valve(Cd = .64, Re_c = 150, S_min = {0, 'm'}, area = {.01, 'm^2'}, area_leak = {1e-08, 'm^2'}, smoothing_factor = .01, diam_orifice = gateValveOrificeDia);
+    Convection = foundation.thermal.elements.convection(thermal_type = int32(1), area = radiatorConvArea, heat_tr_coeff = radiatorConvHTC);
+    BypassGateValveOp = foundation.signal.functions.gain(gain = maxGateValveBypassOrificeDia);
+    BypassGateValve = fluids.thermal_liquid.valves.flow_control_valves.gate_valve(Cd = .64, Re_c = 150, S_min = {0, 'm'}, area = {.01, 'm^2'}, area_leak = {1e-08, 'm^2'}, smoothing_factor = .01, diam_orifice = gateValveBypassOrificeDia);
+  end
+  connections
+    connect(Subtract.O,BypassGateValveOp.I);
+    connect(One.O,Subtract.I1);
+    connect(GateValveOp.O,GateValve.S);
+    connect(TL_V,GateValveOp.I);
+    connect(TL_V,Subtract.I2);
+    connect(BypassGateValveOp.O,BypassGateValve.S);
+    connect(TL_B,RadiatorBypassPipe.B);
+    connect(TL_B,RadiatorPipe.B);
+    connect(Ins.A,RadiatorBypassPipe.H);
+    connect(GateValve.B,RadiatorPipe.A);
+    connect(M,Convection.B);
+    connect(Convection.A,RadiatorPipe.H);
+    connect(BypassGateValve.B,RadiatorBypassPipe.A);
+    connect(TL_A,BypassGateValve.A);
+    connect(TL_A,GateValve.A);
+  end
+end

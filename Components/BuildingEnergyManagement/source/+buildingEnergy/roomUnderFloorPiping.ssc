@@ -1,0 +1,66 @@
+component(Propagation=Blocks) roomUnderFloorPiping
+    % Room Underfloor Piping : 2.5
+    % This block is used to specify underfloor heating or cooling inside a 
+    % room. The block has two Thermal-Liquid (TL) nodes, A and B, to model 
+    % the fluid. The Thermal node R connects to the room thermal mass. 
+    % The input port V is used to control the flow into the radiator. When 
+    % set to 0, the whole cooling fluid passes through the radiator pipes.
+    % When it is set to 1, the whole cooling liquid passes through a by-pass
+    % circuit and the radiator is non-functional.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationRoomUnderFloorPiping.html">Documentation for Room Under-floor Piping</a>
+    % <br/>
+
+    % Copyright 2025 The MathWorks, Inc.
+
+    annotations
+        Icon = "roomUnderFloorPiping.png";
+        UILayout = [UIGroup("Piping", pipeHydrDia,pipeLength,pipeArea,pipeRoughness)
+                    UIGroup("Heat Transfer",htc,iniTemperature)];
+        
+        M : Side=Right;
+        TL_A : Side=Left;
+        TL_B : Side=Right;
+        TL_V : Side=Left;
+    end
+
+    inputs
+        TL_V = 0; % V
+    end
+  
+    nodes
+        TL_A = foundation.thermal_liquid.thermal_liquid; % A
+        M = foundation.thermal.thermal; % R
+        TL_B = foundation.thermal_liquid.thermal_liquid; % B
+    end
+
+    parameters
+        pipeHydrDia = {1.5e-2, "m"}; % Pipe hydraulic diameter
+        pipeLength = {1, "m"};       % Pipe length
+        pipeArea = {1.75e-4, "m^2"}; % Pipe cross-sectional area
+        pipeRoughness = {1e-6, "m"}; % Pipe roughness
+        iniTemperature = {300, "K"}; % Initial temperature
+        htc = {10, "W/(K*m^2)"};     % Heat transfer coefficient
+    end
+
+    components(ExternalAccess=observe)
+        RoomUnderFloor = RoomUnderFloorPiping(UFPipeHTArea =pi*pipeHydrDia*pipeLength,...
+            UFPipeHTC=htc,gateValveOrificeDia=pipeHydrDia,gateValveBypassOrificeDia=pipeHydrDia,...
+            maxGateValveOrificeDia=pipeHydrDia,maxGateValveBypassOrificeDia=pipeHydrDia,...
+            UFPipeHydrDia=pipeHydrDia,UFBypassPipeHydrDia=pipeHydrDia,UFPipeT=iniTemperature,...
+            UFBypassPipeT=iniTemperature,UFPipeArea=pipeArea,UFBypassPipeArea=pipeArea,...
+            UFPipeLen=pipeLength,UFBypassPipeLen=pipeLength,UFPipeRoughness=pipeRoughness,...
+            UFBypassPipeRoughness=pipeRoughness);
+    end
+
+    connections
+        connect(RoomUnderFloor.TL_A,TL_A);
+        connect(RoomUnderFloor.TL_B,TL_B);
+        connect(RoomUnderFloor.M,M);
+    end
+
+    equations
+        RoomUnderFloor.TL_V == TL_V;
+    end
+end

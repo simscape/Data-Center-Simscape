@@ -1,0 +1,106 @@
+component(Propagation=Blocks) roomVolumeHVAC
+    % Room Volume (HVAC) : 2.5
+    % This block is used to specify air volume inside a room with centralized 
+    % heating or cooling. The moist air domain is used to model the physics. 
+    % You can add heat to the air volume through the input port S. The node 
+    % M is the Thermal node attached to the thermal mass of air in the block. The
+    % output port T provides temperature of the air mass. Moist air domain 
+    % nodes A and B are used to specify cool or hot moist air in and out of 
+    % the room. The input port N is used to specify the number of occupants 
+    % in the room. 
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationRoomVolumeHVAC.html">Documentation for Room Volume (HVAC)</a>
+    % <br/>
+
+    % Copyright 2025 The MathWorks, Inc.
+
+    annotations
+        Icon = "roomVolumeHVAC.png";
+        UILayout = [UIGroup("HVAC",Hnum,length,width,height,airInletCrossSection,airOutletCrossSection)
+                    UIGroup("Air Quality",perPersonQ,breathT,perPersonCO2,perPersonMoisture,relHumidity,tauCondensation,entrainedFrac)
+                    UIGroup("Initial Condition",traceGasMassFrac,pressureAirVol,temperatureAirVol,relHumidityAirVol,mfWaterDroplets)];
+        H : Side=Top;
+        A : Side=Left;
+        B : Side=Right;
+        S : Side=Left;
+        N : Side=Left;
+    end
+
+    inputs
+        S = {0,"W"}; % S
+        N = {0,"1"}; % N
+    end
+
+    outputs
+        T = {300,"K"}; % T
+    end
+  
+    nodes
+        A = foundation.moist_air.moist_air; % A
+        B = foundation.moist_air.moist_air; % B
+    end
+
+    for i = 1:Hnum
+        nodes
+            H(i) = foundation.thermal.thermal; % M
+        end
+    end
+
+    parameters
+        Hnum = 1;                              % Number of thermal nodes
+        length = {5, "m"};                     % Room length
+        width = {3, "m"};                      % Room width
+        height = {2.5, "m"};                   % Room height
+        breathT = {0, 'K'};                    % Breath temperature
+        perPersonCO2 = {0, "g/s"};             % CO2 per person
+        perPersonMoisture = {0, "g/s"};        % Moisture per person
+        perPersonQ = {0, "W"};                 % Heat load per person
+        relHumidity = {1, "1"};                % Relative humidity at saturation
+        airInletCrossSection = {0.01, "m^2"};  % Area inlet for HVAC
+        airOutletCrossSection = {0.01, "m^2"}; % Area outlet for HVAC
+        tauCondensation = {0.001, "s"};        % Condensation time constant
+        mfWaterDroplets = {0, "1"};            % Initial mass ratio of water droplets to moist air
+        entrainedFrac = {1, "1"};              % Fraction of condensate entrained as water droplets
+        traceGasMassFrac = {0, "1"};           % Initial trace gas mass fraction of moist air volume
+        pressureAirVol = {0.101325, "MPa"};    % Initial pressure of moist air volume
+        temperatureAirVol = {293, "K"};        % Initial temperature of most air volume
+        relHumidityAirVol = {0, "1"};          % Initial relative humidity of moist air volume
+    end
+
+    parameters(ExternalAccess=none)
+        length_m = value(length,"m");
+        width_m = value(width,"m");
+        height_m = value(height,"m");
+        roomVolume = length_m*width_m*height_m;
+    end
+    components(ExternalAccess=observe)
+        roomAirVol = RoomHVAC(roomVolume=length*width*height,...
+            breathT=breathT, perPersonCO2=perPersonCO2, perPersonMoisture=perPersonMoisture,...
+            perPersonQ=perPersonQ, relHumidity=relHumidity, airInletCrossSection=airInletCrossSection,...
+            airOutletCrossSection=airOutletCrossSection, tauCondensation=tauCondensation,...
+            traceGasMassFrac=traceGasMassFrac,...
+            pressureAirVol=pressureAirVol,...
+            temperatureAirVol=temperatureAirVol,...
+            relHumidityAirVol=relHumidityAirVol,...
+            entrainedFrac=entrainedFrac,...
+            mfWaterDroplets=mfWaterDroplets)
+    end
+
+    connections
+        connect(S,roomAirVol.S);
+        connect(N,roomAirVol.N);
+        connect(A,roomAirVol.A);
+        connect(B,roomAirVol.B);
+    end
+
+    for i = 1:Hnum
+        connections
+            connect(H(i),roomAirVol.H);
+        end
+    end
+
+    equations
+        T == roomAirVol.RoomVolume.H.T;
+    end
+end

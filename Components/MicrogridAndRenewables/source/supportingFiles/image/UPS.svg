@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:d="http://www.mathworks.com/blockgraphics" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svg" width="600" height="611" d:options="PreserveAspect:On;ScalingOnResizeMax:2.0;Rotate:Off;Resize:FitToBlock;">
+	<g id="part" title="part_0" ie-ports="left:simulink*simulink,top:,right:simulink*simulink,bottom:">
+		<rect id="rect" fill="none" stroke="#0076BE" stroke-linejoin="round" stroke-width="14" x="180" y="80" width="320" height="480" rx="28" ry="28"/>
+		<rect id="rect_1" fill="none" stroke="#0076BE" stroke-linejoin="round" stroke-width="12" x="258" y="120" width="164" height="90" rx="10" ry="10"/>
+		<path id="path" fill="#0076BE" stroke="#0076BE" stroke-linejoin="round" stroke-width="3" d=" M 322,132 L 305,172 L 336,164 L 318,208 L 358,160 L 326,168 L 322,132 Z"/>
+		<rect id="rect_2" fill="none" stroke="#0076BE" stroke-linejoin="round" stroke-width="11" x="262.5" y="260" width="138" height="64" rx="8" ry="8"/>
+		<rect id="rect_3" fill="none" stroke="#0076BE" stroke-linejoin="round" stroke-width="11" x="409" y="279" width="18" height="26" rx="4" ry="4"/>
+		<rect id="rect_4" fill="#0076BE" x="283" y="272" width="24" height="40" rx="3" ry="3"/>
+		<rect id="rect_5" fill="#0076BE" x="315" y="272" width="24" height="40" rx="3" ry="3"/>
+		<rect id="rect_6" fill="#0076BE" x="347" y="272" width="24" height="40" rx="3" ry="3"/>
+		<ellipse id="ellipse" fill="none" stroke="#0076BE" stroke-width="12" cx="340" cy="453.94" rx="36" ry="36"/>
+		<ellipse id="ellipse_7" fill="#0076BE" cx="340" cy="453.94" rx="12" ry="12"/>
+	</g>
+</svg>

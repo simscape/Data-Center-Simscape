@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:d="http://www.mathworks.com/blockgraphics" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svg" width="50" height="51" viewBox="0 0 50 51" fill="none">
+	<g id="part" title="part_0" ie-ports="left:,top:simulink,right:,bottom:">
+		<rect id="rect" fill="white" style="stroke: #ffffff;" transform="matrix(1,0,0,1,0,0.0322266035)" x="0" y="0" width="50" height="50" rx="0" ry="0"/>
+		<path id="path" stroke="black" stroke-linecap="round" stroke-linejoin="round" style="stroke:#1171be;" d=" M 14.5,22.53 L 24.29,12.74 C 24.68,12.35 25.32,12.35 25.71,12.74 L 35,22.03 L 37.57,24.6 C 37.79,24.82 38.16,24.79 38.34,24.52 L 39.77,22.37 C 39.9,22.18 39.88,21.91 39.71,21.74 L 26.41,8.45 C 25.63,7.67 24.37,7.67 23.59,8.45 L 10.29,21.74 C 10.12,21.91 10.1,22.18 10.23,22.37 L 11.66,24.52 C 11.84,24.79 12.21,24.82 12.43,24.6 L 14.5,22.53 Z M 14.5,22.53 V 35.53 C 14.5,35.81 14.72,36.03 15,36.03 H 35.5"/>
+		<path id="path_1" stroke="black" stroke-linecap="round" stroke-linejoin="round" style="stroke:#1171be;" d=" M 35.5,36.03 V 22.53"/>
+		<path id="path_2" stroke="black" style="stroke:#1171be;" d=" M 25.5,21.03 L 23.5,25.03 H 26.5 L 24.5,29.03"/>
+		<ellipse id="ellipse" stroke="black" style="stroke:#1171be;" cx="25" cy="25.03" rx="5.5" ry="5.5"/>
+	</g>
+</svg>

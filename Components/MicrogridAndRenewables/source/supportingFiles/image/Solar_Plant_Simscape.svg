@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:d="http://www.mathworks.com/blockgraphics" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+	<g id="part_1" title="part_0" ie-ports="left:,top:simulink,right:simulink,bottom:">
+		<rect id="rect" fill="white" style="stroke: #ffffff;" x="0" y="0" width="50" height="50" rx="0" ry="0"/>
+		<rect id="rect_1" stroke="black" style="stroke:#1171be;" x="6.5" y="39.5" width="37" height="2" rx="0" ry="0"/>
+		<rect id="rect_2" stroke="black" style="stroke:#1171be;" transform="matrix(0.7463943047,-0.6655039759,0.6655039759,0.7463943047,-19.3623332711,18.9675858172)" x="15.21" y="34.89" width="11.54" height="2" rx="0" ry="0"/>
+		<rect id="rect_3" stroke="black" style="stroke:#1171be;" transform="matrix(0.7463943047,-0.6655039759,0.6655039759,0.7463943047,-17.0798820133,24.9571216003)" x="24.21" y="34.89" width="11.54" height="2" rx="0" ry="0"/>
+		<rect id="rect_4" stroke="black" style="stroke:#1171be;" transform="matrix(0.7463943047,-0.6655039759,0.6655039759,0.7463943047,-14.7974312391,30.946656114)" x="33.21" y="34.89" width="11.54" height="2" rx="0" ry="0"/>
+		<path id="path" stroke="black" style="stroke:#1171be;" d=" M 21.5,39.5 V 32"/>
+		<path id="path_5" stroke="black" style="stroke:#1171be;" d=" M 30.5,39.5 V 32"/>
+		<path id="path_6" stroke="black" style="stroke:#1171be;" d=" M 39.5,39.5 V 32"/>
+		<ellipse id="ellipse" stroke="black" style="stroke:#1171be;" cx="12.5" cy="15.5" rx="7" ry="7"/>
+		<path id="path_7" stroke="black" style="stroke:#1171be;" d=" M 12.5,7 V 4.5 V 4"/>
+		<path id="path_8" stroke="black" style="stroke:#1171be;" d=" M 18.44,9.56 L 20.21,7.79 L 20.56,7.44"/>
+		<path id="path_9" stroke="black" style="stroke:#1171be;" d=" M 4.44,23.56 L 6.21,21.79 L 6.56,21.44"/>
+		<path id="path_10" stroke="black" style="stroke:#1171be;" d=" M 6.56,9.56 L 4.79,7.79 L 4.44,7.44"/>
+		<path id="path_11" stroke="black" style="stroke:#1171be;" d=" M 21.06,23.06 L 19.29,21.29 L 18.94,20.94"/>
+		<path id="path_12" stroke="black" style="stroke:#1171be;" d=" M 4,15.5 H 1.5 H 1"/>
+		<path id="path_13" stroke="black" style="stroke:#1171be;" d=" M 24,15.5 H 21.5 H 21"/>
+		<path id="path_14" stroke="black" style="stroke:#1171be;" d=" M 12.5,27 V 24.5 V 24"/>
+	</g>
+</svg>

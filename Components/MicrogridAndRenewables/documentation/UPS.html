@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><meta name="generator" content="MATLAB 2026a"><title>Double Conversion Uninterruptible Power Supply (UPS)</title><style type="text/css">.rtcContent { padding: 30px; } .S0 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 28.8px; min-height: 0px; white-space: pre; color: rgb(192, 76, 11); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 24px; font-weight: 400; text-align: left;  }
+._richTextNode {white-space: break-spaces;}
+.S1 { margin-bottom: 20px; padding-bottom: 4px;  }
+.S2 { margin: 0px; padding: 10px 0px 10px 5px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 700; text-align: start;  }
+.S3 { margin: -1px 0px 0px; padding: 10px 0px 10px 7px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: start;  }
+.S4 { margin: 20px 10px 5px 4px; padding: 0px; line-height: 25px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: 700; text-align: left;  }
+.S5 { margin: 2px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S6 { margin: 10px 0px 20px; padding-left: 0px; font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-size: 14px;  }
+.S7 { margin-left: 56px; line-height: 21px; min-height: 0px; text-align: left; white-space: pre-wrap;  }
+.S8 { margin: 15px 10px 5px 4px; padding: 0px; line-height: 20.4px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 17px; font-weight: 700; text-align: left;  }
+.S9 { margin: 3px; border: 0.8px solid rgb(191, 191, 191); border-collapse: collapse;  }
+.S10 { background-color: rgba(0, 0, 0, 0);  }
+.S11 { border: 0.8px solid rgb(191, 191, 191); vertical-align: top;  }
+.S12 { margin: 2px 10px 2px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: center;  }
+.S13 { margin: 2px 10px 2px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }</style></head><body><div class = rtcContent><h1  class = 'S0' id = 'TMP_1201' ><span class="_richTextNode">Double Conversion Uninterruptible Power Supply (UPS)</span></h1><div  class = 'S1'><div  class = 'S2'><span class="_richTextNode" style=' font-weight: bold;'>Table of Contents</span></div><div  class = 'S3'><a href = "#TMP_5ee4"><span class="_richTextNode">Overview
+</span></a><a href = "#TMP_1e69"><span class="_richTextNode">Detailed Model
+</span></a><span class="_richTextNode">    </span><a href = "#TMP_65d7"><span class="_richTextNode">Block Description
+</span></a><span class="_richTextNode">    </span><a href = "#TMP_8f97"><span class="_richTextNode">Rectifier
+</span></a><span class="_richTextNode">    </span><a href = "#TMP_700a"><span class="_richTextNode">DC-Link and Battery
+</span></a><span class="_richTextNode">    </span><a href = "#TMP_6e4b"><span class="_richTextNode">Inverter
+</span></a><a href = "#TMP_711f"><span class="_richTextNode">Block Diagram
+</span></a><a href = "#TMP_4ac7"><span class="_richTextNode">Ports
+</span></a><span class="_richTextNode">    </span><a href = "#TMP_0cad"><span class="_richTextNode">Inputs
+</span></a><span class="_richTextNode">    </span><a href = "#TMP_572e"><span class="_richTextNode">Outputs
+</span></a><a href = "#TMP_77f2"><span class="_richTextNode">Parameters
+</span></a><a href = "#TMP_8e71"><span class="_richTextNode">Key Characteristics</span></a></div></div><h2  class = 'S4' id = 'TMP_5ee4' ><span class="_richTextNode">Overview</span></h2><div  class = 'S5'><span class="_richTextNode">This block models a double conversion UPS system that provides uninterrupted and regulated AC power to a critical load. The UPS continuously processes power through a rectifier–DC link–inverter chain, ensuring complete electrical isolation from upstream disturbances.</span></div><div  class = 'S5'><span class="_richTextNode">The UPS operates on the principle of continuous power conversion:</span></div><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">Input AC power is converted to DC by the rectifier</span></li><li  class = 'S7'><span class="_richTextNode">The DC link stabilizes energy flow and interfaces with the battery</span></li><li  class = 'S7'><span class="_richTextNode">The inverter regenerates a controlled AC waveform to supply the load</span></li></ul><div  class = 'S5'><span class="_richTextNode">The battery supports the DC link to ensure uninterrupted operation during grid disturbances or outages.</span></div><div  class = 'S5'><span class="_richTextNode">The UPS supports the following operating states:</span></div><div  class = 'S5'><span class="_richTextNode" style=' font-weight: bold;'>Normal Operation</span></div><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">Grid feeds the rectifier</span></li><li  class = 'S7'><span class="_richTextNode">Rectifier maintains DC-link voltage</span></li><li  class = 'S7'><span class="_richTextNode">Inverter supplies regulated AC power to the load</span></li><li  class = 'S7'><span class="_richTextNode">Battery remains in float or controlled charging mode</span></li></ul><div  class = 'S5'><span class="_richTextNode" style=' font-weight: bold;'>Battery Operation</span></div><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">Triggered when grid voltage is unavailable or out of range</span></li><li  class = 'S7'><span class="_richTextNode">Battery supplies power to the DC link</span></li><li  class = 'S7'><span class="_richTextNode">Inverter continues to supply uninterrupted AC power</span></li></ul><h2  class = 'S4' id = 'TMP_1e69' ><span class="_richTextNode">Detailed Model</span></h2><h3  class = 'S8' id = 'TMP_65d7' ><span class="_richTextNode">Block Description</span></h3><div  class = 'S5'><span class="_richTextNode">The detailed model consists of three main components:</span></div><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">Rectifier</span></li><li  class = 'S7'><span class="_richTextNode">DC-Link with Battery</span></li><li  class = 'S7'><span class="_richTextNode">Inverter</span></li></ul><h3  class = 'S8' id = 'TMP_8f97' ><span class="_richTextNode">Rectifier</span></h3><div  class = 'S5'><span class="_richTextNode">You can configure the rectifier block to match your desired rating by specifying parameters such as input voltage, current limits, switching frequency, and control gains. This block models the AC–DC conversion stage and regulates the input current drawn from the grid.</span></div><div  class = 'S5'><span class="_richTextNode">This block implements an power factor correction (PFC) control strategy, which shapes the input current to be:</span></div><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">Sinusoidal</span></li><li  class = 'S7'><span class="_richTextNode">In phase with the grid voltage</span></li></ul><div  class = 'S5'><span class="_richTextNode">This ensures that the UPS operates with a near-unity power factor and minimizes harmonic distortion injected into the grid.</span></div><div  class = 'S5'><span class="_richTextNode">This block simulates:</span></div><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">Conversion of three-phase AC input to regulated DC output</span></li><li  class = 'S7'><span class="_richTextNode">Input current control using PFC</span></li><li  class = 'S7'><span class="_richTextNode">DC-link voltage support through controlled power flow</span></li><li  class = 'S7'><span class="_richTextNode">Interaction with upstream grid through voltage and current feedback</span></li></ul><h3  class = 'S8' id = 'TMP_700a' ><span class="_richTextNode">DC-Link and Battery</span></h3><div  class = 'S5'><span class="_richTextNode">The DC-link subsystem represents the energy buffer between the rectifier and inverter. It includes a DC bus capacitor and a battery system for energy storage and backup operation.</span></div><div  class = 'S5'><span class="_richTextNode">This block simulates:</span></div><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">DC voltage dynamics and energy storage</span></li><li  class = 'S7'><span class="_richTextNode">Battery charging and discharging behavior</span></li><li  class = 'S7'><span class="_richTextNode">Power balance between rectifier and inverter</span></li></ul><div  class = 'S5'><span class="_richTextNode">Control inputs such as charging current, rectifier current, and voltage feedback are used to regulate the DC-link operation under different conditions.</span></div><h3  class = 'S8' id = 'TMP_6e4b' ><span class="_richTextNode" style=' font-weight: bold;'>Inverter</span></h3><div  class = 'S5'><span class="_richTextNode">The inverter converts DC-link voltage into a regulated AC output that supplies the load. It ensures continuous and high-quality power delivery independent of input disturbances.</span></div><div  class = 'S5'><span class="_richTextNode">This block simulates</span></div><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">DC–AC conversion</span></li><li  class = 'S7'><span class="_richTextNode">Output voltage regulation</span></li><li  class = 'S7'><span class="_richTextNode">Frequency and waveform control</span></li><li  class = 'S7'><span class="_richTextNode">Load supply under both normal and battery operation</span></li></ul><div  class = 'S5'><span class="_richTextNode">The following table gives information about different units in the block:</span></div><table  class = 'S9'><col/><col/><col/><tr  class = 'S10'><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold;'>Unit</span></div></td><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold; font-family: monospace;'>Structure</span></div></td><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold; font-family: monospace;'>Functionality</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Rectifier</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">AC-DC controlled converter</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Converts AC input to DC power and regulates input current and DC-link voltage</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">DC-Link and Battery</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">DC bus with energy storage</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Stabilizes DC voltage and manages battery charging and discharging</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Inverter</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">DC-AC controlled converter</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Converts DC power to regulated AC output and maintains voltage and frequency at the load</span></div></td></tr></table><div  class = 'S5'><span class="_richTextNode" style=' font-weight: bold;'></span></div><h2  class = 'S4' id = 'TMP_711f' ><span class="_richTextNode">Block Diagram</span></h2><div  class = 'S5'><span class="_richTextNode">This figure gives you the block diagram of the UPS block</span></div><div  class = 'S5'><span class="_richTextNode">                              </span><img class = "imageNode" src = "data:image/png;base64,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" width = "524" height = "247" alt = "" style = "vertical-align: baseline; width: 524px; height: 247px;"></img></div><h2  class = 'S4' id = 'TMP_4ac7' ><span class="_richTextNode" style=' font-weight: bold;'>Ports</span></h2><h3  class = 'S8' id = 'TMP_0cad' ><span class="_richTextNode" style=' font-weight: bold;'>Inputs</span></h3><div  class = 'S5'><span class="_richTextNode">This table gives you the details about the different inputs to the block.</span></div><table  class = 'S9'><col style="width: 254px;" /><col/><tr  class = 'S10'><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold; font-family: monospace;'>Input</span></div></td><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold; font-family: monospace;'>Description</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>ABC</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Three-phase AC input to the UPS</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>iChrg</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Battery charge or discharge control signal</span></div></td></tr></table><h3  class = 'S8' id = 'TMP_572e' ><span class="_richTextNode" style=' font-weight: bold;'>Outputs</span></h3><div  class = 'S5'><span class="_richTextNode">This table gives you the details about different outputs of the block.</span></div><table  class = 'S9'><col style="width: 255.5999755859375px;" /><col/><tr  class = 'S10'><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold; font-family: monospace;'>Output</span></div></td><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold; font-family: monospace;'>Description</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">~</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Three-phase AC output from inverter</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>Meas (Rectifier)</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Rectifier-side measurements</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>Meas (Inverter)</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Inverter-side electrical measurements</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>DCMeas</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">DC-link voltage and power measurements</span></div></td></tr></table><h2  class = 'S4' id = 'TMP_77f2' ><span class="_richTextNode">Parameters</span></h2><div  class = 'S5'><span class="_richTextNode">This table describes the different parameters of the block.</span></div><table  class = 'S9'><col style="width: 259px;" /><col/><tr  class = 'S10'><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold; font-family: monospace;'>Parameter</span></div></td><td  class = 'S11'><div  class = 'S12'><span class="_richTextNode" style=' font-weight: bold; font-family: monospace;'>Description</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>General</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Rated and nominal values of UPS</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>Active Front End</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Input filter and PFC parameters</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>DC Link</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">BESS, Capacitor and DC bus regulation parameters</span></div></td></tr><tr  class = 'S10'><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode" style=' font-weight: bold;'>Inverter</span></div></td><td  class = 'S11'><div  class = 'S13'><span class="_richTextNode">Output filter and inverter controller parameters</span></div></td></tr></table><h2  class = 'S4' id = 'TMP_8e71' ><span class="_richTextNode">Key Characteristics</span></h2><ul  class = 'S6'><li  class = 'S7'><span class="_richTextNode">Continuous double conversion operation (zero transfer time)</span></li><li  class = 'S7'><span class="_richTextNode">Full decoupling of load from grid disturbances</span></li><li  class = 'S7'><span class="_richTextNode">Integrated battery energy storage through DC link</span></li><li  class = 'S7'><span class="_richTextNode">Measurement-enabled architecture for system monitoring</span></li><li  class = 'S7'><span class="_richTextNode">Suitable for data center and critical power applications</span></li></ul><div  class = 'S5'><span class="_richTextNode">Copyright 2026 The MathWorks, Inc.</span></div>
+<br>
+<!-- 
+##### SOURCE BEGIN #####
+%% Double Conversion Uninterruptible Power Supply (UPS)
+%% Overview
+% This block models a double conversion UPS system that provides uninterrupted 
+% and regulated AC power to a critical load. The UPS continuously processes power 
+% through a rectifier–DC link–inverter chain, ensuring complete electrical isolation 
+% from upstream disturbances.
+% 
+% The UPS operates on the principle of continuous power conversion:
+%% 
+% * Input AC power is converted to DC by the rectifier
+% * The DC link stabilizes energy flow and interfaces with the battery
+% * The inverter regenerates a controlled AC waveform to supply the load
+%% 
+% The battery supports the DC link to ensure uninterrupted operation during 
+% grid disturbances or outages.
+% 
+% The UPS supports the following operating states:
+% 
+% *Normal Operation*
+%% 
+% * Grid feeds the rectifier
+% * Rectifier maintains DC-link voltage
+% * Inverter supplies regulated AC power to the load
+% * Battery remains in float or controlled charging mode
+%% 
+% *Battery Operation*
+%% 
+% * Triggered when grid voltage is unavailable or out of range
+% * Battery supplies power to the DC link
+% * Inverter continues to supply uninterrupted AC power
+%% Detailed Model
+% Block Description
+% The detailed model consists of three main components:
+%% 
+% * Rectifier
+% * DC-Link with Battery
+% * Inverter
+% Rectifier
+% You can configure the rectifier block to match your desired rating by specifying 
+% parameters such as input voltage, current limits, switching frequency, and control 
+% gains. This block models the AC–DC conversion stage and regulates the input 
+% current drawn from the grid.
+% 
+% This block implements an power factor correction (PFC) control strategy, which 
+% shapes the input current to be:
+%% 
+% * Sinusoidal
+% * In phase with the grid voltage
+%% 
+% This ensures that the UPS operates with a near-unity power factor and minimizes 
+% harmonic distortion injected into the grid.
+% 
+% This block simulates:
+%% 
+% * Conversion of three-phase AC input to regulated DC output
+% * Input current control using PFC
+% * DC-link voltage support through controlled power flow
+% * Interaction with upstream grid through voltage and current feedback
+% DC-Link and Battery
+% The DC-link subsystem represents the energy buffer between the rectifier and 
+% inverter. It includes a DC bus capacitor and a battery system for energy storage 
+% and backup operation.
+% 
+% This block simulates:
+%% 
+% * DC voltage dynamics and energy storage
+% * Battery charging and discharging behavior
+% * Power balance between rectifier and inverter
+%% 
+% Control inputs such as charging current, rectifier current, and voltage feedback 
+% are used to regulate the DC-link operation under different conditions.
+% *Inverter*
+% The inverter converts DC-link voltage into a regulated AC output that supplies 
+% the load. It ensures continuous and high-quality power delivery independent 
+% of input disturbances.
+% 
+% This block simulates
+%% 
+% * DC–AC conversion
+% * Output voltage regulation
+% * Frequency and waveform control
+% * Load supply under both normal and battery operation
+%% 
+% The following table gives information about different units in the block:
+%% 
+% *Unit*
+%% 
+% |*Structure*|
+%% 
+% |*Functionality*|
+%% 
+% Rectifier
+%% 
+% AC-DC controlled converter
+%% 
+% Converts AC input to DC power and regulates input current and DC-link voltage
+%% 
+% DC-Link and Battery
+%% 
+% DC bus with energy storage
+%% 
+% Stabilizes DC voltage and manages battery charging and discharging
+%% 
+% Inverter
+%% 
+% DC-AC controlled converter
+%% 
+% Converts DC power to regulated AC output and maintains voltage and frequency 
+% at the load
+%% 
+% 
+%% Block Diagram
+% This figure gives you the block diagram of the UPS block
+% 
+% 
+%% *Ports*
+% *Inputs*
+% This table gives you the details about the different inputs to the block.
+%% 
+% |*Input*|
+%% 
+% |*Description*|
+%% 
+% *ABC*
+%% 
+% Three-phase AC input to the UPS
+%% 
+% *iChrg*
+%% 
+% Battery charge or discharge control signal
+% *Outputs*
+% This table gives you the details about different outputs of the block.
+%% 
+% |*Output*|
+%% 
+% |*Description*|
+%% 
+% ~
+%% 
+% Three-phase AC output from inverter
+%% 
+% *Meas (Rectifier)*
+%% 
+% Rectifier-side measurements
+%% 
+% *Meas (Inverter)*
+%% 
+% Inverter-side electrical measurements
+%% 
+% *DCMeas*
+%% 
+% DC-link voltage and power measurements
+%% Parameters
+% This table describes the different parameters of the block.
+%% 
+% |*Parameter*|
+%% 
+% |*Description*|
+%% 
+% *General*
+%% 
+% Rated and nominal values of UPS
+%% 
+% *Active Front End*
+%% 
+% Input filter and PFC parameters
+%% 
+% *DC Link*
+%% 
+% BESS, Capacitor and DC bus regulation parameters
+%% 
+% *Inverter*
+%% 
+% Output filter and inverter controller parameters
+%% Key Characteristics
+%% 
+% * Continuous double conversion operation (zero transfer time)
+% * Full decoupling of load from grid disturbances
+% * Integrated battery energy storage through DC link
+% * Measurement-enabled architecture for system monitoring
+% * Suitable for data center and critical power applications
+%% 
+% Copyright 2026 The MathWorks, Inc.
+##### SOURCE END #####
+-->
+</div></body></html>

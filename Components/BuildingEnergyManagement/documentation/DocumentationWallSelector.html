@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>Wall Selector</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-01-22">
+<meta name="DC.source" content="DocumentationWallSelector.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>Wall Selector</h1>
+<!--introduction-->
+<p>This block is used to specify a solid wall, or a solid wall with vent and/or windows. The wall and the window glass properties are also set using this block. This block can also be used to build composite walls. One node, Thermal node <i>A</i>, is connected to the ambient and the other node, Thermal node <i>B</i>, to the room. The optional port <i>S</i> is used to specify the solar radiation falling on the wall. This port is only visible for <tt>Wall Type</tt> values <tt>Solid Wall with Solar Load</tt>, <tt>Solid Wall with Window/Door and Solar Load</tt>, <tt>Solid Wall with Window/Door, Vent, and Solar Load</tt>, and <tt>Solid Wall with Vent and Solar Load</tt>.</p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">Wall</a>
+</li>
+<li>
+<a href="#2">Window</a>
+</li>
+<li>
+<a href="#3">Vent</a>
+</li>
+<li>
+<a href="#4">Heat Transfer</a>
+</li>
+</ul>
+</div>
+<h2 id="1">Wall</h2>
+<div>
+<ul>
+<li>
+<b>Select wall type</b>, <tt>optWall</tt>, specified as a drop-down list option for the wall type. The options available are (1) <tt>Solid Wall</tt>, (2) <tt>Solid Wall with Opening</tt>, (3) <tt>Solid Wall with Solar Load</tt>, (4) <tt>Solid Wall with Window/Door and Solar Load</tt>, (5) <tt>Solid Wall with Window/Door, Vent, and Solar Load</tt>, and (6) <tt>Solid Wall with Vent and Solar Load</tt>. Option (1) and (2) are used for internal walls, solid and walls with openings. They can also be used to specify external walls or surfaces where no solar radiation falls. Options (3)-(6) are different wall types with solar radiation falling on them. The solar radiation is specified using the input port <i>S</i>.</li>
+<li>
+<b>Wall length</b>, <tt>wallLength</tt>, specified as a scalar value.</li>
+<li>
+<b>Wall height</b>, <tt>wallHeight</tt>, specified as a scalar value.</li>
+<li>
+<b>Wall thickness</b>, <tt>wallThickness</tt>, specified as a scalar value.</li>
+<li>
+<b>Wall material density</b>, <tt>wallMaterialDen</tt>, specified as a scalar value.</li>
+<li>
+<b>Wall material heat capacity</b>, <tt>wallMaterialCp</tt>, specified as a scalar value.</li>
+<li>
+<b>Wall absorptivity</b>, <tt>wallAbsorptivity</tt>, specified as a scalar value.</li>
+<li>
+<b>Wall thermal conductivity</b>, <tt>wallThermalK</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="2">Window</h2>
+<div>
+<ul>
+<li>
+<b>Window length</b>, <tt>winLength</tt>, specified as a scalar value.</li>
+<li>
+<b>Window height</b>, <tt>winHeight</tt>, specified as a scalar value.</li>
+<li>
+<b>Window glass thickness</b>, <tt>winThickness</tt>, specified as a scalar value.</li>
+<li>
+<b>Window glass material density</b>, <tt>winMaterialDen</tt>, specified as a scalar value.</li>
+<li>
+<b>Window glass material heat capacity</b>, <tt>winMaterialCp</tt>, specified as a scalar value.</li>
+<li>
+<b>Window glass absorptivity</b>, <tt>winAbsorptivity</tt>, specified as a scalar value.</li>
+<li>
+<b>Window glass transmissivity</b>, <tt>winTransmissivity</tt>, specified as a scalar value.</li>
+<li>
+<b>Window glass thermal conductivity</b>, <tt>winThermalK</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="3">Vent</h2>
+<div>
+<ul>
+<li>
+<b>Vent length</b>, <tt>ventLength</tt>, specified as a scalar value.</li>
+<li>
+<b>Vent height</b>, <tt>ventHeight</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="4">Heat Transfer</h2>
+<div>
+<ul>
+<li>
+<b>Effective heat transfer coefficient from ambient to wall surface</b>, <tt>extToWallHTC</tt>, specified as a scalar value.</li>
+<li>
+<b>Effective heat transfer coefficient from internal surface to the room</b>, <tt>intToRoomHTC</tt>, specified as a scalar value.</li>
+<li>
+<b>Initial temperature</b>, <tt>iniT</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<p class="footer">Copyright 2025 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% Wall Selector
+% 
+% This block is used to specify a solid wall, or a solid wall with vent 
+% and/or windows. The wall and the window glass properties are also set 
+% using this block. This block can also be used to build composite 
+% walls. One node, Thermal node _A_, is connected to the ambient and the 
+% other node, Thermal node _B_, to the room. The optional port _S_ is 
+% used to specify the solar radiation falling on the wall. This port is 
+% only visible for |Wall Type| values |Solid Wall with Solar Load|, 
+% |Solid Wall with Window/Door and Solar Load|, |Solid Wall with 
+% Window/Door, Vent, and Solar Load|, and |Solid Wall with Vent and 
+% Solar Load|. 
+
+% Copyright 2025 The MathWorks, Inc.
+
+%% Wall
+% * *Select wall type*, |optWall|, specified as a drop-down list option for
+% the wall type. The options available are (1) |Solid Wall|, (2) |Solid 
+% Wall with Opening|, (3) |Solid Wall with Solar Load|, (4) |Solid Wall 
+% with Window/Door and Solar Load|, (5) |Solid Wall with Window/Door, Vent, 
+% and Solar Load|, and (6) |Solid Wall with Vent and Solar Load|. Option
+% (1) and (2) are used for internal walls, solid and walls with openings.
+% They can also be used to specify external walls or surfaces where no
+% solar radiation falls. Options (3)-(6) are different wall types with
+% solar radiation falling on them. The solar radiation is specified using
+% the input port _S_.
+% * *Wall length*, |wallLength|, specified as a scalar value.
+% * *Wall height*, |wallHeight|, specified as a scalar value.
+% * *Wall thickness*, |wallThickness|, specified as a scalar value.
+% * *Wall material density*, |wallMaterialDen|, specified as a scalar value.
+% * *Wall material heat capacity*, |wallMaterialCp|, specified as a scalar value.
+% * *Wall absorptivity*, |wallAbsorptivity|, specified as a scalar value.
+% * *Wall thermal conductivity*, |wallThermalK|, specified as a scalar value.
+%
+%% Window
+% * *Window length*, |winLength|, specified as a scalar value.
+% * *Window height*, |winHeight|, specified as a scalar value.
+% * *Window glass thickness*, |winThickness|, specified as a scalar value.
+% * *Window glass material density*, |winMaterialDen|, specified as a scalar value.
+% * *Window glass material heat capacity*, |winMaterialCp|, specified as a scalar value.
+% * *Window glass absorptivity*, |winAbsorptivity|, specified as a scalar value.
+% * *Window glass transmissivity*, |winTransmissivity|, specified as a scalar value.
+% * *Window glass thermal conductivity*, |winThermalK|, specified as a scalar value.
+%
+%% Vent
+% * *Vent length*, |ventLength|, specified as a scalar value.
+% * *Vent height*, |ventHeight|, specified as a scalar value.
+%
+%% Heat Transfer
+% * *Effective heat transfer coefficient from ambient to wall surface*, 
+% |extToWallHTC|, specified as a scalar value.
+% * *Effective heat transfer coefficient from internal surface to the room*, 
+% |intToRoomHTC|, specified as a scalar value.
+% * *Initial temperature*, |iniT|, specified as a scalar value.
+
+##### SOURCE END #####
+-->
+</body>
+</html>

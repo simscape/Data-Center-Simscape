@@ -1,0 +1,519 @@
+component vanadiumRedoxFlowBattery
+    % Vanadium Redox Flow Battery: 2.5
+    % This block implements a 1RC pair equivalent circuit model to calculate 
+    % the battery dynamics. The equivalent circuit model represents the 
+    % battery stack dynamics. There are multiple stacks connected in series 
+    % and the material balance equations are solved for all vanadium species 
+    % in the cell stack and the electrolyte tank. Species balance provides 
+    % the battery potential and the state of charge. Optional models for cross 
+    % diffusion and thermal are also available.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationVaRedoxFlowBattery.html">Documentation for VRFB</a>
+    % <br/>
+    % <br/>
+    % <a href="matlab:edit displayVRFBsize">Calculate rating of VRFB</a>
+    % <br/>
+
+    % Copyright 2023 - 2026 The MathWorks, Inc.
+
+    nodes
+        p = foundation.electrical.electrical; % +:left
+        n = foundation.electrical.electrical; % -:right
+        H = foundation.thermal.thermal;       % H:right
+    end
+  
+    inputs
+        flow = {0, "lpm"}; % lpm:left
+    end
+
+    annotations
+        UILayout = [UIGroup("Break Points",flowrateLUT,thermalManagement,...
+                            temperatureLUT,initialTsys,SOC) 
+                    UIGroup("Electrolyte Properties",electrolyteDen,electrolyteCp,...
+                            electrolyteKinVis,crossDiffModel,thMemb,diffCoeff2,...
+                            diffCoeff3,diffCoeff4,diffCoeff5,activationE,...
+                            electrolyteK,minStateOfCharge,maxStateOfCharge,msgWarn) 
+                    UIGroup("Stack Electrical",molar,V0,LUTdischgR0,LUTdischgRes,...
+                            LUTdischgTau,LUTchgR0,LUTchgRes,LUTchgTau,stackLen,...
+                            stackWid,stackHgt,stackMassCp)
+                    UIGroup("Stack Flow",stackPrDropLUT,pipeLength,pipeDia,...
+                            pipeArea,pipeRoughness,ReLaminar,ReTurbulent,...
+                            darcyFriction)
+                    UIGroup("Battery Stacks",Nc,Ns,Np,seriesFlowMalDistr,...
+                            shuntResModel,shuntRes) 
+                    UIGroup("Container Thermal",containerVolume,containerArea,...
+                            containerThermalmass,nFans,fanCapacity,extHTC)];
+    end
+
+    parameters
+        initialTsys           = {280, "K"};               % Initial temperature
+        flowrateLUT           = {[5 10 20 40 80], "lpm"}; % Stack flowrate vector
+        temperatureLUT        = {[293 300 313], "K"};     % Temperature vector
+        Ns                    = {10, "1" };               % Number of series connected stacks
+        Np                    = {2, "1" };                % Number of parallel units of series connected stacks
+        Nc                    = {20, "1" };               % Number of cells per stack
+        V0                    = {1.3, "V"};               % Single cell electrode potential
+        LUTdischgR0           = {0.1*ones(1,5), "Ohm"};   % Stack discharge ohmic resistance
+        LUTdischgRes          = {0.1*ones(1,5), "Ohm"};   % Stack discharge dynamic resistance
+        LUTdischgTau          = {10*ones(1,5), "s"};      % Stack discharge time constant
+        LUTchgR0              = {0.1*ones(1,5), "Ohm"};   % Stack charge ohmic resistance
+        LUTchgRes             = {0.1*ones(1,5), "Ohm"};   % Stack charge dynamic resistance
+        LUTchgTau             = {10*ones(1,5), "s"};      % Stack charge time constant
+        stackLen              = {0.15, "m"};              % Stack length
+        stackWid              = {0.30, "m"};              % Stack width
+        stackHgt              = {0.30, "m"};              % Stack height
+        thMemb                = {1e-3, "m"};              % Membrane thickness
+        molar                 = {2, "mol/l"};             % Vanadium molarity in electrolyte
+        seriesFlowMalDistr    = {ones(1,10), "1"};        % Series stack flow maldistribution
+        minStateOfCharge      = {1e-4, "1"};              % Minimum state of charge
+        maxStateOfCharge      = {0.9999, "1"};            % Maximum state of charge
+        SOC                   = {0.99, "1"};              % Initial cell state of charge
+        activationE           = {17341, "W*s/mol"};       % Activation energy for diffusion reaction
+        diffCoeff2            = {4.31e-12, "m^2/s"};      % Va(II) diffusion coefficient through membrane
+        diffCoeff3            = {1.92e-12, "m^2/s"};      % Va(III) diffusion coefficient through membrane
+        diffCoeff4            = {6.53e-12, "m^2/s"};      % Va(IV) diffusion coefficient through membrane
+        diffCoeff5            = {3.78e-12, "m^2/s"};      % Va(V) diffusion coefficient through membrane
+        msgWarn               = simscape.enum.assert.action.none; % Cell Vanadium concentration check
+        crossDiffModel        = vanadiumRedoxFlowChemistry.disabled; % Cross diffusion model
+        
+        pipeLength            = {1,"m"};                  % Stack effective pipe length
+        pipeDia               = {1e-2,"m"};               % Stack pipe hydraulic diameter
+        pipeArea              = {0.01, "m^2"};            % Stack pipe cross-sectional area
+        pipeRoughness         = {15e-6, "m"};             % Stack pipe roughness
+        stackPrDropLUT        = {[100 110 120 130 140], "Pa"}; % Stack pressure drop at different flowrate points
+        electrolyteDen        = {1000, "kg/m^3"};         % Electrolyte density
+        electrolyteKinVis     = {3.9e-6, "m^2/s"};        % Electrolyte kinematic viscosity
+        
+        thermalManagement     = vanadiumRedoxFlowThermalModel.disabled; % Thermal model
+        containerVolume       = {0.5, "m^3"};             % Container volume
+        containerArea         = {10,"m^2"};               % Container surface area for ambient heat loss
+        stackMassCp           = {324000, "J/K"};          % Stack thermal mass
+        electrolyteCp         = {800, "J/kg/K"};          % Electrolyte heat capacity
+        nFans                 = {5,"1"};                  % Number of cooling fans
+        fanCapacity           = {80, "m^3/hr"};           % Cooling fan flow rating
+        extHTC                = {20, "W/m^2/K"};          % Heat transfer coefficient from ambient to container walls
+        containerThermalmass  = {90000, "J/K"};           % Container thermal mass
+        
+        shuntRes              = {1000, "Ohm"};            % Effective self discharge resistance
+        shuntResModel         = vanadiumRedoxFlowShuntCurrModel.disabled; % Shunt current model
+        electrolyteK          = {1, "1/Ohm/m"};           % Electrolyte conductivity
+    end
+
+    parameters(ExternalAccess=none)
+        F               = {96485, "C/mol" };
+        R               = {8.314, "J/K/mol"};
+        Ncells          = Ns*Nc;
+        stackVol        = stackLen*stackWid*stackHgt; 
+        Cmax            = molar / {1e-3, "m^3/l"};
+        Cmin            = {0, "mol/m^3"};
+        arMemb          = stackHgt*stackWid;
+        openSw          = {1e-8, "1/Ohm"};
+        flUnit          = {1/60000, "m^3/s/lpm"};
+        stackAirVol     = containerVolume - Ns*stackVol;
+        tankVolume      = Ns*Np*stackVol/2;
+        pipeLenEff      = stackLen+pipeLength;
+        containerAirCp  = {700, "J/kg/K"};
+        containerAirDen = {1.2, "kg/m^3"};
+        stackAreaHTC    = stackLen*stackWid + 2*stackHgt*(stackLen+stackWid);
+        massCpAir       = stackAirVol*containerAirDen*containerAirCp;
+        tankMassCp      = tankVolume*electrolyteDen*electrolyteCp;
+        tankAreaHT      = (tankVolume^(2/3))*5; % Assuming a cubic tank
+        pipeAreaHTC     = pi*pipeLenEff*pipeDia;
+        pipeMassCp      = (0.25*pi*pipeLenEff*pipeDia^2)*electrolyteDen*electrolyteCp;
+        ReLaminar       = {2000, "1"};
+        ReTurbulent     = {4000, "1"};
+        darcyFriction   = {64, "1"};
+        shuntRmanifold  = (pipeLenEff/(Ns*pipeArea))/electrolyteK;
+        shuntRcell      = (stackWid/(stackHgt*stackLen/Nc))/electrolyteK;
+        v_mps           = max(0,value(fanCapacity,"m^3/s")*value(nFans,"1")/value(stackAreaHTC,"m^2"));
+        htcRef          = vanadiumRedoxFlowHTC(v_mps);
+        intHTC          = {htcRef, "W/m^2/K"};
+        pFlowMalDist    = seriesFlowMalDistr;
+        nFlowMalDist    = seriesFlowMalDistr;
+    end
+
+    variables(ExternalAccess=none)
+        vSwitchOpen = {0,"V"};
+        pCellSOCvec = {value=SOC*ones(1,Ns)};
+        nCellSOCvec = {value=SOC*ones(1,Ns)};
+        portH = {0, "W"};
+        tankNegT = {value={298,"K"}, priority=priority.high }; % Electrolyte temperature (neg. Tank)
+        tankPosT = {value={298,"K"}, priority=priority.high }; % Electrolyte temperature (pos. Tank)
+    end
+
+    variables(ExternalAccess=observe)
+        i               = {0, "A"};
+        is              = {0, "A"};
+        v               = {value=Ncells*V0};
+        voltNernstEqn   = {value=Ncells*V0};
+        voltOhmic       = {value={0,"V"}*ones(1,Ns)};
+        voltDynamic     = {value={0,"V"}*ones(1,Ns)};
+        systemPrDrop    = {0, "Pa"};
+        % Vanadium concentration terms : cell
+        cellC2vec       = {value=SOC*Cmax*ones(1,Ns), priority=priority.high};     % V(2+) concentration in cell, mol/m^3
+        cellC3vec       = {value=(1-SOC)*Cmax*ones(1,Ns), priority=priority.high}; % V(3+) concentration in cell, mol/m^3
+        cellC4vec       = {value=(1-SOC)*Cmax*ones(1,Ns), priority=priority.high}; % VO(+2) concentration in cell, mol/m^3
+        cellC5vec       = {value=SOC*Cmax*ones(1,Ns), priority=priority.high};     % VO2(+1) concentration in cell, mol/m^3
+        % Vanadium concentration terms : tank
+        tankC2          = {value=SOC*Cmax, priority=priority.high};                % V(2+) concentration in cell, mol/m^3
+        tankC3          = {value=(1-SOC)*Cmax, priority=priority.high};            % V(3+) concentration in cell, mol/m^3
+        tankC4          = {value=(1-SOC)*Cmax, priority=priority.high};            % VO(+2) concentration in cell, mol/m^3
+        tankC5          = {value=SOC*Cmax, priority=priority.high};                % VO2(+1) concentration in cell, mol/m^3
+        % SOC initialization for tanks
+        pStateOfCharge            = {value=SOC};
+        nStateOfCharge            = {value=SOC};
+        stateOfCharge   = {value=SOC};
+        minCellStackSOC = {value=SOC};
+        maxCellStackSOC = {value=SOC};
+        % Shunt currents
+        shuntCurrPercent= {0,"1"};
+        stackCellT    = {value={value(initialTsys,"K")*ones(1,10),"K"}, priority=priority.high }; % Stack temperature
+        pipeNegSideT  = {value={value(initialTsys,"K"),"K"}, priority=priority.high }; % Pipe temperature (neg. loop)
+        pipePosSideT  = {value={value(initialTsys,"K"),"K"}, priority=priority.high }; % Pipe temperature (pos. loop)
+        containerAirT = {value={value(initialTsys,"K"),"K"}, priority=priority.high }; % Container air temperature
+        % tankNegT      = {value={value(initialTsys,"K"),"K"}, priority=priority.high }; % Electrolyte temperature (neg. Tank)
+        % tankPosT      = {value={value(initialTsys,"K"),"K"}, priority=priority.high }; % Electrolyte temperature (pos. Tank)
+        containerT    = {value={value(initialTsys,"K"),"K"}, priority=priority.high }; % Container surface temperature        
+    end
+
+    branches
+        i : p.i -> n.i;
+        portH: H.Q -> *;
+    end
+
+    intermediates
+        power_dissipated = Np*sum(voltOhmic + voltDynamic)*((i/Np)+is); % Dissipated power
+        pump_power       = abs(systemPrDrop*flow);              % Pump power requirement
+    end
+
+    equations
+        % Check parameter validity
+        assert(Ns > 0);
+        assert(Nc > 0);
+        assert(molar > 0, ...
+            "Vanadium molarity in electrolyte must be greater than zero.");
+        assert(SOC >= 0 && SOC <= 1, ...
+            "Initial state of charge must be between 0 and 1.");
+        assert(length(seriesFlowMalDistr) == Ns, ...
+            "Flow maldistribution vector must be equal to the number of cells in the stack.");
+        assert(sum(seriesFlowMalDistr) == Ns, ...
+            "Flow maldistribution must conserve mass. Points of low flow and high flow must balance out.");
+        assert(length(stackPrDropLUT) == length(flowrateLUT), ...
+            "Cell stack pressure drop vector must be of same size as the vector of flowrate points");
+        assert(length(stackCellT) == Ns, ...
+            "You must specify initial temperature of all stacks.");
+
+        % Cell specie balance equations for each cell (cell<specie>Vec) & diffusion through the membrane
+        if and(and(all(cellC4vec>Cmin),all(cellC4vec<Cmax)),and(all(cellC5vec>Cmin),all(cellC5vec<Cmax)))
+            (stackVol/2) * cellC4vec.der == (flow*flUnit/Ns) * pFlowMalDist.* (tankC4 - cellC4vec) ...
+                                      - ((i/Np)+is)/F - Nc*(arMemb/thMemb) * ...
+                                      (diff4*exp(-activationE/(R*max(stackCellT)))*cellC4vec - 3*diff2*exp(-activationE/(R*max(stackCellT)))*cellC2vec - 2*diff3*exp(-activationE/(R*max(stackCellT)))*cellC3vec);
+            (stackVol/2) * cellC5vec.der == (flow*flUnit/Ns) * pFlowMalDist.* (tankC5 - cellC5vec) ...
+                                      + ((i/Np)+is)/F - Nc*(arMemb/thMemb) * ...
+                                      (diff5*exp(-activationE/(R*max(stackCellT)))*cellC5vec + 2*diff2*exp(-activationE/(R*max(stackCellT)))*cellC2vec + diff3*exp(-activationE/(R*max(stackCellT)))*cellC3vec);
+        else
+            (stackVol/2) * cellC4vec.der == {0, "mol/s"};
+            (stackVol/2) * cellC5vec.der == {0, "mol/s"};
+        end
+        if and(and(all(cellC2vec>Cmin),all(cellC2vec<Cmax)),and(all(cellC3vec>Cmin),all(cellC3vec<Cmax)))
+            (stackVol/2) * cellC2vec.der == (flow*flUnit/Ns) * nFlowMalDist.* (tankC2 - cellC2vec) ...
+                                      + ((i/Np)+is)/F - Nc*(arMemb/thMemb) * ...
+                                      (diff2*exp(-activationE/(R*max(stackCellT)))*cellC2vec + 2*diff5*exp(-activationE/(R*max(stackCellT)))*cellC5vec + diff4*exp(-activationE/(R*max(stackCellT)))*cellC4vec); 
+            (stackVol/2) * cellC3vec.der == (flow*flUnit/Ns) * nFlowMalDist.* (tankC3 - cellC3vec) ...
+                                      - ((i/Np)+is)/F - Nc*(arMemb/thMemb) * ...
+                                      (diff3*exp(-activationE/(R*max(stackCellT)))*cellC3vec - 3*diff5*exp(-activationE/(R*max(stackCellT)))*cellC5vec - 2*diff4*exp(-activationE/(R*max(stackCellT)))*cellC4vec);
+        else
+            (stackVol/2) * cellC2vec.der == {0, "mol/s"};
+            (stackVol/2) * cellC3vec.der == {0, "mol/s"};
+        end
+
+        % Specie balance equations in the tank
+        if and(and(tankC2>Cmin,tankC2<Cmax),and(tankC3>Cmin,tankC3<Cmax))
+            (tankVolume/Np) * tankC2.der == flow*flUnit * (sum(cellC2vec)/Ns - tankC2);
+            (tankVolume/Np) * tankC3.der == flow*flUnit * (sum(cellC3vec)/Ns - tankC3);
+        else
+            (tankVolume/Np) * tankC2.der == {0, "mol/s"};
+            (tankVolume/Np) * tankC3.der == {0, "mol/s"};
+        end
+        if and(and(tankC4>Cmin,tankC4<Cmax),and(tankC5>Cmin,tankC5<Cmax))
+            (tankVolume/Np) * tankC4.der == flow*flUnit * (sum(cellC4vec)/Ns - tankC4);
+            (tankVolume/Np) * tankC5.der == flow*flUnit * (sum(cellC5vec)/Ns - tankC5);
+        else
+            (tankVolume/Np) * tankC4.der == {0, "mol/s"};
+            (tankVolume/Np) * tankC5.der == {0, "mol/s"};
+        end
+        
+        % Electrical model
+        pCellSOCvec    == cellC5vec ./(cellC4vec+cellC5vec);
+        nCellSOCvec    == cellC2vec ./(cellC2vec+cellC3vec);
+        minCellStackSOC == max({0,"1"},min([nCellSOCvec,pCellSOCvec]));
+        maxCellStackSOC == min({1,"1"},max([nCellSOCvec,pCellSOCvec]));
+        
+        nStateOfCharge == max(minStateOfCharge, min(maxStateOfCharge, tankC2/(tankC2+tankC3)));
+        pStateOfCharge == max(minStateOfCharge, min(maxStateOfCharge, tankC5/(tankC4+tankC5)));
+        stateOfCharge  == (pStateOfCharge+nStateOfCharge)/2;
+        
+        % Calculate cell voltage
+        voltNernstEqn       == Ncells*V0 + sum(stackCellT.*((R/F)*...
+                               log(pStateOfCharge*nStateOfCharge/((1-pStateOfCharge)*(1-nStateOfCharge)))));
+        ((i/Np)+is)*stackResvec  == stackTauvec .* voltDynamic.der + voltDynamic;
+        voltOhmic           == ((i/Np)+is)*stackR0vec;
+        v                   == voltNernstEqn + sum(voltOhmic + voltDynamic);
+
+        % Switch to disconnect once tank vanadium concentration is depleted.
+        vSwitchOpen     == (i/Np)/openSw;
+        if  minCellStackSOC > minStateOfCharge 
+            % Switch is closed, normal operation.
+            p.v - n.v == v;
+            is*shuntResVal == -v;
+            % Calculate pressure drop
+            systemPrDrop == 2*Np*foundation.thermal_liquid.elements.pipe_friction(...
+                            flow*flUnit*electrolyteDen, electrolyteDen, electrolyteKinVis*electrolyteDen, ...   % Pipe flow, anolyte and catholyte
+                            pipeArea, pipeDia, pipeLenEff, pipeRoughness/pipeDia, ...
+                            ReLaminar, ReTurbulent, darcyFriction) ... 
+                            + Np*sum(tablelookup(flowrateLUT, stackPrDropLUT, (flow/Ns)*pFlowMalDist, ...       % Stack (pos) pressure drop
+                            interpolation=linear, extrapolation=nearest)) ...
+                            + Np*sum(tablelookup(flowrateLUT, stackPrDropLUT, (flow/Ns)*nFlowMalDist, ...       % Stack (neg) pressure drop
+                            interpolation=linear, extrapolation=nearest));
+        else 
+            % Stack Vanadium depleted, open switch to disconnect battery.
+            p.v - n.v == simscape.function.blend(vSwitchOpen,v,{0,"1"},minStateOfCharge,minCellStackSOC);
+            is*shuntResVal == -simscape.function.blend(vSwitchOpen,v,{0,"1"},minStateOfCharge,minCellStackSOC);
+            % Calculate pressure drop
+            systemPrDrop == {0, "Pa"};
+        end
+
+        if abs(i) > {0.1,"A"}
+            shuntCurrPercent == 100*is/(i/Np);
+        else
+            shuntCurrPercent == 0;
+        end
+    end
+
+    % Cross diffusion model
+    if crossDiffModel == vanadiumRedoxFlowChemistry.disabled
+        annotations
+            [thMemb,diffCoeff2,diffCoeff3,diffCoeff4,diffCoeff5,...
+             shuntResModel,shuntRes,electrolyteK,activationE] : ExternalAccess=none;
+        end
+        parameters(ExternalAccess=none)
+            diff2  = {0, "m^2/s"}; % Va(II) diffusion coefficient through memberane
+            diff3  = {0, "m^2/s"}; % Va(III) diffusion coefficient through memberane
+            diff4  = {0, "m^2/s"}; % Va(IV) diffusion coefficient through memberane
+            diff5  = {0, "m^2/s"}; % Va(V) diffusion coefficient through memberane
+        end
+        parameters(ExternalAccess=none)
+            shuntResVal = {1e+10, "Ohm"};
+        end
+        equations
+            % Output warnings if concentration values are unrealistic
+            assert(all(cellC2vec>=Cmin), ...
+                "Va(II) concentration must be greater than zero. You must increase the electrolyte flowrate.", ...
+                Action = msgWarn);
+            assert(all(cellC2vec<=Cmax), ...
+                "Va(II) concentration must be less than total initial Vanadium molar concentration.", ...
+                Action = msgWarn);
+            assert(all(cellC3vec>=Cmin), ...
+                "Va(III) concentration must be greater than zero. You must increase the electrolyte flowrate.", ...
+                Action = msgWarn);
+            assert(all(cellC3vec<=Cmax), ...
+                "Va(III) concentration must be less than total initial Vanadium molar concentration.", ...
+                Action = msgWarn);
+            assert(all(cellC4vec>=Cmin), ...
+                "Va(IV) concentration must be greater than zero. You must increase the electrolyte flowrate.", ...
+                Action = msgWarn);
+            assert(all(cellC4vec<=Cmax), ...
+                "Va(IV) concentration must be less than total initial Vanadium molar concentration.", ...
+                Action = msgWarn);
+            assert(all(cellC5vec>=Cmin), ...
+                "Va(V) concentration must be greater than zero. You must increase the electrolyte flowrate.", ...
+                Action = msgWarn);
+            assert(all(cellC5vec<=Cmax), ...
+                "Va(V) concentration must be less than total initial Vanadium molar concentration.", ...
+                Action = msgWarn);
+        end
+    else
+        parameters(ExternalAccess=none)
+            diff2  = diffCoeff2/exp(-activationE/(R*{298,"K"}));   % Va(II) diffusion coefficient through memberane
+            diff3  = diffCoeff3/exp(-activationE/(R*{298,"K"}));   % Va(III) diffusion coefficient through memberane
+            diff4  = diffCoeff4/exp(-activationE/(R*{298,"K"}));   % Va(IV) diffusion coefficient through memberane
+            diff5  = diffCoeff5/exp(-activationE/(R*{298,"K"}));   % Va(V) diffusion coefficient through memberane
+        end
+        equations
+            assert(thMemb > 0, "Membrane thickness must be greater than zero.");
+        end
+
+        if shuntResModel == vanadiumRedoxFlowShuntCurrModel.equation
+            annotations
+                [shuntRes] : ExternalAccess=none;
+            end
+            parameters(ExternalAccess=none)
+                shuntResVal = {vanadiumRedoxFlowShuntRes(value(Ns,"1"),...
+                               value(Nc,"1"),...
+                               value(shuntRmanifold,"Ohm"),...
+                               value(shuntRcell,"Ohm")), "Ohm"};
+            end
+        elseif shuntResModel == vanadiumRedoxFlowShuntCurrModel.userdef
+            annotations
+                [electrolyteK] : ExternalAccess=none;
+            end
+            equations
+                assert(shuntRes > 0, "Shunt resistor must be greater than zero.");
+            end
+            parameters(ExternalAccess=none)
+                shuntResVal = shuntRes;
+            end
+        else
+            annotations
+                [shuntRes,electrolyteK] : ExternalAccess=none;
+            end
+            parameters(ExternalAccess=none)
+                shuntResVal = {1e+10, "Ohm"};
+            end
+        end
+    end
+
+    % Thermal Model
+    if thermalManagement == vanadiumRedoxFlowThermalModel.disabled
+        annotations
+            [containerVolume,containerArea,stackMassCp,electrolyteCp,...
+             nFans,fanCapacity,temperatureLUT,H,containerThermalmass,extHTC] : ExternalAccess=none;
+            Icon = "VaRedoxFlowBattery_NoThermal.png";
+        end
+        variables(ExternalAccess=none)
+            stackR0vec  = {value=(sum(LUTdischgR0)/length(LUTdischgR0))*ones(1,Ns)};
+            stackResvec = {value=(sum(LUTdischgRes)/length(LUTdischgRes))*ones(1,Ns)};
+            stackTauvec = {value=(sum(LUTdischgTau)/length(LUTdischgTau))*ones(1,Ns)};
+        end
+        equations
+            assert(length(LUTdischgR0) == length(flowrateLUT), ...
+                "Stack discharge ohmic resistance vector must be of same size as the vector of flowrate points");
+            assert(length(LUTdischgRes) == length(flowrateLUT), ...
+                "Stack discharge resistance vector for RC pair must be of same size as the vector of flowrate points");
+            assert(length(LUTdischgTau) == length(flowrateLUT), ...
+                "Stack discharge time constant vector for RC pair must be of same size as the vector of flowrate points");
+            assert(length(LUTchgR0) == length(flowrateLUT), ...
+                "Stack charge ohmic resistance vector must be of same size as the vector of flowrate points");
+            assert(length(LUTchgRes) == length(flowrateLUT), ...
+                "Stack charge resistance vector for RC pair must be of same size as the vector of flowrate points");
+            assert(length(LUTchgTau) == length(flowrateLUT), ...
+                "Stack charge time constant vector for RC pair must be of same size as the vector of flowrate points");
+            
+            stackCellT.der    == {0,"K/s"};
+            pipeNegSideT.der  == {0,"K/s"};
+            pipePosSideT.der  == {0,"K/s"};
+            containerAirT.der == {0,"K/s"};
+            tankNegT.der      == {0,"K/s"};
+            tankPosT.der      == {0,"K/s"};
+            containerT.der    == {0,"K/s"};
+            H.T               == {300,"K"};
+            
+            if i < 0 % discharge
+                stackR0vec    == tablelookup(flowrateLUT, LUTdischgR0, ...
+                                 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+                stackTauvec   == tablelookup(flowrateLUT, LUTdischgTau, ...
+                                 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+                stackResvec   == tablelookup(flowrateLUT, LUTdischgRes, ...
+                                 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+            else % charge
+                stackR0vec    == tablelookup(flowrateLUT, LUTchgR0, ...
+                                 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+                stackTauvec   == tablelookup(flowrateLUT, LUTchgTau, ...
+                                 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+                stackResvec   == tablelookup(flowrateLUT, LUTchgRes, ...
+                                 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+            end
+        end
+    else
+        annotations
+            Icon = "VaRedoxFlowBattery_Thermal.png";
+        end
+        variables(ExternalAccess=none)
+            stackR0vec  = {value=(sum(sum(LUTdischgR0))/(length(temperatureLUT)*Ns))*ones(1,Ns)};
+            stackResvec = {value=(sum(sum(LUTdischgRes))/(length(temperatureLUT)*Ns))*ones(1,Ns)};
+            stackTauvec = {value=(sum(sum(LUTdischgTau))/(length(temperatureLUT)*Ns))*ones(1,Ns)};
+        end
+        equations
+            assert(stackAirVol > 0,...
+                "Container air volume must be greater than zero. Increase container dimensions or decrease stack size.");
+            assert(size(LUTdischgR0,1) == length(temperatureLUT) && size(LUTdischgR0,2) == length(flowrateLUT), ...
+                "Stack discharge ohmic resistance vector must be a matrix of size [m,n] where m & n are length of vectors of temperature & flowrate points.");
+            assert(size(LUTdischgRes,1) == length(temperatureLUT) && size(LUTdischgRes,2) == length(flowrateLUT), ...
+                "Stack discharge resistance vector for RC pair must be a matrix of size [m,n] where m & n are length of vectors of temperature & flowrate points.");
+            assert(size(LUTdischgTau,1) == length(temperatureLUT) && size(LUTdischgTau,2) == length(flowrateLUT), ...
+                "Stack discharge time constant vector for RC pair must be a matrix of size [m,n] where m & n are length of vectors of temperature & flowrate points.");
+            assert(size(LUTchgR0,1) == length(temperatureLUT) && size(LUTchgR0,2) == length(flowrateLUT), ...
+                "Stack charge ohmic resistance vector must be a matrix of size [m,n] where m & n are length of vectors of temperature & flowrate points.");
+            assert(size(LUTchgRes,1) == length(temperatureLUT) && size(LUTchgRes,2) == length(flowrateLUT), ...
+                "Stack charge resistance vector for RC pair must be a matrix of size [m,n] where m & n are length of vectors of temperature & flowrate points.");
+            assert(size(LUTchgTau,1) == length(temperatureLUT) && size(LUTchgTau,2) == length(flowrateLUT), ...
+                "Stack charge time constant vector for RC pair must be a matrix of size [m,n] where m & n are length of vectors of temperature & flowrate points.");
+            
+            if i < 0 % discharge
+                stackR0vec    == tablelookup(temperatureLUT, flowrateLUT, LUTdischgR0, ...
+                                 stackCellT, 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+                stackTauvec   == tablelookup(temperatureLUT, flowrateLUT, LUTdischgTau, ...
+                                 stackCellT, 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+                stackResvec   == tablelookup(temperatureLUT, flowrateLUT, LUTdischgRes, ...
+                                 stackCellT, 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+            else % charge
+                stackR0vec    == tablelookup(temperatureLUT, flowrateLUT, LUTchgR0, ...
+                                 stackCellT, 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+                stackTauvec   == tablelookup(temperatureLUT, flowrateLUT, LUTchgTau, ...
+                                 stackCellT, 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+                stackResvec   == tablelookup(temperatureLUT, flowrateLUT, LUTchgRes, ...
+                                 stackCellT, 0.5*((flow/Ns)*pFlowMalDist+(flow/Ns)*nFlowMalDist), ...
+                                 interpolation=linear, extrapolation=nearest);
+            end
+            % Stack heat balance
+            stackMassCp*stackCellT.der == abs((voltOhmic+voltDynamic)*(i/Np)) ...                                  % Heat generation
+                + intHTC*stackAreaHTC*(containerAirT-stackCellT) ...                                          % Heat exchange with stagnant air
+                + electrolyteCp*electrolyteDen*((flow*flUnit/Ns)*pFlowMalDist).*(pipePosSideT-stackCellT)...  % Heat exchange due to flow
+                + electrolyteCp*electrolyteDen*((flow*flUnit/Ns)*nFlowMalDist).*(pipeNegSideT-stackCellT);    % Heat exchange due to flow
+            % Pipe (neg) heat balance
+            pipeMassCp*pipeNegSideT.der == ...
+                intHTC*pipeAreaHTC*(containerAirT-pipeNegSideT)...                                            % Heat exchange with stagnant air
+                + electrolyteCp*electrolyteDen*flow*flUnit*(max(stackCellT)-pipeNegSideT)...                  % Heat exchange with cell stack
+                + electrolyteCp*electrolyteDen*flow*flUnit*(tankNegT-pipeNegSideT);                           % Heat exchange with tank
+            % Pipe (pos) heat balance
+            pipeMassCp*pipePosSideT.der == ...
+                intHTC*pipeAreaHTC*(containerAirT-pipePosSideT)...                                            % Heat exchange with stagnant air
+                + electrolyteCp*electrolyteDen*flow*flUnit*(max(stackCellT)-pipePosSideT)...                  % Heat exchange with cell stack
+                + electrolyteCp*electrolyteDen*flow*flUnit*(tankPosT-pipePosSideT);                           % Heat exchange with tank
+
+            % Container air heat balance
+            massCpAir*containerAirT.der == ...
+                Np*intHTC*stackAreaHTC*sum(stackCellT-containerAirT)...                                          % Heat exchange with all the cell stacks
+                + Np*intHTC*pipeAreaHTC*(pipePosSideT-containerAirT)...                                          % Heat exchange with pipes (pos)
+                + Np*intHTC*pipeAreaHTC*(pipeNegSideT-containerAirT)...                                          % Heat exchange with pipes (neg)
+                + intHTC*containerArea*(containerT-containerAirT)...                                          % Heat exchange with container walls
+                + nFans*fanCapacity*{1/3600,"hr/s"}*containerAirDen*containerAirCp*(H.T-containerAirT)...     % Heat exchange due to fans
+                + intHTC*tankAreaHT*(tankPosT-containerAirT)...                                              % Heat exchange with tank (pos)
+                + intHTC*tankAreaHT*(tankNegT-containerAirT);                                                % Heat exchange with tank (neg)
+                
+            containerThermalmass*containerT.der == intHTC*containerArea*(containerAirT-containerT) + extHTC*containerArea*(H.T-containerT);
+            extHTC*containerArea*(H.T-containerT) == portH;
+            
+            % Negative tank heat balance
+            tankMassCp*tankNegT.der == ...
+                Np*electrolyteCp*electrolyteDen*flow*flUnit*(pipeNegSideT-tankNegT)...                            % Heat exchange with pipes (neg)
+                + intHTC*tankAreaHT*(containerAirT-tankNegT);                                                 % Heat exchange with container air (neg)
+            % Positive tank heat balance
+            tankMassCp*tankPosT.der == ...
+                Np*electrolyteCp*electrolyteDen*flow*flUnit*(pipePosSideT-tankPosT)...                            % Heat exchange with pipes (pos)
+                + intHTC*tankAreaHT*(containerAirT-tankPosT);                                                 % Heat exchange with container air (pos)
+        end
+    end
+end

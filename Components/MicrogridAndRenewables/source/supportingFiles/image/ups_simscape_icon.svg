@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 680" width="680" height="680">
+
+  <!-- MAIN CABINET BODY -->
+  <rect x="180" y="80" width="320" height="480" rx="28"
+        fill="none" stroke="#0076BE" stroke-width="14" stroke-linejoin="round"/>
+
+  <!-- DISPLAY SCREEN — centred horizontally, upper third -->
+  <rect x="258" y="120" width="164" height="90" rx="10"
+        fill="none" stroke="#0076BE" stroke-width="12" stroke-linejoin="round"/>
+
+  <!-- LIGHTNING BOLT inside screen -->
+  <polygon points="322,132 305,172 336,164 318,208 358,160 326,168"
+           fill="#0076BE" stroke="#0076BE" stroke-width="3"
+           stroke-linejoin="round"/>
+
+  <!-- BATTERY SYMBOL — middle third, centred -->
+  <rect x="271" y="260" width="138" height="64" rx="8"
+        fill="none" stroke="#0076BE" stroke-width="11" stroke-linejoin="round"/>
+  <!-- Positive terminal nub -->
+  <rect x="409" y="279" width="18" height="26" rx="4"
+        fill="none" stroke="#0076BE" stroke-width="11" stroke-linejoin="round"/>
+  <!-- Charge fill bars -->
+  <rect x="283" y="272" width="24" height="40" rx="3" fill="#0076BE"/>
+  <rect x="315" y="272" width="24" height="40" rx="3" fill="#0076BE"/>
+  <rect x="347" y="272" width="24" height="40" rx="3" fill="#0076BE"/>
+
+  <!-- POWER BUTTON — centred, lower third -->
+  <circle cx="340" cy="410" r="36"
+          fill="none" stroke="#0076BE" stroke-width="12"/>
+  <circle cx="340" cy="410" r="12"
+          fill="#0076BE"/>
+
+  <!-- LEFT SIDE VENTS -->
+  <line x1="182" y1="440" x2="216" y2="440"
+        stroke="#0076BE" stroke-width="12" stroke-linecap="round"/>
+  <line x1="182" y1="468" x2="216" y2="468"
+        stroke="#0076BE" stroke-width="12" stroke-linecap="round"/>
+  <line x1="182" y1="496" x2="216" y2="496"
+        stroke="#0076BE" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- RIGHT SIDE VENTS -->
+  <line x1="464" y1="440" x2="498" y2="440"
+        stroke="#0076BE" stroke-width="12" stroke-linecap="round"/>
+  <line x1="464" y1="468" x2="498" y2="468"
+        stroke="#0076BE" stroke-width="12" stroke-linecap="round"/>
+  <line x1="464" y1="496" x2="498" y2="496"
+        stroke="#0076BE" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- LEFT FOOT -->
+  <rect x="220" y="548" width="70" height="28" rx="8"
+        fill="none" stroke="#0076BE" stroke-width="12" stroke-linejoin="round"/>
+
+  <!-- RIGHT FOOT -->
+  <rect x="390" y="548" width="70" height="28" rx="8"
+        fill="none" stroke="#0076BE" stroke-width="12" stroke-linejoin="round"/>
+
+</svg>

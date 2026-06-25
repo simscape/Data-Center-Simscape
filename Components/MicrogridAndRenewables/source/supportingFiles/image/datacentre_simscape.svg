@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:d="http://www.mathworks.com/blockgraphics" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svg" width="147" height="150" viewBox="0 0 147 150">
+	<g id="part" title="part_0" ie-ports="left:simulink,top:,right:simulink*simulink,bottom:">
+		<text id="text_16" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="7" font-weight="bold" letter-spacing="1" text-anchor="middle" x="96" y="3">
+			<tspan dx="0" dy="6.4" x="96">DATA CENTRE</tspan>
+		</text>
+		<rect id="rect_17" fill="#1A7BB9" stroke="#0A5A8E" stroke-width="1" x="49.5" y="19" width="18.5" height="102.3" rx="2" ry="2"/>
+		<rect id="rect_18" fill="#002D56" stroke="none" x="52.5" y="22" width="12.5" height="96.3" rx="1" ry="1"/>
+		<rect id="rect_19" fill="#004E8C" x="56.45" y="25" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_20" fill="#004E8C" x="56.45" y="34" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_21" fill="#004E8C" x="56.45" y="43" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_22" fill="#004E8C" x="56.45" y="52" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_23" fill="#004E8C" x="56.45" y="61" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_24" fill="#004E8C" x="56.45" y="70" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_25" fill="#004E8C" x="56.45" y="79" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_26" fill="#004E8C" x="56.45" y="88" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_27" fill="#004E8C" x="56.45" y="97" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_28" fill="#004E8C" x="56.45" y="106" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_29" fill="#004E8C" x="56.45" y="115" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<ellipse id="ellipse" fill="#00CC66" cx="59.8" cy="27.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_30" fill="#00CC66" cx="59.8" cy="36.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_31" fill="#FFCC00" cx="59.8" cy="45.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_32" fill="#00CC66" cx="59.8" cy="54.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_33" fill="#00CC66" cx="59.8" cy="63.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_34" fill="#FF4444" cx="59.8" cy="72.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_35" fill="#00CC66" cx="59.8" cy="81.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_36" fill="#00CC66" cx="59.8" cy="90.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_37" fill="#FFCC00" cx="59.8" cy="99.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_38" fill="#00CC66" cx="59.8" cy="108.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_39" fill="#00CC66" cx="59.8" cy="117.2" rx="1" ry="1"/>
+		<rect id="rect_40" fill="#1A7BB9" stroke="#0A5A8E" stroke-width="1" x="93.5" y="19" width="18.5" height="102.3" rx="2" ry="2"/>
+		<rect id="rect_41" fill="#002D56" stroke="none" x="96.5" y="22" width="12.5" height="96.3" rx="1" ry="1"/>
+		<rect id="rect_42" fill="#004E8C" x="100.45" y="25" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_43" fill="#004E8C" x="100.45" y="34" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_44" fill="#004E8C" x="100.45" y="43" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_45" fill="#004E8C" x="100.45" y="52" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_46" fill="#004E8C" x="100.45" y="61" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_47" fill="#004E8C" x="100.45" y="70" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_48" fill="#004E8C" x="100.45" y="79" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_49" fill="#004E8C" x="100.45" y="88" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_50" fill="#004E8C" x="100.45" y="97" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_51" fill="#004E8C" x="100.45" y="106" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<rect id="rect_52" fill="#004E8C" x="100.45" y="115" width="6.55" height="2" rx="0.5" ry="0.5"/>
+		<ellipse id="ellipse_53" fill="#FFCC00" cx="103.8" cy="27.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_54" fill="#00CC66" cx="103.8" cy="36.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_55" fill="#00CC66" cx="103.8" cy="45.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_56" fill="#00CC66" cx="103.8" cy="54.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_57" fill="#FF4444" cx="103.8" cy="63.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_58" fill="#00CC66" cx="103.8" cy="72.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_59" fill="#00CC66" cx="103.8" cy="81.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_60" fill="#00CC66" cx="103.8" cy="90.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_61" fill="#FFCC00" cx="103.8" cy="99.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_62" fill="#00CC66" cx="103.8" cy="108.2" rx="1" ry="1"/>
+		<ellipse id="ellipse_63" fill="#00CC66" cx="103.8" cy="117.2" rx="1" ry="1"/>
+		<rect id="rect_88" fill="#A8D8F0" stroke="#7EC8E3" stroke-width="0.8" x="41.97" y="137" width="83.97" height="2" rx="0" ry="0"/>
+		<line id="line_89" stroke="#7EC8E3" stroke-width="0.5" x1="56" y1="137" x2="56" y2="149"/>
+		<line id="line_90" stroke="#7EC8E3" stroke-width="0.5" x1="84" y1="137" x2="84" y2="149"/>
+		<line id="line_91" stroke="#7EC8E3" stroke-width="0.5" x1="112" y1="137" x2="112" y2="149"/>
+		<rect id="rect_93" fill="none" stroke="#7EC8E3" stroke-width="2" x="22" y="3" width="111" height="140" rx="10" ry="10"/>
+		<rect id="rect" fill="#A8D8F0" stroke="#7EC8E3" stroke-width="0.8" x="36.47" y="8" width="83.47" height="2" rx="0" ry="0"/>
+		<line id="line" stroke="#7EC8E3" stroke-width="0.5" x1="78" y1="8" x2="78" y2="20"/>
+		<line id="line_94" stroke="#7EC8E3" stroke-width="0.5" x1="106" y1="8" x2="106" y2="20"/>
+	</g>
+</svg>

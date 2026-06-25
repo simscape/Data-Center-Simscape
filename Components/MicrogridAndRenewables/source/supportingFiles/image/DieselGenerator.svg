@@ -1,0 +1,13 @@
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="50" height="50" fill="white"/>
+<rect x="10.5" y="14.5" width="31" height="20" rx="1" stroke="black"/>
+<path d="M43.5 9.5C43.5 10.7145 42.7301 11.5 42 11.5C41.2699 11.5 40.5 10.7145 40.5 9.5C40.5 8.28555 41.2699 7.5 42 7.5C42.7301 7.5 43.5 8.28555 43.5 9.5Z" stroke="black"/>
+<path d="M42 7.5H35.5C33.8431 7.5 32.5 8.84315 32.5 10.5V14" stroke="black" stroke-linecap="round"/>
+<path d="M42 11.5H39C38.4477 11.5 38 11.9477 38 12.5V14.5" stroke="black" stroke-linecap="round"/>
+<circle cx="34.5" cy="20.5" r="3" stroke="black"/>
+<path d="M34.5 20.5L32.5 22.5M34.5 28L33.5 29" stroke="black" stroke-linecap="round"/>
+<circle cx="34.5" cy="28" r="2" stroke="black"/>
+<path d="M7 18C7 17.4477 7.44772 17 8 17H10V31H8C7.44772 31 7 30.5523 7 30V18Z" stroke="black"/>
+<path d="M11.5 36.5C10.9477 36.5 10.5 36.0523 10.5 35.5V35.5C10.5 34.9477 10.9477 34.5 11.5 34.5H40.5C41.0523 34.5 41.5 34.9477 41.5 35.5V35.5C41.5 36.0523 41.0523 36.5 40.5 36.5H11.5Z" stroke="black"/>
+<rect x="17.5" y="17.5" width="10" height="5" rx="0.5" stroke="black"/>
+</svg>

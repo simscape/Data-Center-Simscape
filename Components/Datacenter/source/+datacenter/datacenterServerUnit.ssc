@@ -1,0 +1,104 @@
+component(Propagation=Blocks) datacenterServerUnit
+    % Datacenter Server Unit:2.5
+    % The implementation is based on the paper: Xiaobo Fan, Wolf-Dietrich 
+    % Weber, and Luiz André Barroso, "Power Provisioning for a Warehouse-
+    % sized Computer", Published in Proceedings of the ACM International 
+    % Symposium on Computer Architecture, San Diego, CA, June 2007.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationDatacenter.html">Documentation for Datacenter Server Unit</a>
+    % <br/>
+    % <br/>
+    % <a href="matlab:edit displayDataCenterRating">Calculate rating of Data Center</a>
+    % <br/>
+
+    % Copyright 2025 - 2026 The MathWorks, Inc.
+
+    if physQ == datacenterPhysics.linear
+        annotations
+            calibParam : ExternalAccess=none;
+        end
+    end
+
+    annotations
+        Icon = "datacenter.png";
+        UILayout = [UIGroup("Server Name-Plate Rating",...
+            peakPowCPU,numOfCPU,peakPowMemory,numOfMemory,...
+            peakPowDisk,numOfDisk,peakPowPCIslot,numOfPCIslot,...
+            peakPowMotherboard,numOfMotherboard,peakPowFan,numOfFan)
+        UIGroup("Electrical Power Systems",...
+            powerSupplyEff,numCPUperServer,ratioActualToNameplate,...
+            serverMass,serverSpHeat,idlePower,physQ,calibParam)];
+    end
+
+    inputs
+        U = {0.5, "1"}; % U
+    end
+
+    outputs
+        To = {300, "K"}; % T
+        P = {0, "W"}; % P
+    end
+
+    nodes
+        H = foundation.thermal.thermal; % H
+    end
+
+    annotations
+        U  : Side=Left;
+        P  : Side=Right;
+        To : Side=Right;
+        H  : Side=Bottom;
+    end
+
+    parameters
+        peakPowCPU = {40, "W"};              % Peak power of CPU
+        numOfCPU = {2, "1"};                 % Number of CPU
+        peakPowMemory = {9, "W"};            % Peak power of Memory
+        numOfMemory = {4, "1"};              % Number of Memory
+        peakPowDisk = {12, "W"};             % Peak power of Disk
+        numOfDisk = {1, "1"};                % Number of Disk
+        peakPowPCIslot = {25, "W"};          % Peak power of PCI slots
+        numOfPCIslot = {2, "1"};             % Number of PCI slots
+        peakPowMotherboard = {25, "W"};      % Peak power of Motherboard
+        numOfMotherboard = {1, "1"};         % Number of Motherboard
+        peakPowFan = {10, "W"};              % Peak power of Fans
+        numOfFan = {1, "1"};                 % Number of Fans
+        idlePower = {25, "W"};               % Measured idle power for one server
+        powerSupplyEff = {85, "1"};          % Power supply efficiency, in percentage
+        ratioActualToNameplate = {0.6, "1"}; % Ratio of server actual to name-plate peak power
+        serverMass = {50, "kg"};             % Mass of each server
+        serverSpHeat = {2500, "J/(kg*K)"};   % Specific heat capacity of the server
+        numCPUperServer = {20, "1"};         % Total units in server stack
+        physQ = datacenterPhysics.linear;    % Heat generation model
+        calibParam = {1, "1"};               % Calibration parameter for non-linear heat generation model
+    end
+
+    parameters(ExternalAccess=observe)
+        pduRating = (peakPowCPU*numOfCPU + peakPowMemory*numOfMemory + ...
+                    peakPowDisk*numOfDisk + peakPowPCIslot*numOfPCIslot + ...
+                    peakPowMotherboard*numOfMotherboard + ...
+                    peakPowFan*numOfFan)*numCPUperServer;
+        peakPower = pduRating*(ratioActualToNameplate/(powerSupplyEff/100));
+        pduIdlePower = numCPUperServer*idlePower;
+    end
+
+    variables
+        T = {value = {300, 'K'}, priority = priority.high}; % Temperature
+    end
+
+    variables(ExternalAccess=observe)
+        Q = {0, "W"}; % Heat flow rate
+    end
+
+    branches
+        Q : H.Q -> *;
+    end
+
+    equations
+        To == T;
+        T == H.T;
+        P == pduIdlePower + (peakPower - pduIdlePower)*(2*U - U^calibParam);
+        Q + P == numCPUperServer*serverMass*serverSpHeat*T.der;
+    end
+end
