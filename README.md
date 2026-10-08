@@ -8,7 +8,7 @@
 <table>
   <tr>
     <td class="text-column" width=1200>In this project, you learn how to 
-        design modern data centers by specifying server rack layouts and 
+        design modern data centers by specifying the server rack layouts and 
         power ratings. The project shows how to design and validate 
         double-conversion UPS control systems, including low-voltage 
         ride-through compliance, mains-loss scenarios, and N+1 redundancy 
