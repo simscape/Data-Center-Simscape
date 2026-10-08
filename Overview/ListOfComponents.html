@@ -181,9 +181,28 @@ var componentData = [
     // Format: ["ComponentName", "Library", "DocFile.html", "TestHarnessName"]
 
     // ── Datacenter Components ──────────────────────────────────────────────
-    ["Custom Dynamic Load (3-phase) block",     "Datacenter",                       "DocumentationDynLoadPQ3ph.html",               "TestDatacenter"],
-    ["Datacenter Server Unit",                  "Datacenter",                       "DocumentationDatacenter.html",                 "TestDatacenter"],
-    ["Utilization Converter",                   "Datacenter",                       "DocumentationUtilizationConverter.html",       "TestDatacenter"],
+    ["Air Cooled PDU Assembly",                     "Datacenter/Assemblies",    "DocumentationAirCooledPDUAssembly.html",   "TestAirCooledPDUAssembly"],
+    ["CDU (LUT)",                                   "Datacenter/CDU",           "DocumentationCDULUT.html",                 "TestCDULUT"],
+    ["CDU (TL)",                                    "Datacenter/CDU",           "DocumentationCDUTL.html",                  "TestCDUTL"],
+    ["CDU (TL) Detailed",                           "Datacenter/CDU",           "DocumentationCDUTLDetailed.html",          "TestCDUTLTL"],
+    ["CHB Module (Average Model)",                  "Datacenter/Facilities",    "DocumentationCHBModule.html",              "TestCHBModule"],
+    ["CHB Phase Leg (Average Model)",               "Datacenter/Facilities",    "DocumentationCHBPhaseLeg.html",            "TestCHBPhaseLeg"],
+    ["Chiller",                                     "Datacenter/Facilities",    "DocumentationChiller.html",                "TestChiller"],
+    ["Cold Plate",                                  "Datacenter/PDU",           "DocumentationColdPlate.html",              "TestColdPlate"],
+    ["Compute Profile Source (LLM Workload Generator)", "Datacenter/Facilities","DocumentationComputeProfileSource.html",   "TestComputeProfileSource"],
+    ["Custom Dynamic Load (3-phase) block",         "Datacenter",               "DocumentationDynLoadPQ3ph.html",           ""],
+    ["DAB Generalized Average Model",               "Datacenter/Facilities",    "DocumentationDABGeneralizedAvgModel.html", "TestDABGeneralizedAvgModel"],
+    ["Flow Multiplier",                             "Datacenter/Utilities",     "",                                         "TestMultiplierTL"],
+    ["PDU + CDU Assembly (LUT)",                    "Datacenter/Assemblies",    "DocumentationPDUCDUAssemblyLUT.html",      "TestPDUCDULUTAssembly"],
+    ["PDU + CDU Assembly (TL)",                     "Datacenter/Assemblies",    "DocumentationPDUCDUAssemblyTL.html",       "TestPDUCDUTLAssembly"],
+    ["PDU + CDU Assembly (TL-TL)",                  "Datacenter/Assemblies",    "DocumentationPDUCDUAssemblyTLTL.html",     "TestPDUCDUTLTLAssembly"],
+    ["PDU Racks",                                   "Datacenter/PDU",           "DocumentationPDURacks.html",               "TestPDURacks"],
+    ["PDU Racks (TL)",                              "Datacenter/PDU",           "DocumentationPDURacksTL.html",             "TestPDURacksTL"],
+    ["PSU PFC Stage (Average Model)",               "Datacenter/Facilities",    "DocumentationPSUPFCStage.html",            "TestPFCStage"],
+    ["Rack Air Cooling",                            "Datacenter/CDU",           "DocumentationRackAirCooling.html",         "TestRackAirCooling"],
+    ["Server Tray",                                 "Datacenter/PDU",           "DocumentationServerTray.html",             "TestServerTray"],
+    ["Server Tray (TL)",                            "Datacenter/PDU",           "DocumentationServerTrayTL.html",           "TestServerTrayTL"],
+    ["Thermal Multiplier",                          "Datacenter/Utilities",     "",                                         "TestMultiplierTH"],
 
     // ── Building Energy Management ─────────────────────────────────────────
     ["Room Volume (HVAC)",                      "Building Energy Management",       "DocumentationRoomVolumeHVAC.html",             "TestRoomVolumeHVAC"],
@@ -247,12 +266,14 @@ function buildTable() {
         var library    = componentData[i][1];
         var docFile    = componentData[i][2];
         var testModel  = componentData[i][3];
+        var docCell  = docFile   ? '<a href="matlab:web(\'' + docFile + '\',\'-new\')">' + docFile + '</a>' : '';
+        var testCell = testModel ? '<a href="matlab:open_system(\'' + testModel + '\')">' + testModel + '</a>' : '';
         html += '<tr>'
             + '<td>' + (i + 1) + '</td>'
             + '<td>' + name + '</td>'
             + '<td>' + library + '</td>'
-            + '<td><a href="matlab:web(\'' + docFile + '\')">' + docFile + '</a></td>'
-            + '<td><a href="matlab:open_system(\'' + testModel + '\')">' + testModel + '</a></td>'
+            + '<td>' + docCell + '</td>'
+            + '<td>' + testCell + '</td>'
             + '</tr>';
     }
     tbody.innerHTML = html;

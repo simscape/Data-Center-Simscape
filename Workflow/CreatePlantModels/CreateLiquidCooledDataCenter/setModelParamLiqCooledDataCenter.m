@@ -1,0 +1,29 @@
+% Set model parameters during SLX initialization
+
+% Copyright 2026 The MathWorks, Inc.
+
+setServerNamePlateParameters;
+modelParam.PDU.NPVtbl.dataTbl = dataTbl;
+disp(modelParam.PDU.NPVtbl.dataTbl);
+clear dataTbl
+modelParam.PDU.NumGPU = 4;
+modelParam.PDU.NumCPU = 2;
+modelParam.PDU.NumTrays = 5;
+modelParam.PDU.NumRacks = 3;
+modelParam.CDU.flowrate_lpm = [18, 30, 60, 78, 102, 120, 156, 198, 210, 222];
+modelParam.CDU.Capacity_kW  = [10, 15, 45, 70, 110, 150, 250, 400, 450, 500];
+modelParam.CDU.PumpEff_pc   = [40.0, 42.0, 47.0, 50.0, 53.5, 56.0, 60.0, 63.7, 64.0, 63.5];
+modelParam.CDU.PrDrop_kPa   = [9, 25, 100, 169, 289, 400, 676, 1089, 1225, 1369;...
+                               19.3, 53.7, 215, 363.3, 621.4, 860, 1453.4, 2341.3, 2633.8, 2943.3];
+
+modelParam.DataCenterRating = simscape.Value(500,"kW");
+modelParam.NumAssemblies = getPDUCountForRating(DataCenterRating=modelParam.DataCenterRating,...
+                                                NumOfGPUperTray=modelParam.PDU.NumGPU,...
+                                                NumOfCPUperTray=modelParam.PDU.NumCPU,...
+                                                NumOfRacksPerPDU=modelParam.PDU.NumRacks,...
+                                                NumOfTraysPerRack=modelParam.PDU.NumTrays,...
+                                                GPUtdp=simscape.Value(modelParam.PDU.NPVtbl.dataTbl.GPU("TDP per Die [W]"),"W"),...
+                                                CPUtdp=simscape.Value(modelParam.PDU.NPVtbl.dataTbl.CPU("TDP per Die [W]"),"W"),...
+                                                GPUidlePower=simscape.Value(modelParam.PDU.NPVtbl.dataTbl.GPU("Idle Power [W]"),"W"),...
+                                                CPUidlePower=simscape.Value(modelParam.PDU.NPVtbl.dataTbl.CPU("Idle Power [W]"),"W"));
+modelParam.Name = "CreateLiquidCooledDataCenter";

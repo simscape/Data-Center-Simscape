@@ -1,0 +1,529 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>DocumentationComputeProfileSource</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-09-21">
+<meta name="DC.source" content="DocumentationComputeProfileSource.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">Compute Profile Source (LLM Workload Generator) Block</a>
+</li>
+<li>
+<a href="#2">Overview</a>
+</li>
+<li>
+<a href="#3">Ports</a>
+</li>
+<li>
+<a href="#4">Parameters</a>
+</li>
+<li>
+<a href="#5">Observable Variables</a>
+</li>
+<li>
+<a href="#6">See Also</a>
+</li>
+</ul>
+</div>
+<h2 id="1">Compute Profile Source (LLM Workload Generator) Block</h2>
+<p>This block generates a time-varying compute demand signal (TFLOPS) that replicates the training, inference, or fine-tuning cycle of large language models. It supports NVIDIA (Rubin Ultra, B200, H200, H100, A100), AMD (MI300X, MI325X), Intel (Gaudi3), and custom GPU specifications.</p>
+<p>
+<img vspace="5" hspace="5" src="computeProfileSource.png" alt="Compute Profile Source block icon" width="96"> </p>
+<h2 id="2">Overview</h2>
+<p>The Compute Profile Source produces a periodic utilization waveform that drives GPU power consumption in data center electrical simulations. The output captures the load transitions that stress power delivery networks: bus capacitors, battery backup units, cable ratings, and PFC controllers.</p>
+<p>
+<b>Training</b> uses a 4-stage model calibrated against measured GPU power traces (Ko &amp; Zhu, 2024). The output follows a periodic cycle where each training step contains four distinct power phases:</p>
+<div>
+<ul>
+<li>
+<b>Stage 1: Idle/Bubble</b> --- Data loading overlapped with CPU/NIC activity; GPU near idle power. Duration set by pipeline parallelism depth (PP - 1 micro-batches). This is the lowest-power phase.</li>
+<li>
+<b>Stage 2: Forward Pass</b> --- High GEMM utilization with steady GPU power draw. Tensor cores are active; power is dominated by compute.</li>
+<li>
+<b>Stage 3: Backward Pass</b> --- Peak power phase from activation recompute and memory pressure. The forward/backward split within each micro-batch is 45/55%. This stage drives the worst-case bus capacitor sizing.</li>
+<li>
+<b>Stage 4: Communication + Sync</b> --- Ring all-reduce gradient synchronization, Adam optimizer step, and cleanup. Network-burst dominated; GPU compute drops back toward idle.</li>
+</ul>
+</div>
+<p>This 4-stage model captures the three load transitions that drive electrical design decisions:</p>
+<div>
+<ul>
+<li>
+<b>Idle to Forward (inrush)</b> --- rapid ramp from near-idle to high compute; sizes PFC bus capacitors and cable current ratings.</li>
+<li>
+<b>Forward to Backward (peak)</b> --- transition to peak power; determines worst-case voltage droop on the DC bus.</li>
+<li>
+<b>Backward to Communication (load dump)</b> --- sudden drop from peak compute to communication-dominated; drives voltage overshoot and BBU energy absorption.</li>
+</ul>
+</div>
+<p>
+<b>Inference</b> uses a roofline-based 4-stage model:</p>
+<div>
+<ul>
+<li>
+<b>Stage 1: Base Load</b> --- KV cache maintenance, background tasks. Minimal GPU compute activity.</li>
+<li>
+<b>Stage 2: Prefill</b> --- Compute-bound forward pass on the prompt (GEMM, high tensor core utilization). Duration scales with prompt token length. This produces a sharp power spike.</li>
+<li>
+<b>Stage 3: Decode</b> --- Memory-bound autoregressive token generation (HBM-limited). Steady, moderate power plateau. Duration scales with output token count.</li>
+<li>
+<b>Stage 4: Teardown</b> --- Output flush, return to baseline.</li>
+</ul>
+</div>
+<p>Token lengths can be set via the <tt>promptTokens</tt> parameter (<tt>tokenSource</tt> = Fixed) or driven by an external signal connected to the <tt>Tn(in)</tt> input port (<tt>tokenSource</tt> = External). Use External mode to simulate time-varying request distributions.</p>
+<p>
+<b>Fine-Tuning</b> models LoRA/adapter training with periodic evaluation passes, reduced all-reduce payloads, and distinct compute/communication phases.</p>
+<h2 id="3">Ports</h2>
+<p>
+<b>Outputs:</b>
+</p>
+<div>
+<ul>
+<li>
+<b>C</b> (<tt>compute</tt>) --- Total cluster compute demand in TFLOPS.</li>
+<li>
+<b>U</b> (<tt>U</tt>) --- Cluster utilization fraction [0, 1].</li>
+</ul>
+</div>
+<p>
+<b>Inputs:</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Tn(in)</b> (<tt>promptLenIn</tt>) --- External prompt token length (used when <tt>tokenSource</tt> = External). Connect a signal source or leave unconnected when using Fixed token length.</li>
+</ul>
+</div>
+<h2 id="4">Parameters</h2>
+<p>
+<b>Configuration (always visible):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>GPU model</b>, <tt>gpuModel</tt>, enumeration. Selects hardware preset for peak TFLOPS, HBM bandwidth, and inter-node bandwidth. Options: <tt>RubinUltra</tt>, <tt>B200</tt>, <tt>H200</tt>, <tt>H100</tt>, <tt>A100</tt>, <tt>MI300X</tt>, <tt>MI325X</tt>, <tt>Gaudi3</tt>, <tt>Custom</tt>. Default: <tt>B200</tt>.</li>
+<li>
+<b>Total GPU count</b>, <tt>numGPUs</tt>, scalar. Default: <tt>288</tt>.</li>
+<li>
+<b>Workload type</b>, <tt>workloadType</tt>, enumeration. Options: <tt>Training</tt>, <tt>Inference</tt>, <tt>FineTuning</tt>. Default: <tt>Training</tt>.</li>
+<li>
+<b>Time compression factor</b>, <tt>timeScale</tt>, scalar. 1 = real-time, 12 = compress 178 s cycle into ~15 s. Default: <tt>1</tt>.</li>
+<li>
+<b>Token length source</b>, <tt>tokenSource</tt>, enumeration. <tt>Fixed</tt> uses the <tt>promptTokens</tt> parameter; <tt>External</tt> reads from the input port. Default: <tt>Fixed</tt>.</li>
+<li>
+<b>Show advanced parameters</b>, <tt>showAdvanced</tt>, logical. Reveals hardware, training, inference, efficiency, fine-tuning, and output groups. Default: <tt>false</tt>.</li>
+</ul>
+</div>
+<p>
+<b>Hardware (advanced):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Peak TFLOPS</b>, <tt>customPeakTFLOPS</tt>. Used when GPU model = Custom. Default: <tt>1000</tt>.</li>
+<li>
+<b>HBM bandwidth</b>, <tt>customHbmBW</tt>, in bytes/s. Default: <tt>4e12</tt>.</li>
+<li>
+<b>Inter-node bandwidth</b>, <tt>interNodeBW</tt>, in bytes/s. Default: <tt>50e9</tt>.</li>
+<li>
+<b>LLM model size</b>, <tt>llmSize</tt>, enumeration. Options: <tt>Llama7B</tt>, <tt>Llama13B</tt>, <tt>Llama70B</tt>, <tt>GPT175B</tt>, <tt>Llama405B</tt>, <tt>Custom</tt>. Default: <tt>Llama70B</tt>.</li>
+<li>
+<b>Billion parameters</b>, <tt>customNumParamsB</tt>. Default: <tt>70</tt>.</li>
+<li>
+<b>Transformer layers</b>, <tt>customNumLayers</tt>. Default: <tt>80</tt>.</li>
+<li>
+<b>Bytes per param</b>, <tt>customPrecision</tt>. 2 = BF16, 1 = FP8, 4 = FP32. Default: <tt>2</tt>.</li>
+<li>
+<b>Parallelism strategy</b>, <tt>parallelism</tt>, enumeration. Options: <tt>TP8PP4</tt>, <tt>TP4PP8</tt>, <tt>TP8PP8</tt>, <tt>TP4PP4</tt>, <tt>Custom</tt>. Default: <tt>TP8PP4</tt>.</li>
+<li>
+<b>Tensor parallelism</b>, <tt>customTP</tt>. Default: <tt>8</tt>.</li>
+<li>
+<b>Pipeline parallelism</b>, <tt>customPP</tt>. Default: <tt>4</tt>.</li>
+</ul>
+</div>
+<p>
+<b>Training (advanced):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Micro-batch size</b>, <tt>microBatch</tt>. Default: <tt>8</tt>.</li>
+<li>
+<b>Global batch size</b>, <tt>globalBatch</tt>. Default: <tt>2048</tt>.</li>
+<li>
+<b>Sequence length</b>, <tt>seqLength</tt>, in tokens. Default: <tt>2048</tt>.</li>
+<li>
+<b>Stage 1: Idle utilization</b>, <tt>idleUtil</tt>. Pipeline bubble + data load. Default: <tt>0.05</tt>.</li>
+<li>
+<b>Stage 2: Forward pass utilization</b>, <tt>fwdUtil</tt>. Default: <tt>0.85</tt>.</li>
+<li>
+<b>Stage 3: Backward pass utilization</b>, <tt>bwdUtil</tt>. Peak power stage. Default: <tt>0.92</tt>.</li>
+<li>
+<b>Stage 4: Communication utilization</b>, <tt>commSyncUtil</tt>. All-reduce + optimizer + cleanup. Default: <tt>0.15</tt>.</li>
+</ul>
+</div>
+<p>
+<b>Inference (advanced):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Prompt length</b>, <tt>promptTokens</tt>, in tokens. Default: <tt>512</tt>.</li>
+<li>
+<b>Output length</b>, <tt>outputTokens</tt>, in tokens. Default: <tt>256</tt>.</li>
+<li>
+<b>Concurrent requests</b>, <tt>numConcurrent</tt>. Default: <tt>8</tt>.</li>
+<li>
+<b>Batch size</b>, <tt>batchSize</tt>. Default: <tt>8</tt>.</li>
+<li>
+<b>AllReduce latency per layer</b>, <tt>allreduceLatency</tt>, in s. Default: <tt>5e-6</tt>.</li>
+<li>
+<b>Base inference utilization</b>, <tt>baseInfUtil</tt>. Default: <tt>0.08</tt>.</li>
+<li>
+<b>Base load fraction</b>, <tt>baseInfFrac</tt>. Fraction of inference period for base load (split equally before prefill and after decode). Default: <tt>0.10</tt>.</li>
+</ul>
+</div>
+<p>
+<b>Efficiency (advanced):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Model FLOP Utilization</b>, <tt>MFU</tt>. Compute-phase efficiency. Default: <tt>0.85</tt>.</li>
+<li>
+<b>Checkpoint overhead</b>, <tt>checkpointOverhead</tt>. Time fraction. Default: <tt>0.03</tt>.</li>
+<li>
+<b>Straggler overhead</b>, <tt>stragglerOverhead</tt>. Time fraction. Default: <tt>0.02</tt>.</li>
+</ul>
+</div>
+<p>
+<b>Fine-Tuning (advanced):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Trainable parameter fraction</b>, <tt>trainableParamFrac</tt>. LoRA ~2%. Default: <tt>0.02</tt>.</li>
+<li>
+<b>Eval interval</b>, <tt>evalInterval</tt>, in training steps. Default: <tt>5</tt>.</li>
+<li>
+<b>Eval batches</b>, <tt>evalBatches</tt>. Default: <tt>2</tt>.</li>
+<li>
+<b>Fine-tune checkpoint overhead</b>, <tt>ftCheckpointOverhead</tt>. Default: <tt>0.05</tt>.</li>
+</ul>
+</div>
+<p>
+<b>Output (advanced):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Enable noise</b>, <tt>enableNoise</tt>, logical. Adds quasi-random variation from 7 incommensurate sine oscillators (realistic DVFS + straggler jitter). Default: <tt>true</tt>.</li>
+<li>
+<b>Noise amplitude</b>, <tt>noiseAmplitude</tt>. Peak fraction of nominal. Default: <tt>0.08</tt>.</li>
+<li>
+<b>Step jitter</b>, <tt>stepJitter</tt>. Step period variation fraction. Default: <tt>0.15</tt>.</li>
+<li>
+<b>Enable filter</b>, <tt>enableFilter</tt>, logical. Low-pass smoothing on output. Default: <tt>false</tt>.</li>
+<li>
+<b>Filter time constant</b>, <tt>filterTimeConstant</tt>, in s. Default: <tt>0.01</tt>.</li>
+</ul>
+</div>
+<h2 id="5">Observable Variables</h2>
+<p>The following signals are available for logging via Simscape data logging (<tt>ExternalAccess = observe</tt>):</p>
+<div>
+<ul>
+<li>
+<tt>phaseId</tt> --- Integer phase identifier (1 = forward, 2 = backward, 4 = comm/sync, 6 = idle, 7 = prefill, 8 = decode, 13 = base load).</li>
+<li>
+<tt>utilization</tt> --- Cluster utilization fraction [0, 1].</li>
+<li>
+<tt>stepCount</tt> --- Approximate training step counter.</li>
+<li>
+<tt>tcUtilization</tt> --- Tensor core utilization (inference roofline).</li>
+<li>
+<tt>hbmUtilization</tt> --- HBM bandwidth utilization (inference roofline).</li>
+<li>
+<tt>tokensPerSecObs</tt> --- Token throughput (inference, tokens/s).</li>
+<li>
+<tt>ttftObs</tt> --- Time to first token (inference, s).</li>
+</ul>
+</div>
+<h2 id="6">See Also</h2>
+<div>
+<ul>
+<li>
+<tt>datacenter.pfcStage</tt> --- PFC boost rectifier that regulates the DC bus voltage supplying the IT load driven by this compute profile.</li>
+<li>
+<tt>DocumentationUtilizationConverter</tt> --- Utility for converting rack utilization matrices.</li>
+</ul>
+</div>
+<p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% Compute Profile Source (LLM Workload Generator) Block
+% This block generates a time-varying compute demand signal (TFLOPS) that
+% replicates the training, inference, or fine-tuning cycle of large language
+% models. It supports NVIDIA (Rubin Ultra, B200, H200, H100, A100), AMD
+% (MI300X, MI325X), Intel (Gaudi3), and custom GPU specifications.
+%
+% <<computeProfileSource.png>>
+
+%
+
+%% Overview
+% The Compute Profile Source produces a periodic utilization waveform that
+% drives GPU power consumption in data center electrical simulations. The
+% output captures the load transitions that stress power delivery networks:
+% bus capacitors, battery backup units, cable ratings, and PFC controllers.
+%
+% *Training* uses a 4-stage model calibrated against measured GPU power
+% traces (Ko & Zhu, 2024). The output follows a periodic cycle where each
+% training step contains four distinct power phases:
+%
+% * *Stage 1: Idle/Bubble* REPLACE_WITH_DASH_DASH- Data loading overlapped with CPU/NIC
+%   activity; GPU near idle power. Duration set by pipeline parallelism
+%   depth (PP - 1 micro-batches). This is the lowest-power phase.
+% * *Stage 2: Forward Pass* REPLACE_WITH_DASH_DASH- High GEMM utilization with steady GPU
+%   power draw. Tensor cores are active; power is dominated by compute.
+% * *Stage 3: Backward Pass* REPLACE_WITH_DASH_DASH- Peak power phase from activation
+%   recompute and memory pressure. The forward/backward split within each
+%   micro-batch is 45/55%. This stage drives the worst-case bus capacitor
+%   sizing.
+% * *Stage 4: Communication + Sync* REPLACE_WITH_DASH_DASH- Ring all-reduce gradient
+%   synchronization, Adam optimizer step, and cleanup. Network-burst
+%   dominated; GPU compute drops back toward idle.
+%
+% This 4-stage model captures the three load transitions that drive
+% electrical design decisions:
+%
+% * *Idle to Forward (inrush)* REPLACE_WITH_DASH_DASH- rapid ramp from near-idle to high
+%   compute; sizes PFC bus capacitors and cable current ratings.
+% * *Forward to Backward (peak)* REPLACE_WITH_DASH_DASH- transition to peak power; determines
+%   worst-case voltage droop on the DC bus.
+% * *Backward to Communication (load dump)* REPLACE_WITH_DASH_DASH- sudden drop from peak
+%   compute to communication-dominated; drives voltage overshoot and BBU
+%   energy absorption.
+%
+% *Inference* uses a roofline-based 4-stage model:
+%
+% * *Stage 1: Base Load* REPLACE_WITH_DASH_DASH- KV cache maintenance, background tasks.
+%   Minimal GPU compute activity.
+% * *Stage 2: Prefill* REPLACE_WITH_DASH_DASH- Compute-bound forward pass on the prompt
+%   (GEMM, high tensor core utilization). Duration scales with prompt
+%   token length. This produces a sharp power spike.
+% * *Stage 3: Decode* REPLACE_WITH_DASH_DASH- Memory-bound autoregressive token generation
+%   (HBM-limited). Steady, moderate power plateau. Duration scales with
+%   output token count.
+% * *Stage 4: Teardown* REPLACE_WITH_DASH_DASH- Output flush, return to baseline.
+%
+% Token lengths can be set via the |promptTokens| parameter (|tokenSource|
+% = Fixed) or driven by an external signal connected to the |Tn(in)| input
+% port (|tokenSource| = External). Use External mode to simulate
+% time-varying request distributions.
+%
+% *Fine-Tuning* models LoRA/adapter training with periodic evaluation passes,
+% reduced all-reduce payloads, and distinct compute/communication phases.
+
+%% Ports
+% *Outputs:*
+%
+% * *C* (|compute|) REPLACE_WITH_DASH_DASH- Total cluster compute demand in TFLOPS.
+% * *U* (|U|) REPLACE_WITH_DASH_DASH- Cluster utilization fraction [0, 1].
+%
+% *Inputs:*
+%
+% * *Tn(in)* (|promptLenIn|) REPLACE_WITH_DASH_DASH- External prompt token length (used when
+%   |tokenSource| = External). Connect a signal source or leave
+%   unconnected when using Fixed token length.
+
+%% Parameters
+% *Configuration (always visible):*
+%
+% * *GPU model*, |gpuModel|, enumeration. Selects hardware preset for peak
+%   TFLOPS, HBM bandwidth, and inter-node bandwidth. Options:
+%   |RubinUltra|, |B200|, |H200|, |H100|, |A100|, |MI300X|, |MI325X|,
+%   |Gaudi3|, |Custom|. Default: |B200|.
+% * *Total GPU count*, |numGPUs|, scalar. Default: |288|.
+% * *Workload type*, |workloadType|, enumeration. Options: |Training|,
+%   |Inference|, |FineTuning|. Default: |Training|.
+% * *Time compression factor*, |timeScale|, scalar. 1 = real-time,
+%   12 = compress 178 s cycle into ~15 s. Default: |1|.
+% * *Token length source*, |tokenSource|, enumeration. |Fixed| uses the
+%   |promptTokens| parameter; |External| reads from the input port.
+%   Default: |Fixed|.
+% * *Show advanced parameters*, |showAdvanced|, logical. Reveals hardware,
+%   training, inference, efficiency, fine-tuning, and output groups.
+%   Default: |false|.
+%
+% *Hardware (advanced):*
+%
+% * *Peak TFLOPS*, |customPeakTFLOPS|. Used when GPU model = Custom.
+%   Default: |1000|.
+% * *HBM bandwidth*, |customHbmBW|, in bytes/s. Default: |4e12|.
+% * *Inter-node bandwidth*, |interNodeBW|, in bytes/s. Default: |50e9|.
+% * *LLM model size*, |llmSize|, enumeration. Options: |Llama7B|,
+%   |Llama13B|, |Llama70B|, |GPT175B|, |Llama405B|, |Custom|.
+%   Default: |Llama70B|.
+% * *Billion parameters*, |customNumParamsB|. Default: |70|.
+% * *Transformer layers*, |customNumLayers|. Default: |80|.
+% * *Bytes per param*, |customPrecision|. 2 = BF16, 1 = FP8, 4 = FP32.
+%   Default: |2|.
+% * *Parallelism strategy*, |parallelism|, enumeration. Options:
+%   |TP8PP4|, |TP4PP8|, |TP8PP8|, |TP4PP4|, |Custom|.
+%   Default: |TP8PP4|.
+% * *Tensor parallelism*, |customTP|. Default: |8|.
+% * *Pipeline parallelism*, |customPP|. Default: |4|.
+%
+% *Training (advanced):*
+%
+% * *Micro-batch size*, |microBatch|. Default: |8|.
+% * *Global batch size*, |globalBatch|. Default: |2048|.
+% * *Sequence length*, |seqLength|, in tokens. Default: |2048|.
+% * *Stage 1: Idle utilization*, |idleUtil|. Pipeline bubble + data load.
+%   Default: |0.05|.
+% * *Stage 2: Forward pass utilization*, |fwdUtil|. Default: |0.85|.
+% * *Stage 3: Backward pass utilization*, |bwdUtil|. Peak power stage.
+%   Default: |0.92|.
+% * *Stage 4: Communication utilization*, |commSyncUtil|. All-reduce +
+%   optimizer + cleanup. Default: |0.15|.
+%
+% *Inference (advanced):*
+%
+% * *Prompt length*, |promptTokens|, in tokens. Default: |512|.
+% * *Output length*, |outputTokens|, in tokens. Default: |256|.
+% * *Concurrent requests*, |numConcurrent|. Default: |8|.
+% * *Batch size*, |batchSize|. Default: |8|.
+% * *AllReduce latency per layer*, |allreduceLatency|, in s. Default: |5e-6|.
+% * *Base inference utilization*, |baseInfUtil|. Default: |0.08|.
+% * *Base load fraction*, |baseInfFrac|. Fraction of inference period for
+%   base load (split equally before prefill and after decode). Default: |0.10|.
+%
+% *Efficiency (advanced):*
+%
+% * *Model FLOP Utilization*, |MFU|. Compute-phase efficiency. Default: |0.85|.
+% * *Checkpoint overhead*, |checkpointOverhead|. Time fraction. Default: |0.03|.
+% * *Straggler overhead*, |stragglerOverhead|. Time fraction. Default: |0.02|.
+%
+% *Fine-Tuning (advanced):*
+%
+% * *Trainable parameter fraction*, |trainableParamFrac|. LoRA ~2%.
+%   Default: |0.02|.
+% * *Eval interval*, |evalInterval|, in training steps. Default: |5|.
+% * *Eval batches*, |evalBatches|. Default: |2|.
+% * *Fine-tune checkpoint overhead*, |ftCheckpointOverhead|. Default: |0.05|.
+%
+% *Output (advanced):*
+%
+% * *Enable noise*, |enableNoise|, logical. Adds quasi-random variation
+%   from 7 incommensurate sine oscillators (realistic DVFS + straggler
+%   jitter). Default: |true|.
+% * *Noise amplitude*, |noiseAmplitude|. Peak fraction of nominal.
+%   Default: |0.08|.
+% * *Step jitter*, |stepJitter|. Step period variation fraction.
+%   Default: |0.15|.
+% * *Enable filter*, |enableFilter|, logical. Low-pass smoothing on output.
+%   Default: |false|.
+% * *Filter time constant*, |filterTimeConstant|, in s. Default: |0.01|.
+
+%% Observable Variables
+% The following signals are available for logging via Simscape data logging
+% (|ExternalAccess = observe|):
+%
+% * |phaseId| REPLACE_WITH_DASH_DASH- Integer phase identifier (1 = forward, 2 = backward,
+%   4 = comm/sync, 6 = idle, 7 = prefill, 8 = decode, 13 = base load).
+% * |utilization| REPLACE_WITH_DASH_DASH- Cluster utilization fraction [0, 1].
+% * |stepCount| REPLACE_WITH_DASH_DASH- Approximate training step counter.
+% * |tcUtilization| REPLACE_WITH_DASH_DASH- Tensor core utilization (inference roofline).
+% * |hbmUtilization| REPLACE_WITH_DASH_DASH- HBM bandwidth utilization (inference roofline).
+% * |tokensPerSecObs| REPLACE_WITH_DASH_DASH- Token throughput (inference, tokens/s).
+% * |ttftObs| REPLACE_WITH_DASH_DASH- Time to first token (inference, s).
+
+%% See Also
+% * |datacenter.pfcStage| REPLACE_WITH_DASH_DASH- PFC boost rectifier that regulates the DC bus
+%   voltage supplying the IT load driven by this compute profile.
+% * |DocumentationUtilizationConverter| REPLACE_WITH_DASH_DASH- Utility for converting rack
+%   utilization matrices.
+
+##### SOURCE END #####
+-->
+</body>
+</html>

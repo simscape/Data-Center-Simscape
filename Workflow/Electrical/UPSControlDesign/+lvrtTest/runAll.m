@@ -5,8 +5,11 @@ function simResults = runAll(gridCodeNames)
 %   initializes parameters, and runs the simulation for each grid code.
 %   Returns a cell array of SimulationOutput objects.
 %
+%   Pass the result to lvrtTest.evaluate to get the pass/fail table.
+%
 %   Example:
-%     simResults = lvrtTest.runAll({'ERCOT', 'RTEFrance', 'EirGrid', 'ATC', 'AESO'})
+%     simResults = lvrtTest.runAll({'ERCOT', 'RTE France', 'Eir Grid'})
+%     testResults = lvrtTest.evaluate(simResults, {"ERCOT","RTE France","Eir Grid"})
 
 % Copyright 2026 The MathWorks, Inc.
 
@@ -21,7 +24,7 @@ load_system('UPSControl');
 DataCenterParam;
 
 for codeIdx = 1:numGridCodes
-    lvrtProfileName = gridCodeNames{codeIdx}; %#ok<*NASGU>
+    lvrtProfileName = char(gridCodeNames{codeIdx}); %#ok<*NASGU>
     LVRT;
     simResults{codeIdx} = sim('UPSControl', 'SrcWorkspace', 'current');
 end

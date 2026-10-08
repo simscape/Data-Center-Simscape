@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>PDU Racks</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-09-21">
+<meta name="DC.source" content="DocumentationPDURacks.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>PDU Racks</h1>
+<!--introduction-->
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">PDU Racks</a>
+</li>
+<li>
+<a href="#3">IT Tray</a>
+</li>
+<li>
+<a href="#4">GPU</a>
+</li>
+<li>
+<a href="#5">CPU</a>
+</li>
+<li>
+<a href="#6">Initial Conditions</a>
+</li>
+</ul>
+</div>
+<p>
+<img vspace="5" hspace="5" src="docImagePDURacks.png" alt=""> </p>
+<p>PDU racks are modeled from <b>Server Tray</b> component and scaling up values, using <b>Thermal Multiplier</b>, to account for total number of trays in a rack, as well as the number of racks. Thermal node <b>Ha</b> and <b>Hc</b> specify the server tray heat transfer to ambient and cooling system, respectively. The input ports <i>U</i> are used to specify the GPU and CPU utilization values. The utilization values are set to same for all the tray blocks modeled using the <b>Thermal Multiplier</b>. The output port <i>P</i>, <i>Tgpu</i>, and <i>Tcpu</i> specify the electrical power consumption and temperatures of the GPU and CPU chips on each server tray.</p>
+<h2 id="2">PDU Racks</h2>
+<div>
+<ul>
+<li>
+<b>Number of IT trays per rack (-)</b>, <tt>nTrays</tt>, specified as a scalar value.</li>
+<li>
+<b>Number of racks (-)</b>, <tt>nRacks</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="3">IT Tray</h2>
+<div>
+<ul>
+<li>
+<b>Tray mass (kg)</b>, <tt>trayMass</tt>, specified as a scalar value.</li>
+<li>
+<b>Tray specific heat capacity (J/kg*K)</b>, <tt>trayCp</tt>, specified as a scalar value.</li>
+<li>
+<b>Tray to external thermal resistance (K/W)</b>, <tt>trayThermalR</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="4">GPU</h2>
+<div>
+<ul>
+<li>
+<b>Number of GPU per tray (-)</b>, <tt>nGPU</tt>, specified as a scalar value.</li>
+<li>
+<b>GPU TDP per die (W)</b>, <tt>gpuTDPperDie</tt>, specified as a scalar value.</li>
+<li>
+<b>GPU idle power (W)</b>, <tt>gpuIdlePower</tt>, specified as a scalar value.</li>
+<li>
+<b>HBM power per GPU (W)</b>, <tt>gpuHBMpower</tt>, specified as a scalar value.</li>
+<li>
+<b>GPU power utilization exponent (-)</b>, <tt>gpuExponent</tt>, specified as a scalar value.</li>
+<li>
+<b>HBM utilization as fraction of compute utilization (-)</b>, <tt>gpuHBMutil</tt>, specified as a scalar value.</li>
+<li>
+<b>Leakage increase per K above nominal temperature (W/K)</b>, <tt>gpuLeakage</tt>, specified as a scalar value.</li>
+<li>
+<b>Nominal die temperature at TDP (K)</b>, <tt>gpuNominalDieT</tt>, specified as a scalar value.</li>
+<li>
+<b>GPU die thermal capacitance (J/K)</b>, <tt>gpuDieThermalC</tt>, specified as a scalar value.</li>
+<li>
+<b>GPU die-heat-sink thermal resistance (K/W)</b>, <tt>gpuHeatSinkR</tt>, specified as a scalar value.</li>
+<li>
+<b>Surface area per die for ambient heat transfer (m^2)</b>, <tt>gpuSurfArea</tt>, specified as a scalar value.</li>
+<li>
+<b>GPU die-ambient thermal resistance (K/W)</b>, <tt>gpuAmbientR</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="5">CPU</h2>
+<div>
+<ul>
+<li>
+<b>Number of CPU per tray (-)</b>, <tt>nCPU</tt>, specified as a scalar value.</li>
+<li>
+<b>CPU TDP per socket (W)</b>, <tt>cpuTDPperSocket</tt>, specified as a scalar value.</li>
+<li>
+<b>CPU idle power per socket (W)</b>, <tt>cpuIdlePower</tt>, specified as a scalar value.</li>
+<li>
+<b>CPU power utilization exponent (-)</b>, <tt>cpuExponent</tt>, specified as a scalar value.</li>
+<li>
+<b>Leakage increase per K above nominal temperature (W/K)</b>, <tt>cpuLeakage</tt>, specified as a scalar value.</li>
+<li>
+<b>Nominal die temperature at TDP (K)</b>, <tt>cpuNominalDieT</tt>, specified as a scalar value.</li>
+<li>
+<b>CPU die thermal capacitance (J/K)</b>, <tt>cpuDieThermalC</tt>, specified as a scalar value.</li>
+<li>
+<b>CPU die-heat-sink thermal resistance (K/W)</b>, <tt>cpuHeatSinkR</tt>, specified as a scalar value.</li>
+<li>
+<b>Surface area per die for ambient heat transfer (m^2)</b>, <tt>cpuSurfArea</tt>, specified as a scalar value.</li>
+<li>
+<b>CPU die-ambient thermal resistance (K/W)</b>, <tt>cpuAmbientR</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<h2 id="6">Initial Conditions</h2>
+<div>
+<ul>
+<li>
+<b>Initial temperature (K)</b>, <tt>initialT</tt>, specified as a scalar value.</li>
+<li>
+<b>Heat transfer coefficient to ambient (W/m^2.K)</b>, <tt>htc</tt>, specified as a scalar value.</li>
+</ul>
+</div>
+<p class="footer">Copyright 2026 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% PDU Racks
+
+% Copyright 2026 The MathWorks, Inc.
+
+%%
+% 
+% <<docImagePDURacks.png>>
+% 
+% PDU racks are modeled from *Server Tray* component and scaling up values,
+% using *Thermal Multiplier*, to account for total number of trays in a
+% rack, as well as the number of racks. Thermal node *Ha* and *Hc* specify the 
+% server tray heat transfer to ambient and cooling system, respectively. 
+% The input ports _U_ are used to specify the GPU and CPU utilization 
+% values. The utilization values are set to same for all the tray blocks 
+% modeled using the *Thermal Multiplier*. The output port _P_, _Tgpu_, and 
+% _Tcpu_ specify the electrical power consumption and temperatures of the 
+% GPU and CPU chips on each server tray.
+
+%% PDU Racks
+% * *Number of IT trays per rack (-)*, |nTrays|, specified as a scalar value.
+% * *Number of racks (-)*, |nRacks|, specified as a scalar value.
+
+%% IT Tray
+% * *Tray mass (kg)*, |trayMass|, specified as a scalar value.
+% * *Tray specific heat capacity (J/kg*K)*, |trayCp|, specified as a scalar value.
+% * *Tray to external thermal resistance (K/W)*, |trayThermalR|, specified as a scalar value.
+
+%% GPU
+% * *Number of GPU per tray (-)*, |nGPU|, specified as a scalar value.
+% * *GPU TDP per die (W)*, |gpuTDPperDie|, specified as a scalar value.
+% * *GPU idle power (W)*, |gpuIdlePower|, specified as a scalar value.
+% * *HBM power per GPU (W)*, |gpuHBMpower|, specified as a scalar value.
+% * *GPU power utilization exponent (-)*, |gpuExponent|, specified as a scalar value.
+% * *HBM utilization as fraction of compute utilization (-)*, |gpuHBMutil|, specified as a scalar value.
+% * *Leakage increase per K above nominal temperature (W/K)*, |gpuLeakage|, specified as a scalar value.
+% * *Nominal die temperature at TDP (K)*, |gpuNominalDieT|, specified as a scalar value.
+% * *GPU die thermal capacitance (J/K)*, |gpuDieThermalC|, specified as a scalar value.
+% * *GPU die-heat-sink thermal resistance (K/W)*, |gpuHeatSinkR|, specified as a scalar value.
+% * *Surface area per die for ambient heat transfer (m^2)*, |gpuSurfArea|, specified as a scalar value.
+% * *GPU die-ambient thermal resistance (K/W)*, |gpuAmbientR|, specified as a scalar value.
+
+%% CPU
+% * *Number of CPU per tray (-)*, |nCPU|, specified as a scalar value.
+% * *CPU TDP per socket (W)*, |cpuTDPperSocket|, specified as a scalar value.
+% * *CPU idle power per socket (W)*, |cpuIdlePower|, specified as a scalar value.
+% * *CPU power utilization exponent (-)*, |cpuExponent|, specified as a scalar value.
+% * *Leakage increase per K above nominal temperature (W/K)*, |cpuLeakage|, specified as a scalar value.
+% * *Nominal die temperature at TDP (K)*, |cpuNominalDieT|, specified as a scalar value.
+% * *CPU die thermal capacitance (J/K)*, |cpuDieThermalC|, specified as a scalar value.
+% * *CPU die-heat-sink thermal resistance (K/W)*, |cpuHeatSinkR|, specified as a scalar value.
+% * *Surface area per die for ambient heat transfer (m^2)*, |cpuSurfArea|, specified as a scalar value.
+% * *CPU die-ambient thermal resistance (K/W)*, |cpuAmbientR|, specified as a scalar value.
+
+%% Initial Conditions
+% * *Initial temperature (K)*, |initialT|, specified as a scalar value.
+% * *Heat transfer coefficient to ambient (W/m^2.K)*, |htc|, specified as a scalar value.
+
+
+##### SOURCE END #####
+-->
+</body>
+</html>

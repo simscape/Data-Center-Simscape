@@ -1,0 +1,120 @@
+component biDirectionalConverter
+    % Bi-directional DC-DC Converter :2.0
+    % This block represents a controlled bi-directional DC-DC
+    % converter. Use the current reference
+    % reference as control input to convert the electrical energy
+    % between the two sides.
+
+    % Copyright 2026 The MathWorks, Inc.
+
+    parameters 
+        efficiency_option = ee.enum.converters.efficiency.constant; % Converter efficiency        
+    end
+
+    parameters(ExternalAccess=none)
+        efficiency_fixed = {100,'1'};  % Efficiency (%)
+        i_vec = {[ 0, 2, 5 ], 'A'};    % Output current vector
+        efficiency_vec = {[ 90, 95, 98 ], '1'}; % Efficiency vector (%)
+    end
+
+    inputs
+        Iref = {1, 'A'}; % Iref:left
+    end
+
+    nodes
+        p1 = foundation.electrical.electrical;     % 1+:left
+        n1 = foundation.electrical.electrical;     % 1-:left
+        p2 = foundation.electrical.electrical;     % 2+:right
+        n2 = foundation.electrical.electrical;     % 2-:right
+    end
+    
+
+    variables
+        iL = {value={0, 'A'},priority=priority.none}; % Inductor current
+        vc  = {value={0, 'V'},priority=priority.none}; % Capacitor voltage
+    end
+
+    annotations
+        [iL,vc] : ExternalAccess=none
+        efficiency_option : ExternalAccess = modify
+    end
+
+    variables(ExternalAccess=observe)
+        i1 = { 0, 'A' }; % Input current
+        i2 = { 0, 'A' }; % Output current
+        v1 = { 0, 'V' }; % Input voltage
+        v2 = { 0, 'V' }; % Output voltage
+    end
+
+    branches
+        i1 : p1.i -> n1.i;
+        i2 : p2.i -> n2.i;
+    end
+
+    equations
+        v1 == p1.v-n1.v;
+        v2 == p2.v-n2.v;
+        %assert(v1>=0);
+        iL == 0;
+        vc == 0;
+    end
+
+    % Connect to n1 and n2 by GMIN
+    components(ExternalAccess=none)
+        Rneutral = foundation.electrical.elements.resistor(R=1/n1.GMIN);
+    end
+    connections
+        connect(n1,Rneutral.p)
+        connect(Rneutral.n,n2)
+    end
+
+    if efficiency_option==ee.enum.converters.efficiency.constant
+        annotations
+            efficiency_fixed : ExternalAccess=modify;
+        end
+        equations
+            assert(efficiency_fixed>0);
+            assert(efficiency_fixed<=100);
+        end
+        intermediates
+            efficiency = efficiency_fixed/100;
+        end
+    else % efficiency_option==ee.enum.converters.efficiency.tabulated
+        annotations
+            [i_vec,efficiency_vec] : ExternalAccess=modify;
+        end
+        equations
+            assert(length(i_vec) >  1);
+            assert(length(efficiency_vec) >  1);
+            assert(length(i_vec) == length(efficiency_vec));
+        end
+
+        if i_vec(1) > {0, 'A'}
+            % Extend data set to negative values
+            parameters(MATLABEvaluation=compiletime)
+                [i_vec_value, efficiency_vec_value] = ee_declaration_functions.common.twoSidedData(value(i_vec,'A'), value(efficiency_vec,'1'))
+            end
+        else % Already extended to negative values
+            parameters(Access=private)
+                i_vec_value = value(i_vec,'A');
+                efficiency_vec_value = value(efficiency_vec,'1');
+            end
+        end
+        intermediates
+            efficiency = tablelookup(i_vec_value, efficiency_vec_value./100, -value(i2,'A'), interpolation=linear, extrapolation=nearest);
+        end
+    end
+
+    annotations
+        Iref : ExternalAccess=modify;
+    end
+    equations
+        let
+            ref = if Iref <= 0, Iref else Iref end;
+            eta = if i2<=0, efficiency else 1/efficiency end;
+        in
+            i2 == -ref;
+            i1*v1 * eta == -i2*v2;
+        end
+    end
+end

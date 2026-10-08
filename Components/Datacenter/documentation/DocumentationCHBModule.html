@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>CHB Module (Average Model)</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-09-17">
+<meta name="DC.source" content="DocumentationCHBModule.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>CHB Module (Average Model)</h1>
+<!--introduction-->
+<p>Average model of a single H-bridge cell of a Cascaded H-Bridge (CHB) converter. The four switches are not modelled individually. Instead the cell is described by the average relationships</p>
+<pre>v_ac = m * v_dc
+i_dc = m * i_ac</pre>
+<p>where <i>m</i> is the modulation index input. Because no switching events are generated, the component runs with a large solver step and is intended for system-level studies rather than for switching-ripple or EMI analysis.</p>
+<p>The component has an input port <i>m</i>, two AC electrical ports <b>AC+</b> and <b>AC-</b>, and two DC electrical ports <b>DC+</b> and <b>DC-</b>. Connect several modules in series on the AC side to build a phase leg. Each module needs its own DC source or capacitor on the DC side.</p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">Parameters</a>
+</li>
+<li>
+<a href="#2">Modulation Scaling</a>
+</li>
+<li>
+<a href="#3">Equations</a>
+</li>
+<li>
+<a href="#4">Internal Reference Connection</a>
+</li>
+<li>
+<a href="#5">Variables</a>
+</li>
+<li>
+<a href="#6">References</a>
+</li>
+</ul>
+</div>
+<h2 id="1">Parameters</h2>
+<div>
+<ul>
+<li>
+<b>On-state resistance (total per leg) (Ohm)</b>, <tt>OnResistance</tt>, specified as a scalar value. Default is <tt>1e-3</tt>.</li>
+<li>
+<b>Nominal grid voltage (L-L RMS) (V)</b>, <tt>GridVoltage</tt>, specified as a scalar value. Default is <tt>13800</tt>.</li>
+<li>
+<b>Total DC voltage per phase (N * initial DC voltage) (V)</b>, <tt>TotalDCVoltage</tt>, specified as a scalar value. Default is <tt>13200</tt>.</li>
+</ul>
+</div>
+<h2 id="2">Modulation Scaling</h2>
+<p>The input <i>m</i> is not applied directly. It is first scaled by an internal gain derived from the two voltage parameters, then clamped to the range -1 to 1:</p>
+<pre>ModulationGain = GridVoltage / (sqrt(3/2) * TotalDCVoltage)
+ref            = min(max(m * ModulationGain, -1), 1)</pre>
+<p>With the default values the gain is approximately <tt>0.854</tt>. This means the controller upstream of the block can work in per-unit terms without an additional external scaling gain. If you add your own scaling gain outside the block, the modulation index is scaled twice and the control loop gains must be retuned.</p>
+<h2 id="3">Equations</h2>
+<p>The average H-bridge relationships implemented by the component are</p>
+<pre>v_ac == ref * v_dc + OnResistance * i_ac
+i_dc == -ref * i_ac</pre>
+<p>where <tt>v_ac</tt> is the voltage across <b>AC+</b> and <b>AC-</b> and <tt>v_dc</tt> is the voltage across <b>DC+</b> and <b>DC-</b>. The conduction drop <tt>OnResistance * i_ac</tt> accounts for the combined switch and wiring loss of the cell.</p>
+<h2 id="4">Internal Reference Connection</h2>
+<p>The <b>DC-</b> node of the module is connected internally to the electrical domain reference. The DC bus of each module is therefore <b>not floating</b>. Take this into account when connecting module DC buses to downstream converters, and do not add a second reference to the same DC node.</p>
+<h2 id="5">Variables</h2>
+<p>The following variables are exposed for logging and for setting initial targets: <tt>iAC</tt>, <tt>vAC</tt>, <tt>iDC</tt>, <tt>vDC</tt>, and <tt>vOn</tt>. The variable <tt>vDC</tt> is declared with priority <b>None</b>, so it does not act as an initial-condition target by default. Set the DC bus initial voltage on the capacitor or source connected to the DC ports instead.</p>
+<h2 id="6">References</h2>
+<p>Modulation and average-value modelling of cascaded H-bridge converters is covered in standard multilevel-converter references. The component implements the classical fundamental-frequency average model, in which the switching function is replaced by its local average value <i>m</i>.</p>
+<p class="footer">Copyright 2026 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% CHB Module (Average Model)
+% Average model of a single H-bridge cell of a Cascaded H-Bridge (CHB)
+% converter. The four switches are not modelled individually. Instead the
+% cell is described by the average relationships
+%
+%  v_ac = m * v_dc
+%  i_dc = m * i_ac
+%
+% where _m_ is the modulation index input. Because no switching events are
+% generated, the component runs with a large solver step and is intended for
+% system-level studies rather than for switching-ripple or EMI analysis.
+%
+% The component has an input port _m_, two AC electrical ports *AC+* and
+% *AC-*, and two DC electrical ports *DC+* and *DC-*. Connect several
+% modules in series on the AC side to build a phase leg. Each module needs
+% its own DC source or capacitor on the DC side.
+
+% Copyright 2026 The MathWorks, Inc.
+
+%% Parameters
+% * *On-state resistance (total per leg) (Ohm)*, |OnResistance|, specified as a scalar value. Default is |1e-3|.
+% * *Nominal grid voltage (L-L RMS) (V)*, |GridVoltage|, specified as a scalar value. Default is |13800|.
+% * *Total DC voltage per phase (N * initial DC voltage) (V)*, |TotalDCVoltage|, specified as a scalar value. Default is |13200|.
+
+%% Modulation Scaling
+% The input _m_ is not applied directly. It is first scaled by an internal
+% gain derived from the two voltage parameters, then clamped to the range
+% -1 to 1:
+%
+%  ModulationGain = GridVoltage / (sqrt(3/2) * TotalDCVoltage)
+%  ref            = min(max(m * ModulationGain, -1), 1)
+%
+% With the default values the gain is approximately |0.854|. This means the
+% controller upstream of the block can work in per-unit terms without an
+% additional external scaling gain. If you add your own scaling gain outside
+% the block, the modulation index is scaled twice and the control loop gains
+% must be retuned.
+
+%% Equations
+% The average H-bridge relationships implemented by the component are
+%
+%  v_ac == ref * v_dc + OnResistance * i_ac
+%  i_dc == -ref * i_ac
+%
+% where |v_ac| is the voltage across *AC+* and *AC-* and |v_dc| is the
+% voltage across *DC+* and *DC-*. The conduction drop
+% |OnResistance * i_ac| accounts for the combined switch and wiring loss of
+% the cell.
+
+%% Internal Reference Connection
+% The *DC-* node of the module is connected internally to the electrical
+% domain reference. The DC bus of each module is therefore *not floating*.
+% Take this into account when connecting module DC buses to downstream
+% converters, and do not add a second reference to the same DC node.
+
+%% Variables
+% The following variables are exposed for logging and for setting initial
+% targets: |iAC|, |vAC|, |iDC|, |vDC|, and |vOn|. The variable |vDC| is
+% declared with priority *None*, so it does not act as an initial-condition
+% target by default. Set the DC bus initial voltage on the capacitor or
+% source connected to the DC ports instead.
+
+%% References
+% Modulation and average-value modelling of cascaded H-bridge converters is
+% covered in standard multilevel-converter references. The component
+% implements the classical fundamental-frequency average model, in which the
+% switching function is replaced by its local average value _m_.
+
+##### SOURCE END #####
+-->
+</body>
+</html>

@@ -1,0 +1,307 @@
+component gpuPsuLoad
+    % GPU PSU Load (for Impedance Scan):2.5
+    % Models the IT load as seen from the UPS output / AC busway.
+    % Use this when the grid and UPS are already modeled upstream.
+    %
+    % Architecture (what this component represents):
+    %   AC input → [PSU PFC with voltage loop] → [LLC as CPL] → [VR] → GPU
+    %
+    % This is the load-side impedance that interacts with the source
+    % (grid + UPS). The impedance scan measures Z at the interface between
+    % the UPS output and this load.
+    %
+    % Key dynamics:
+    %   - PFC outer voltage loop (BW < 20 Hz) — dominates AC-side impedance
+    %   - Second-order inner current loop (CCM/DCM-aware) — shapes 1-10 kHz
+    %   - LLC constant power load on DC bus (negative input impedance)
+    %   - DC bus capacitor (ride-through energy storage)
+    %   - GPU utilization-dependent power demand
+    %
+    % Per Sun et al. (IEEE TPEL 2022):
+    %   - Outer voltage loop shapes the input impedance seen by the grid/UPS
+    %   - The load appears as negative incremental resistance at low freq
+    %     because PFC regulates V_dc → constant power behavior → Z_in = -V²/P
+    %   - Inner current loop modeled as 2nd-order closed-loop (wn, zeta)
+    %     with smooth CCM/DCM blending based on I_boundary = V*d*Tsw/(2L)
+    %
+    % Ports:
+    %   p, n — AC electrical (connect to UPS output or AC busway)
+    %   U    — GPU utilization input (from workload profile)
+    %
+    % For impedance scanning, set U to a constant (the operating point)
+    % and let the scan block inject perturbation at the p/n terminals.
+
+    % Copyright 2026 The MathWorks, Inc.
+
+    annotations
+        Icon = "gpuPsuLoad.png";
+        UILayout = [UIGroup("IT Load",...
+            gpuTDP, gpuIdlePower, numGPUs, P_cpu, P_aux, powerExponent)
+        UIGroup("PSU PFC Stage",...
+            C_dc, numPSUs, V_dc_ref, Kp_pfc, Ki_pfc, L_pfc, f_sw, BW_current, eta_pfc, P_sat_factor, tau_rms, G_damp, V_dc_uvlo, V_dc_uvlo_width)
+        UIGroup("LLC + VR Efficiency",...
+            eta_llc, eta_vr)
+        UIGroup("Thermal",...
+            rackMass, rackSpHeat)];
+    end
+
+    nodes
+        p = foundation.electrical.electrical; % ph:left
+        n = foundation.electrical.electrical; % N:left
+        H = foundation.thermal.thermal;       % H
+    end
+
+    annotations
+        H : Side = Bottom;
+    end
+
+    inputs
+        U = {0.5, "1"};  % U:left
+    end
+
+    outputs
+        P_load = {0, "W"};     % P:right
+        To = {300, "K"};       % T:right
+    end
+
+    parameters
+        % GPU / Server Load
+        gpuTDP = {1200, "W"};           % GPU TDP per die
+        gpuIdlePower = {300, "W"};      % GPU idle power per die
+        numGPUs = {72, "1"};            % Total GPUs in rack
+        P_cpu = {18000, "W"};           % Total CPU power in rack (e.g. 36 Grace CPUs × 500W)
+        P_aux = {500, "W"};             % Auxiliary load (NIC, BMC, fans)
+        powerExponent = {1.4, "1"};     % Power-utilization curve exponent (NVIDIA ~1.4, AMD ~1.6, Intel ~1.3)
+
+        % PSU PFC Stage — Boost PFC average model
+        % Voltage loop: regulates V_dc_psu. BW intentionally < 20Hz
+        % to avoid injecting 120Hz ripple into control loop.
+        % This slow bandwidth is what makes the PSU a dynamic load
+        % (not just a resistor) at frequencies near the loop crossover.
+        C_dc = {2e-3, "F"};             % DC bus capacitance per PSU
+        numPSUs = {36, "1"};            % Total PSUs in rack
+        V_dc_ref = {400, "V"};          % DC bus voltage setpoint
+        Kp_pfc = {1.0, "W/V"};             % PFC voltage loop proportional gain
+        Ki_pfc = {60, "W/(V*s)"};       % PFC voltage loop integral gain
+        L_pfc = {500e-6, "H"};          % Boost inductor
+
+        % LLC + VR combined efficiency
+        % LLC as CPL: draws constant power regardless of V_dc (within range)
+        % This creates negative input impedance: Z_in = -V_dc² / P_load
+        eta_llc = {0.96, "1"};          % LLC DC/DC efficiency
+        eta_vr = {0.86, "1"};           % VR efficiency
+
+        % PFC efficiency (affects total AC draw)
+        eta_pfc = {0.97, "1"};          % PFC stage efficiency
+
+        % Inner current loop
+        BW_current = {2000, "Hz"};      % Current loop bandwidth
+        f_sw = {65000, "Hz"};           % PFC switching frequency
+
+        % RMS voltage filter
+        tau_rms = {0.040, "s"};         % RMS filter time constant
+
+        % System
+        V_nom = {277, "V"};             % Nominal AC RMS voltage (phase-neutral)
+
+        % Anti-windup
+        P_sat_factor = {1.2, "1"};      % PI output saturation factor
+
+        % Input filter damping (EMI cap equivalent)
+        G_damp = {0.02, "1/Ohm"};           % Parallel damping conductance (models PSU input EMI caps)
+
+        % UVLO (Under-Voltage Lockout)
+        V_dc_uvlo = {280, "V"};             % LLC shutdown threshold voltage
+        V_dc_uvlo_width = {4, "V"};         % UVLO transition width (tanh half-width)
+
+        % Thermal
+        rackMass = {150, "kg"};             % Rack thermal mass
+        rackSpHeat = {550, "J/(kg*K)"};     % Rack specific heat
+    end
+
+    variables
+        % AC terminal
+        i_ac = {0, "A"};                                   % AC current drawn
+        v_ac = {value = {277, "V"}, priority = priority.low}; % AC voltage (L-N)
+
+        % PFC DC bus
+        v_dc = {value = {400, "V"}, priority = priority.high}; % DC bus voltage
+        pfc_integrator = {0, "V*s"};                       % PI integrator state
+
+        % Second-order current loop rate state
+        xi = {0, "A/s"};                                   % Current rate state
+
+        % Filtered RMS voltage squared (for current amplitude calculation)
+        v_rms_sq = {value = {76729, "V^2"}, priority = priority.low}; % V_nom² = 277²
+    end
+
+    variables
+        T = {value = {300, "K"}, priority = priority.high}; % Rack temperature
+    end
+
+    variables(ExternalAccess=observe)
+        P_gpu_demand = {0, "W"};         % Total GPU power
+        P_dc_load = {0, "W"};            % Power drawn from DC bus (LLC input)
+        V_dc_obs = {400, "V"};           % DC bus voltage
+        I_ac_obs = {0, "A"};             % AC current
+        I_dc_obs = {0, "A"};             % DC current from bus
+        V_ac_obs = {0, "V"};             % AC terminal voltage
+        Z_input_real = {0, "Ohm"};       % Real part of input impedance (instantaneous)
+        f_crossover = {0, "Hz"};         % Approximate voltage loop crossover
+        alpha_mode = {1, "1"};           % CCM/DCM blend factor (1=CCM, 0=DCM)
+        Q = {0, "W"};                    % Heat flow out to thermal network
+    end
+
+    branches
+        i_ac : p.i -> n.i;
+        Q : H.Q -> *;
+    end
+
+    intermediates
+        % Terminal voltage
+        v_terminal = p.v - n.v;
+        v_t_abs = abs(v_terminal);
+        v_t_safe = max(v_t_abs, {10, "V"});
+
+        % === GPU LOAD MODEL ===
+        % P = P_idle + (P_TDP - P_idle) × (2U - U^exponent)
+        P_per_gpu = gpuIdlePower + (gpuTDP - gpuIdlePower) * (2*U - U^powerExponent);
+        P_total_gpu = P_per_gpu * numGPUs + P_cpu + P_aux;
+
+        % === LLC AS CONSTANT POWER LOAD (CPL) ===
+        % LLC regulates 12V output regardless of V_dc_input variation
+        % From PFC DC bus perspective: I_load = P / V_dc (constant power)
+        % This gives NEGATIVE incremental impedance:
+        %   dI/dV = -P/V² < 0  →  Z_incremental = -V²/P
+        %
+        % UVLO: LLC shuts down when DC bus drops below V_dc_uvlo.
+        % Smooth tanh blend over V_dc_uvlo_width avoids discontinuity.
+        uvlo_enable = {0.5, "1"} + {0.5, "1"} * tanh((v_dc - V_dc_uvlo) / V_dc_uvlo_width);
+        P_llc_in = P_total_gpu / (eta_llc * eta_vr) * uvlo_enable;
+        I_llc_from_dc = P_llc_in / max(v_dc, {200, "V"});
+
+        % === PFC VOLTAGE LOOP ===
+        % PI controller: error = V_ref - V_dc
+        % Output = reference power to draw from AC (per PSU)
+        % Saturated: 0 ≤ P_ref ≤ 1.2 × P_max_per_psu (physical limit of PFC)
+        v_error = V_dc_ref - v_dc;
+        P_max_per_psu = gpuTDP * numGPUs / (eta_llc * eta_vr * numPSUs);
+        P_pfc_ref_raw = Kp_pfc * v_error + Ki_pfc * pfc_integrator;
+        P_pfc_ref = min(max(P_pfc_ref_raw, {0, "W"}), P_sat_factor * P_max_per_psu);
+        P_pfc_clamped = P_pfc_ref * numPSUs;
+
+        % AC current reference (unity PF, in-phase with voltage)
+        % Real PFC draws current proportional to voltage waveform:
+        %   i(t) = (P / V_rms²) × v(t)
+        % v_rms_sq is a slowly-filtered estimate of V_rms², decoupled from
+        % instantaneous v_terminal. This prevents algebraic loop when a line
+        % impedance exists between the source and this load.
+        v_rms_sq_safe = max(v_rms_sq, V_nom * V_nom * {0.25, "1"});
+        I_ac_ref = P_pfc_clamped * v_terminal / (v_rms_sq_safe * eta_pfc) + G_damp * v_terminal;
+
+        % === SECOND-ORDER CURRENT LOOP PARAMETERS ===
+        % Derived from BW_current (closed-loop natural frequency = wc)
+        % zeta = 0.6: standard design target for 60deg phase margin
+        wc = 2 * 3.14159 * BW_current;
+        zeta_i = {0.6, "1"};
+        wn_i = wc;
+
+        % === CCM/DCM BOUNDARY ===
+        % DCM occurs when average current falls below boundary:
+        %   I_boundary = V_ac * d * T_sw / (2*L_pfc)
+        T_sw = {1, "1"} / f_sw;
+        d_ss = max({0, "1"}, {1, "1"} - v_t_safe / max(v_dc, {200, "V"}));
+        I_boundary = v_t_safe * d_ss * T_sw / (2 * L_pfc);
+        I_boundary_safe = max(I_boundary, {0.1, "A"});
+
+        % Smooth CCM/DCM blend: alpha=1 (CCM), alpha=0 (DCM)
+        i_ac_abs = abs(i_ac);
+        x_blend = (i_ac_abs - I_boundary_safe) / ({0.05, "1"} * I_boundary_safe);
+        x_blend_clamp = max(min(x_blend, {5, "1"}), {-5, "1"});
+        alpha_ccm = {0.5, "1"} + {0.5, "1"} * tanh(x_blend_clamp);
+
+        % Mode-dependent current loop parameters
+        wn_eff = wn_i * max(alpha_ccm, {0.1, "1"});
+        zeta_eff = zeta_i * sqrt(alpha_ccm + {0.1, "1"});
+
+        % === INPUT IMPEDANCE (observable) ===
+        Z_in_dc_magnitude = v_dc * v_dc / max(P_llc_in, {100, "W"});
+        f_loop_crossover = Ki_pfc / (Kp_pfc * 2 * 3.14159);
+    end
+
+    equations
+        % AC terminal voltage
+        v_ac == v_terminal;
+
+        % === PFC DC BUS DYNAMICS ===
+        % C_total × dV_dc/dt = I_charging - I_load
+        %
+        % I_charging: current from PFC rectifier into DC bus
+        %   = (V_ac × I_ac × eta_pfc) / V_dc  (power balance)
+        % I_load: LLC constant power draw
+        %   = P_llc_in / V_dc
+        %
+        % This equation captures the fundamental dynamic:
+        % When GPU load steps up, I_load increases instantly (CPL),
+        % but I_charging responds slowly (limited by voltage loop BW).
+        % The capacitor supplies the difference → V_dc sags.
+        let
+            P_ac_in = v_terminal * i_ac * eta_pfc;
+            I_pfc_to_dc = P_ac_in / max(v_dc, {200, "V"});
+        in
+            C_dc * numPSUs * v_dc.der == I_pfc_to_dc - I_llc_from_dc;
+        end
+
+        % === PFC VOLTAGE LOOP INTEGRATOR (with anti-windup) ===
+        % Stop integrating when PI output is saturated
+        if P_pfc_ref_raw >= {0, "W"} && P_pfc_ref_raw <= P_sat_factor * P_max_per_psu
+            pfc_integrator.der == v_error;
+        else
+            pfc_integrator.der == {0, "V"};
+        end
+
+        % === RMS VOLTAGE FILTER ===
+        % Low-pass filter on v²: tracks V_rms² with ~2 cycle time constant
+        % Decouples current amplitude from instantaneous voltage
+        tau_rms * v_rms_sq.der == v_terminal * v_terminal - v_rms_sq;
+
+        % === AC CURRENT DYNAMICS (Second-Order Closed-Loop) ===
+        % Models the closed-loop response of average current mode control.
+        % PI controller + boost integrator plant gives second-order:
+        %   G_cl(s) = wn² / (s² + 2*zeta*wn*s + wn²)
+        % State-variable form: xi = di_ac/dt (rate state).
+        % In DCM, wn and zeta degrade smoothly via alpha_ccm blending.
+        i_ac.der == xi;
+        xi.der == wn_eff * wn_eff * (I_ac_ref - i_ac) - 2 * zeta_eff * wn_eff * xi;
+
+        % === THERMAL DYNAMICS ===
+        % All electrical power drawn from AC ultimately becomes heat:
+        %   P_heat = P_gpu + P_aux + P_vr_loss + P_llc_loss + P_pfc_loss
+        %          = P_total_gpu / (eta_llc * eta_vr * eta_pfc)
+        %          = total average AC input power
+        % Using the average (DC) power avoids 120 Hz pulsation on the
+        % thermal state (thermal mass timescale >> electrical period).
+        % Energy balance: m*cp*dT/dt = P_heat_gen - Q_out_to_coolant
+        T == H.T;
+        To == T;
+        let
+            P_heat_total = P_llc_in / eta_pfc;
+        in
+            Q + P_heat_total == rackMass * rackSpHeat * T.der;
+        end
+
+        % === OUTPUTS ===
+        P_load == v_dc * I_llc_from_dc;
+        V_dc_obs == v_dc;
+        I_ac_obs == i_ac;
+        I_dc_obs == I_llc_from_dc;
+        V_ac_obs == v_terminal;
+
+        % === OBSERVABLES ===
+        P_gpu_demand == P_total_gpu;
+        P_dc_load == P_llc_in;
+        Z_input_real == Z_in_dc_magnitude;
+        f_crossover == f_loop_crossover;
+        alpha_mode == alpha_ccm;
+    end
+end

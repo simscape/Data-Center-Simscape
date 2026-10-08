@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>CHB Phase Leg (Average Model)</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-09-22">
+<meta name="DC.source" content="DocumentationCHBPhaseLeg.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>CHB Phase Leg (Average Model)</h1>
+<!--introduction-->
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">Parameters</a>
+</li>
+<li>
+<a href="#3">Modulation Index Input</a>
+</li>
+<li>
+<a href="#4">Initial Conditions</a>
+</li>
+<li>
+<a href="#5">Structure</a>
+</li>
+</ul>
+</div>
+<p>
+<img vspace="5" hspace="5" src="docImageHBridge.png" alt=""> </p>
+<p>One phase leg of a Cascaded H-Bridge (CHB) converter, built from <tt>NumModules</tt> series-connected average H-bridge cells. Use one instance per phase of a Solid State Transformer.</p>
+<p>The component has an input port <i>m</i>, two AC electrical ports <b>AC+</b> and <b>AC-</b>, and one pair of DC electrical ports <b>DC+</b> and <b>DC-</b> per module. The DC ports are node arrays: a leg with <tt>NumModules</tt> set to 3 exposes three independent <b>DC+</b> / <b>DC-</b> pairs, one per cell, so that each cell can be loaded by its own DC bus capacitor and downstream converter.</p>
+<p>The cells are connected in series on the AC side. <b>AC+</b> is the AC terminal of the first cell and <b>AC-</b> is the AC terminal of the last cell, so the leg voltage is the sum of the individual cell voltages. In the figure the DC link capacitors are drawn in grey on dashed stubs because they are not part of this component: each <b>DC+</b> / <b>DC-</b> pair must be loaded externally.</p>
+<h2 id="2">Parameters</h2>
+<div>
+<ul>
+<li>
+<b>Number of H-bridge modules (-)</b>, <tt>NumModules</tt>, specified as a scalar value. Default is <tt>3</tt>.</li>
+<li>
+<b>On-state resistance per module (Ohm)</b>, <tt>OnResistance</tt>, specified as a scalar value. Default is <tt>1e-3</tt>.</li>
+<li>
+<b>Initial DC bus voltage per module (V)</b>, <tt>InitialDCVoltage</tt>, specified as a scalar value. Default is <tt>4400</tt>.</li>
+<li>
+<b>Nominal grid voltage (L-L RMS) for modulation scaling (V)</b>, <tt>GridVoltage</tt>, specified as a scalar value. Default is <tt>13800</tt>.</li>
+<li>
+<b>Total DC voltage per phase leg (V)</b>, <tt>TotalDCVoltage</tt>, specified as a scalar value. Default is <tt>13200</tt>.</li>
+</ul>
+</div>
+<p>
+<tt>OnResistance</tt>, <tt>GridVoltage</tt>, and <tt>TotalDCVoltage</tt> are passed straight through to every cell. Set <tt>TotalDCVoltage</tt> equal to <tt>NumModules * InitialDCVoltage</tt> so that the internal modulation scaling matches the actual DC voltage of the leg. See <a href="matlab:open('DocumentationCHBModule.html')">CHB Module (Average Model)</a> for the scaling expression.</p>
+<h2 id="3">Modulation Index Input</h2>
+<p>The input <i>m</i> is a <b>scalar</b> and is broadcast to all cells: every module in the leg receives the same modulation index. The leg therefore models uniform modulation across the cells, and per-module DC voltage balancing cannot be achieved through this input. Balance the DC buses at the phase level instead, by adding a per-phase offset to the reference upstream of the block.</p>
+<h2 id="4">Initial Conditions</h2>
+<p>
+<tt>InitialDCVoltage</tt> sets the starting value of the internal <tt>vDC</tt> variable of each cell, but that variable is declared with priority <b>None</b>, so it is not asserted as an initial-condition target. The DC bus voltage at simulation start is determined by the capacitor or source that you connect to each <b>DC+</b> / <b>DC-</b> pair. Set the precharge voltage there.</p>
+<p>Initial-condition targets in the electrical part of this converter chain are load-bearing: if the DC bus capacitor targets are not satisfied, the initial-condition solve falls back to ignoring all variable targets and the phase legs diverge instead of starting from precharge.</p>
+<h2 id="5">Structure</h2>
+<p>The component instantiates <tt>NumModules</tt> copies of the <b>CHB Module (Average Model)</b> component with <tt>ExternalAccess = observe</tt>, connects their AC terminals in series, and routes each cell DC terminal pair to the corresponding element of the <b>DC+</b> / <b>DC-</b> node arrays. Each cell has its <b>DC-</b> node tied to the electrical domain reference inside the module, so the DC buses of the leg are not floating.</p>
+<p class="footer">Copyright 2026 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% CHB Phase Leg (Average Model)
+
+% Copyright 2026 The MathWorks, Inc.
+
+%%
+%
+% <<docImageHBridge.png>>
+%
+% One phase leg of a Cascaded H-Bridge (CHB) converter, built from
+% |NumModules| series-connected average H-bridge cells. Use one instance per
+% phase of a Solid State Transformer.
+%
+% The component has an input port _m_, two AC electrical ports *AC+* and
+% *AC-*, and one pair of DC electrical ports *DC+* and *DC-* per module. The
+% DC ports are node arrays: a leg with |NumModules| set to 3 exposes three
+% independent *DC+* / *DC-* pairs, one per cell, so that each cell can be
+% loaded by its own DC bus capacitor and downstream converter.
+%
+% The cells are connected in series on the AC side. *AC+* is the AC terminal
+% of the first cell and *AC-* is the AC terminal of the last cell, so the leg
+% voltage is the sum of the individual cell voltages. In the figure the DC
+% link capacitors are drawn in grey on dashed stubs because they are not part
+% of this component: each *DC+* / *DC-* pair must be loaded externally.
+
+%% Parameters
+% * *Number of H-bridge modules (-)*, |NumModules|, specified as a scalar value. Default is |3|.
+% * *On-state resistance per module (Ohm)*, |OnResistance|, specified as a scalar value. Default is |1e-3|.
+% * *Initial DC bus voltage per module (V)*, |InitialDCVoltage|, specified as a scalar value. Default is |4400|.
+% * *Nominal grid voltage (L-L RMS) for modulation scaling (V)*, |GridVoltage|, specified as a scalar value. Default is |13800|.
+% * *Total DC voltage per phase leg (V)*, |TotalDCVoltage|, specified as a scalar value. Default is |13200|.
+%
+% |OnResistance|, |GridVoltage|, and |TotalDCVoltage| are passed straight
+% through to every cell. Set |TotalDCVoltage| equal to
+% |NumModules * InitialDCVoltage| so that the internal modulation scaling
+% matches the actual DC voltage of the leg. See
+% <matlab:open('DocumentationCHBModule.html') CHB Module (Average Model)>
+% for the scaling expression.
+
+%% Modulation Index Input
+% The input _m_ is a *scalar* and is broadcast to all cells: every module in
+% the leg receives the same modulation index. The leg therefore models
+% uniform modulation across the cells, and per-module DC voltage balancing
+% cannot be achieved through this input. Balance the DC buses at the phase
+% level instead, by adding a per-phase offset to the reference upstream of
+% the block.
+
+%% Initial Conditions
+% |InitialDCVoltage| sets the starting value of the internal |vDC| variable
+% of each cell, but that variable is declared with priority *None*, so it is
+% not asserted as an initial-condition target. The DC bus voltage at
+% simulation start is determined by the capacitor or source that you connect
+% to each *DC+* / *DC-* pair. Set the precharge voltage there.
+%
+% Initial-condition targets in the electrical part of this converter chain
+% are load-bearing: if the DC bus capacitor targets are not satisfied, the
+% initial-condition solve falls back to ignoring all variable targets and the
+% phase legs diverge instead of starting from precharge.
+
+%% Structure
+% The component instantiates |NumModules| copies of the *CHB Module
+% (Average Model)* component with |ExternalAccess = observe|, connects their
+% AC terminals in series, and routes each cell DC terminal pair to the
+% corresponding element of the *DC+* / *DC-* node arrays. Each cell has its
+% *DC-* node tied to the electrical domain reference inside the module, so
+% the DC buses of the leg are not floating.
+
+##### SOURCE END #####
+-->
+</body>
+</html>

@@ -6,6 +6,7 @@ classdef datacenterPhysics < int32
     enumeration
         linear    (1)
         nonlinear (2)
+        LUT       (3)
     end
     methods(Static)
         function map = displayText()

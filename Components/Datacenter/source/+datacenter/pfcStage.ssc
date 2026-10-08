@@ -1,0 +1,111 @@
+component pfcStage
+    % PSU PFC Stage (Average Model):2
+    % Average-value PFC boost rectifier with PI voltage loop.
+    % AC side: physical L-R inductor dynamics with average back-EMF.
+    % DC side: internal capacitor with controlled current source.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationPSUPFCStage.html">Documentation for PSU PFC Stage (Average Model)</a>
+    % <br/>
+
+    % Copyright 2026 The MathWorks, Inc.
+
+    annotations
+        Icon = "icon_psuPFC.png";
+        UILayout = [UIGroup("PFC Parameters",...
+            C_dc, V_dc_ref, Kp_pfc, Ki_pfc, eta_pfc, P_max, G_damp, tau_rms, V_nom),...
+            UIGroup("AC Inductor",...
+            L_ac, R_ac)];
+    end
+
+    nodes
+        p = foundation.electrical.electrical;    % AC+:left
+        n = foundation.electrical.electrical;    % AC-:left
+        dc_p = foundation.electrical.electrical; % DC+:right
+        dc_n = foundation.electrical.electrical; % DC-:right
+    end
+
+    parameters
+        C_dc = {2e-3, "F"};            % DC bus capacitance
+        V_dc_ref = {400, "V"};         % DC bus voltage setpoint
+        Kp_pfc = {1.0, "W/V"};         % Voltage loop proportional gain
+        Ki_pfc = {60, "W/(V*s)"};      % Voltage loop integral gain
+        eta_pfc = {0.97, "1"};         % PFC efficiency
+        P_max = {130000, "W"};         % Maximum PFC power rating
+        G_damp = {0.02, "1/Ohm"};      % Parallel damping conductance
+        tau_rms = {0.040, "s"};        % RMS voltage filter time constant
+        V_nom = {277, "V"};            % Nominal AC RMS voltage
+        L_ac = {0.5e-3, "H"};          % AC boost inductor inductance
+        R_ac = {0.01, "Ohm"};          % AC inductor series resistance
+    end
+
+    variables
+        i_ac = {0, "A"};
+        v_ac = {value = {277, "V"}, priority = priority.low};
+        v_dc = {value = {400, "V"}, priority = priority.high};
+        i_dc = {0, "A"};
+        pfc_integrator = {0, "V*s"};
+        v_rms_sq = {value = {76729, "V^2"}, priority = priority.low};
+    end
+
+    branches
+        i_ac : p.i -> n.i;
+        i_dc : dc_p.i -> dc_n.i;
+    end
+
+    intermediates
+        v_terminal = p.v - n.v;
+        v_dc_bus = dc_p.v - dc_n.v;
+
+        % RMS voltage (filtered)
+        v_rms_sq_safe = max(v_rms_sq, V_nom * V_nom * {0.25, "1"});
+        ac_enable = {0.5, "1"} + {0.5, "1"} * tanh((v_rms_sq - V_nom * V_nom * {0.25, "1"}) / (V_nom * V_nom * {0.04, "1"}));
+
+        % PFC voltage loop (PI on DC bus error)
+        v_error = V_dc_ref - v_dc;
+        P_pfc_ref_raw = Kp_pfc * v_error + Ki_pfc * pfc_integrator;
+        P_pfc_ref = min(max(P_pfc_ref_raw, {0, "W"}), {1.2, "1"} * P_max);
+        P_pfc_clamped = P_pfc_ref;
+
+        % AC current reference (unity PF target)
+        I_ac_ref = (P_pfc_clamped * v_terminal / (v_rms_sq_safe * eta_pfc) + G_damp * v_terminal) * ac_enable;
+
+        % Inner current loop: L*di/dt = (Kc + R_ac)*(I_ac_ref - i_ac)
+        % Time constant tau = L/(Kc+R). For PF > 0.99 at 60Hz:
+        %   phase_lag = atan(2*pi*60*tau) < 8.1 deg => tau < 0.38ms
+        % With BW = 10 kHz: tau = L/(Kc+R) ~ 16 us => minimal phase lag
+        Kc = L_ac / {1e-4, "s"};  % Current loop bandwidth ~10 kHz
+
+        % DC source current (nonlinear CPL: P/v_dc)
+        v_dc_safe = max(v_dc, {0.5, "1"} * V_dc_ref);
+        I_dc_source = P_pfc_clamped / v_dc_safe;
+    end
+
+    equations
+        v_ac == v_terminal;
+        v_dc == v_dc_bus;
+
+        % AC current dynamics (inductor with inner current loop)
+        L_ac * i_ac.der == (Kc + R_ac) * (I_ac_ref - i_ac);
+
+        % DC port: capacitor + current source
+        % KCL: I_source = C*dv/dt + I_load
+        % i_dc flows INTO dc_p from external (negative when load draws)
+        % C*dv/dt = I_source - (-i_dc) ... wait:
+        % Current INTO the component at dc_p = i_dc (from branch definition)
+        % Load draws from bus so current flows OUT of dc_p -> i_dc < 0
+        % KCL at dc_p: I_source (from PFC) - C*dv/dt (into cap) + i_dc (into port from outside) = 0
+        % => C*dv/dt = I_source + i_dc
+        i_dc == C_dc * v_dc.der - I_dc_source;
+
+        % PI integrator with anti-windup
+        if P_pfc_ref_raw >= {0, "W"} && P_pfc_ref_raw <= {1.2, "1"} * P_max && ac_enable > {0.1, "1"}
+            pfc_integrator.der == v_error;
+        else
+            pfc_integrator.der == {0, "V"};
+        end
+
+        % RMS voltage filter
+        tau_rms * v_rms_sq.der == v_terminal * v_terminal - v_rms_sq;
+    end
+end

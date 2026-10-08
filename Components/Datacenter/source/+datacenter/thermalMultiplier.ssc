@@ -1,0 +1,37 @@
+component thermalMultiplier
+% Thermal Multiplier:2
+% This block changes the heat flow value based on input ports Na and Nb.
+
+% Copyright 2026 The MathWorks, Inc.
+
+    inputs
+        Na = {1, '1'}; % Na
+        Nb = {1, '1'}; % Nb
+    end
+    
+    nodes
+        A = foundation.thermal.thermal; % A:left
+        B = foundation.thermal.thermal; % B:right
+    end
+
+    annotations
+        Icon = 'icon_multiplierT.png';
+        [Na,Nb]: Side=top;
+    end
+    
+    variables (Access=protected)
+        % Through variables
+        Qa  = {1e-6, 'W'  }; % Energy flow rate into port A
+        Qb  = {1e-6, 'W'  }; % Energy flow rate into port B     
+    end
+    
+    branches
+        Qa  : A.Q  -> *;
+        Qb  : B.Q  -> *;
+    end
+    
+    equations
+       A.T == B.T;
+       Na*Qa  + Nb*Qb  == 0;
+    end
+end

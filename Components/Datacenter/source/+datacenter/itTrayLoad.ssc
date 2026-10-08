@@ -1,0 +1,160 @@
+component itTrayLoad
+    % IT Tray Load (LLC + VR + GPU as CPL):2
+    % Models the downstream load as seen from the PFC DC bus.
+    % LLC DC/DC + VR + GPU collapsed into a single constant-power-load.
+    %
+    % The LLC regulates its output regardless of DC bus voltage,
+    % creating negative incremental impedance: Z = -V²/P
+    %
+    % UVLO protection: load disconnects when V_bus drops below V_uvlo
+    % with hysteresis (reconnects at V_uvlo_recover). Smooth ramp-down
+    % over V_uvlo_band to avoid chattering.
+    %
+    % Ports:
+    %   dc_p, dc_n — DC electrical input (connect to PSU DC bus)
+    %   U          — GPU utilization input (0 to 1)
+    %   P_load     — Signal output: total DC power consumed
+    %   I_dc       — Signal output: DC current drawn from bus
+    %   fault      — Signal output: 1 = UVLO tripped, 0 = normal
+
+    % Copyright 2026 The MathWorks, Inc.
+
+    annotations
+        Icon = "itTrayLoad.png";
+        UILayout = [UIGroup("GPU Load",...
+            gpuTDP, gpuIdlePower, numGPUs, P_cpu, P_aux, powerExponent)
+        UIGroup("Efficiency",...
+            eta_llc, eta_vr)
+        UIGroup("Protection",...
+            V_uvlo, V_uvlo_recover, V_uvlo_band)
+        UIGroup("Dynamics",...
+            tau_response, C_input)
+        UIGroup("Thermal",...
+            trayMass, traySpHeat, R_th_ambient, T_ambient)];
+    end
+
+    nodes
+        dc_p = foundation.electrical.electrical; % DC+:left
+        dc_n = foundation.electrical.electrical; % DC-:left
+        H = foundation.thermal.thermal;          % H
+    end
+
+    annotations
+        H : Side = Bottom;
+    end
+
+    inputs
+        U = {0.5, "1"}; % U:left
+    end
+
+    outputs
+        P_load = {0, "W"};   % P:right
+        To = {300, "K"};     % T:right
+        fault = {0, "1"};    % fault:right
+    end
+
+    parameters
+        gpuTDP = {1200, "W"};       % GPU TDP per die
+        gpuIdlePower = {300, "W"};  % GPU idle power per die
+        numGPUs = {72, "1"};        % Total GPUs in rack
+        P_cpu = {18000, "W"};       % Total CPU power (e.g. 36 Grace CPUs × 500W)
+        P_aux = {500, "W"};         % Auxiliary load (NIC, BMC, fans)
+        powerExponent = {1.4, "1"}; % Power-utilization curve exponent (NVIDIA ~1.4, AMD ~1.6, Intel ~1.3)
+        eta_llc = {0.96, "1"};      % LLC DC/DC efficiency
+        eta_vr = {0.86, "1"};       % VR efficiency
+
+        % Protection
+        V_uvlo = {720, "V"};            % UVLO threshold — load ramps off below this
+        V_uvlo_recover = {740, "V"};    % UVLO recovery — load reconnects above this
+        V_uvlo_band = {20, "V"};        % Ramp-down band width (smooth transition)
+
+        % Dynamics
+        tau_response = {1e-3, "s"};     % IBC+VRM response time constant
+        C_input = {5e-3, "F"};          % PSU bulk input filter capacitance
+
+        % Thermal
+        trayMass = {80, "kg"};              % IT tray thermal mass
+        traySpHeat = {500, "J/(kg*K)"};     % IT tray specific heat
+        R_th_ambient = {1.11e-5, "K/W"};    % Thermal resistance to ambient (cooling)
+        T_ambient = {308.15, "K"};          % Ambient/coolant temperature (35 deg C)
+    end
+
+    variables
+        i_load = {0, "A"};
+        i_bus = {0, "A"};
+        i_filtered = {0, "A"};
+        v_dc = {value = {400, "V"}, priority = priority.low};
+        T = {value = {300, "K"}, priority = priority.high};
+        uvlo_state = {1, "1"};
+    end
+
+    variables(ExternalAccess=observe)
+        I_dc_obs = {0, "A"};     % DC current drawn from bus
+        Q = {0, "W"};            % Heat flow out to thermal network
+        P_shed = {0, "W"};       % Power shed due to UVLO
+        uvlo_active = {0, "1"};  % UVLO status (1 = tripped)
+    end
+
+    branches
+        i_bus : dc_p.i -> dc_n.i;
+        Q : H.Q -> *;
+    end
+
+    intermediates
+        v_bus = dc_p.v - dc_n.v;
+        v_bus_safe = max(v_bus, {1, "V"});
+
+        % GPU power model (Fan/Barroso)
+        P_per_gpu = gpuIdlePower + (gpuTDP - gpuIdlePower) * (2*U - U^powerExponent);
+        P_total_gpu = P_per_gpu * numGPUs + P_cpu + P_aux;
+
+        % LLC constant power load (before UVLO)
+        P_llc_in = P_total_gpu / (eta_llc * eta_vr);
+        I_cpl_target = P_llc_in / v_bus_safe;
+
+        % UVLO gain: smooth ramp from 1→0 over the band below V_uvlo
+        uvlo_gain = max({0,"1"}, min({1,"1"}, (v_bus - (V_uvlo - V_uvlo_band)) / V_uvlo_band));
+    end
+
+    equations
+        v_dc == v_bus;
+
+        % PSU input filter capacitor
+        i_bus == i_load + C_input * v_dc.der;
+
+        % UVLO state with hysteresis:
+        % Trips when V < V_uvlo, recovers when V > V_uvlo_recover
+        if v_bus < V_uvlo
+            uvlo_state.der == -{10, "1/s"} * uvlo_state;
+        elseif v_bus > V_uvlo_recover
+            uvlo_state.der == {10, "1/s"} * ({1,"1"} - uvlo_state);
+        else
+            uvlo_state.der == {0, "1/s"};
+        end
+
+        % Effective UVLO multiplier (combines state + smooth ramp)
+        let
+            uvlo_enable = uvlo_state * uvlo_gain;
+        in
+            % First-order filtered current (IBC+VRM response dynamics)
+            tau_response * i_filtered.der + i_filtered == I_cpl_target * uvlo_enable;
+
+            % Actual load current
+            i_load == i_filtered;
+        end
+
+        % === THERMAL DYNAMICS ===
+        T == H.T;
+        To == T;
+        Q + (v_bus * i_load) == trayMass * traySpHeat * T.der + (T - T_ambient) / R_th_ambient;
+
+        % Outputs
+        P_load == v_bus * i_load;
+        fault == {1,"1"} - uvlo_state;
+        I_dc_obs == i_bus;
+
+        % Observables
+        P_shed == P_llc_in * ({1,"1"} - uvlo_state * uvlo_gain);
+        uvlo_active == {1,"1"} - uvlo_state;
+    end
+end

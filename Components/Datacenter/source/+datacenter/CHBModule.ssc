@@ -1,0 +1,69 @@
+component CHBModule
+% CHB Module (Average Model) :2.0
+% Average model of a single H-bridge (Cascaded H-Bridge) module.
+% Represents four switches using the average relationships:
+%   v_ac = m * v_dc
+%   i_dc = m * i_ac
+% where m is the modulation index input (-1 to 1).
+%
+% Connect multiple modules in series on the AC side to form a
+% CHB phase leg for a Solid-State Transformer.
+%
+% The DC side of each module connects to an isolated DC bus
+% (each module requires its own DC source or capacitor).
+
+% Copyright 2025 - 2026 The MathWorks, Inc.
+
+inputs
+    m = {0, '1'}; % m:left
+end
+
+nodes
+    ACPositive = foundation.electrical.electrical; % AC+:left
+    ACNegative = foundation.electrical.electrical; % AC-:left
+    DCPositive = foundation.electrical.electrical; % DC+:right
+    DCNegative = foundation.electrical.electrical; % DC-:right
+end
+
+parameters
+    OnResistance = {1e-3, 'Ohm'}; % On-state resistance (total per leg)
+    GridVoltage = {13800, 'V'}; % Nominal grid voltage (L-L RMS)
+    TotalDCVoltage = {13200, 'V'}; % Total DC voltage per phase (N * initial DC voltage)
+end
+
+variables
+    iAC = {0, 'A'};
+    vAC = {0, 'V'};
+    iDC = {0, 'A'};
+    vDC = {value = {0, 'V'}, priority = priority.none};
+    vOn = {0, 'V'};
+end
+
+connections
+    connect(DCNegative, *);
+end
+
+branches
+    iAC : ACPositive.i -> ACNegative.i;
+    iDC : DCPositive.i -> DCNegative.i;
+end
+
+equations
+    let
+        ModulationGain = GridVoltage / (sqrt({3,'1'}/{2,'1'}) * TotalDCVoltage);
+        mEffective = m * ModulationGain;
+        ref = if mEffective >= 1, 1 elseif mEffective < -1, -1 else mEffective end;
+    in
+        vAC == ACPositive.v - ACNegative.v;
+        vDC == DCPositive.v - DCNegative.v;
+        vOn == OnResistance * iAC;
+        vAC == ref * vDC + vOn;
+        iDC == -ref * iAC;
+    end
+end
+
+annotations
+    Icon = 'chb_module_icon.svg';
+end
+
+end

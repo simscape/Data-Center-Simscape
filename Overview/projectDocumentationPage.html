@@ -93,6 +93,7 @@
             border: 1px solid #e0e0e0; border-radius: 3px;
             padding: 12px; background: #fff;
             width: 200px;
+            display: flex; flex-direction: column; height: 100%;
         }
         .example-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
         .example-card .thumb {
@@ -115,6 +116,7 @@
             border-radius: 4px; overflow: hidden;
             transition: box-shadow 0.2s, transform 0.15s;
             width: 220px;
+            display: flex; flex-direction: column; height: 100%;
         }
         .model-card:hover {
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
@@ -130,6 +132,7 @@
         }
         .card-content {
             padding: 0.8rem;
+            display: flex; flex-direction: column; flex: 1;
         }
         .card-content h3 {
             margin: 0 0 0.3rem 0; font-size: 12px; font-weight: 600;
@@ -140,7 +143,8 @@
             color: #555; line-height: 1.5;
         }
         .card-actions {
-            display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem;
+            display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto;
+            padding-top: 0.8rem;
         }
         .btn-load {
             padding: 6px 12px; border: none; border-radius: 4px;
@@ -190,7 +194,7 @@
         <li><a href="#Workflow">Workflow</a></li>
         <li class="sub"><a href="#app-CreatePlantModels">Create Plant Models</a></li>
         <li class="sub"><a href="#app-ElectricalAnalysis">Electrical Analysis</a></li>
-        <li class="sub"><a href="#app-HVACAnalysis">HVAC Analysis</a></li>
+        <li class="sub"><a href="#app-ThermalAnalysis">Thermal Analysis</a></li>
         <li><a href="#components">Components</a></li>
         <li><a href="#test">Testing</a></li>
         <li><a href="#requirements">Requirements</a></li>
@@ -205,14 +209,19 @@
     <!-- Section: Overview -->
     <h1 id="overview">Overview</h1>
     <p>
-        In this project, you learn how to design modern data centers by
-        specifying server rack layouts and power ratings. The project
-        shows how to design and validate double-conversion UPS control
-        systems, including low-voltage ride-through compliance, mains-loss
-        scenarios, and N+1 redundancy analysis for critical workloads. You
-        also learn how to estimate HVAC loads based on server utilization
-        and analyze liquid cooling system power requirements for MW-scale
-        facilities.
+        In this project, you will find eight different workflows that help 
+        you in designing the data centers using Simscape. You start by 
+        building and parameterizing liquid-cooled or air-cooled data center 
+        plant models using the composite library blocks provided in this 
+        project. On the thermal side, you size the cooling system over a 
+        full year of local weather, tune control settings to achieve a low 
+        PUE, design the chiller, cooling tower, and pump temperature 
+        controller, and evaluate aisle and server temperatures for 
+        air-cooled layouts. On the electrical side, you design a 
+        double-conversion UPS validated against IEC 62040-3 and ITIC, 
+        evaluate a Solid State Transformer with CHB-DAB power delivery to 
+        GPU racks, and assess MW-scale network stability under firmware 
+        faults, weak grids, and UPS degradation.
     </p>
 
     <!-- Section: Get Started -->
@@ -236,13 +245,13 @@
         <div class="card-grid">
             <div class="model-card">
                 <div class="card-header-bar"></div>
-                <img class="card-image" src="Images/createPlantModels.png" alt="Create Data Center Model">
+                <img class="card-image" src="Images/iconCreateLiquidCooledDataCenterExample.png" alt="Create Liquid Cooled Data Center Model">
                 <div class="card-content">
-                    <h3>Create Data Center Model</h3>
-                    <p>Learn how to create a cluster of server-racks of three different fidilities: electrical, thermal, and electrothermal.</p>
+                    <h3>Create and Parameterize Data Center Models</h3>
+                    <p>Learn how to create a liquid cooled data center of desired rating. Create and parameterize models for power systems and Thermal analysis.</p>
                     <div class="card-actions">
-                        <a href="matlab:edit('CreateDataCenterModel.m')" class="btn-load btn-primary">Open Live Script</a>
-                        <button class="btn-load btn-secondary" onclick="copyCommand(this, &quot;edit('CreateDataCenterModel.m')&quot;)">Copy Command</button>
+                        <a href="matlab:web('summaryCreateLiquidCooledDataCenter.html','-new')" class="btn-load btn-primary">Summary</a>
+                        <a href="matlab:edit('CreateLiquidCooledDataCenterExample.m')" class="btn-load btn-primary">Open Live Script</a>
                     </div>
                 </div>
             </div>
@@ -255,44 +264,92 @@
         <div class="card-grid">
             <div class="model-card">
                 <div class="card-header-bar"></div>
-                <img class="card-image" src="Images/UPSexampleThumbnail.png" alt="Data Center UPS Control">
+                <img class="card-image" src="Images/iconDesignUPSControlDataCenterExample.png" alt="Data Center UPS Control">
                 <div class="card-content">
-                    <h3>UPS Control Design</h3>
+                    <h3>UPS Control Design for AC Architecture</h3>
                     <p>Learn how to build and control a UPS for data center application, compare to Grid Codes.</p>
                     <div class="card-actions">
+                        <a href="matlab:web('summaryUPScontrolDesign.html','-new')" class="btn-load btn-primary">Summary</a>
                         <a href="matlab:edit('UPSControlDesign.m')" class="btn-load btn-primary">Open Live Script</a>
-                        <button class="btn-load btn-secondary" onclick="copyCommand(this, &quot;edit('UPSControlDesign.m')&quot;)">Copy Command</button>
+                    </div>
+                </div>
+            </div>
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/iconSolidStateTransformerHyperscalarExample.png" alt="Data Center Hyperscalar">
+                <div class="card-content">
+                    <h3>Solid State Transformer Design for Hyperscalar</h3>
+                    <p>Learn how to model and validate a Solid State Transformer power delivery system for a Hyperscale Data Center.</p>
+                    <div class="card-actions">
+                        <a href="matlab:web('summaryHyperscaleSSTdesign.html','-new')" class="btn-load btn-primary">Summary</a>
+                        <a href="matlab:edit('HyperscaleSSTDesign.m')" class="btn-load btn-primary">Open Live Script</a>
+                    </div>
+                </div>
+            </div>
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/iconStabilityAssesmentDataCenterExample.png" alt="Data Center Stability">
+                <div class="card-content">
+                    <h3>Stability Assessment of Data Center Power Delivery</h3>
+                    <p>Learn how to model the stability of an MW-scale data center power delivery network under firmware faults, weak grid conditions, and UPS controller degradation.</p>
+                    <div class="card-actions">
+                        <a href="matlab:web('summaryStabilityAssesment.html','-new')" class="btn-load btn-primary">Summary</a>
+                        <a href="matlab:edit('StabilityAssessment.m')" class="btn-load btn-primary">Open Live Script</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sub-section: HVACAnalysis (collapsible, with example grid) -->
-    <h2 id="app-HVACAnalysis" class="collapsible" onclick="toggle(this)">HVAC Analysis</h2>
+    <!-- Sub-section: ThermalAnalysis (collapsible, with example grid) -->
+    <h2 id="app-ThermalAnalysis" class="collapsible" onclick="toggle(this)">Thermal Analysis</h2>
     <div class="collapse-body">
         <div class="card-grid">
             <div class="model-card">
                 <div class="card-header-bar"></div>
-                <img class="card-image" src="Images/datacenterSchematic01.png" alt="Utilization Analysis">
+                <img class="card-image" src="Images/iconSizeDataCenterCoolingSystemExample.png" alt="Cooling System Sizing">
                 <div class="card-content">
-                    <h3>Data Center Utilization Analysis</h3>
-                    <p>Learn how to estimate HVAC requirements for a typical data center consisting of cluster of server-racks.</p>
+                    <h3>Size Data Center Cooling System</h3>
+                    <p>Learn how to estimate the size/rating for the cooling system of a typical MW scale data center.</p>
                     <div class="card-actions">
-                        <a href="matlab:edit('CreateDatacenterForUtilizationAnalysis.m')" class="btn-load btn-primary">Open Live Script</a>
-                        <button class="btn-load btn-secondary" onclick="copyCommand(this, &quot;edit('CreateDatacenterForUtilizationAnalysis.m')&quot;)">Copy Command</button>
+                        <a href="matlab:web('summarySizeCoolingSystem.html','-new')" class="btn-load btn-primary">Summary</a>
+                        <a href="matlab:edit('SizeDataCenterCoolingSystemExample.m')" class="btn-load btn-primary">Open Live Script</a>
                     </div>
                 </div>
             </div>
             <div class="model-card">
                 <div class="card-header-bar"></div>
-                <img class="card-image" src="Images/CDUexampleThumbnail.png" alt="Datacenter Liquid Cooling">
+                <img class="card-image" src="Images/iconEstimatePUEforDesignParametersExample.png" alt="Datacenter PUE Estimation">
                 <div class="card-content">
-                    <h3>Data Center Liquid Cooling</h3>
-                    <p>Learn how to estimate cooling power requirements for a typical MW-scale liquid cooled data center.</p>
+                    <h3>Estimate Power Usage Effectiveness (PUE) for Different Designs</h3>
+                    <p>Learn how to estimate operational parameters for a typical MW-scale liquid cooled data center to ensure a good PUE number.</p>
                     <div class="card-actions">
-                        <a href="matlab:edit('DatacenterLiquidCooling.m')" class="btn-load btn-primary">Open Live Script</a>
-                        <button class="btn-load btn-secondary" onclick="copyCommand(this, &quot;edit('DatacenterLiquidCooling.m')&quot;)">Copy Command</button>
+                        <a href="matlab:web('summaryEstimatePUEforDesignParameters.html','-new')" class="btn-load btn-primary">Summary</a>
+                        <a href="matlab:edit('EstimatePUEforDesignParametersExample.m')" class="btn-load btn-primary">Open Live Script</a>
+                    </div>
+                </div>
+            </div>
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/iconDesignTemperatureControllerExample.png" alt="Datacenter PUE Estimation">
+                <div class="card-content">
+                    <h3>Design Temperature Controller for Liquid Cooled Data Center</h3>
+                    <p>Learn how to design a temperature controller for a typical MW-scale liquid cooled data center and calculate the PUE number.</p>
+                    <div class="card-actions">
+                        <a href="matlab:web('summaryDesignTemperatureController.html','-new')" class="btn-load btn-primary">Summary</a>
+                        <a href="matlab:edit('DesignTemperatureControllerExample.m')" class="btn-load btn-primary">Open Live Script</a>
+                    </div>
+                </div>
+            </div>
+            <div class="model-card">
+                <div class="card-header-bar"></div>
+                <img class="card-image" src="Images/iconEvaluateAirCooledDataCenterTemperatureExample.png" alt="Datacenter Air Cooling">
+                <div class="card-content">
+                    <h3>Evaluate Temperature in an Air Cooled Data Center</h3>
+                    <p>Learn how to design a temperature controller for a typical air cooled data center and operate different PDU units with different server utilization values.</p>
+                    <div class="card-actions">
+                        <a href="matlab:web('summaryEvaluateAirCooledDataCenter.html','-new')" class="btn-load btn-primary">Summary</a>
+                        <a href="matlab:edit('EvaluateAirCooledDataCenterTemperatureExample.m')" class="btn-load btn-primary">Open Live Script</a>
                     </div>
                 </div>
             </div>
@@ -305,54 +362,25 @@
     <p>
         The project utilizes library components available in Simscape&trade;, Simscape Electrical&trade;, 
         and Simscape Fluids&trade; libraries. There are a few Simscape custom components used in this project, 
-        a list of which you will find below. All such custom components, their documentation, source code, 
-        and test harness can be viewed by natigating to the <b>Components</b> folder in the project root 
+        a list of which you will find below. All such custom components, their documentation, source code,
+        and test harness can be viewed by navigating to the <b>Components</b> folder in the project root
         directory.
     </p>
-    <h2 id="app-DataCenterComponents" class="collapsible" onclick="toggle(this)">Data Center</h2>
-    <div class="collapse-body">
-        <div class="card-grid">
-            <div class="model-card">
-                <div class="card-header-bar"></div>
-                <img class="card-image" src="Images/datacenterLibIcon.png" alt="Data Center Lib">
-                <div class="card-content">
-                    <h3>Server Unit</h3>
-                    <p>The custom component models a server power requirements and heat load based on it's utilization.</p>
-                    <div class="card-actions">
-                        <a href="matlab:web('DocumentationDatacenter.html')" class="btn-load btn-primary">Open Documentation</a>
-                        <a href="matlab:open_system('TestDatacenter')" class="btn-load btn-primary">Open Test Harness</a>
-                    </div>
-                </div>
-            </div>
-            <div class="model-card">
-                <div class="card-header-bar"></div>
-                <img class="card-image" src="Images/utilitiesIcon.png" alt="Data Center Utilities">
-                <div class="card-content">
-                    <h3>Utilities</h3>
-                    <p>Learn how to use functions provided in the project to automate build for large Data Center models.</p>
-                    <div class="card-actions">
-                        <a href="matlab:web('DocumentationDataCenterUtilities.html')" class="btn-load btn-primary">Open Documentation</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <h2 id="app-OtherComponents" class="collapsible" onclick="toggle(this)">Other</h2>
-    <div class="collapse-body">
-        <p>
-            Click <a href="matlab:web('ListOfComponents.html')">Component Documentation</a>
-            to learn more about all the different custom components available in this project. You
-            can also view these components in the <a href="matlab:run('showSimscapeCustomComponents.m')">
-            Simulink Browser</a> by navigating to the Simscape Custom Components section.
-        </p>
-    </div>
+    <p>
+        See <a href="matlab:web('ListOfComponents.html','-new')">List of Components</a> file to 
+        learn more about all the custom blocks and composite components present in this project.
+    </p>
+    <p>
+        Open <a href="matlab:run('showSimscapeCustomComponents')">Data Center Custom Components</a> 
+        to copy them on your Simscape model canvas.
+    </p>
 
 
     <!-- Section: Testing -->
     <h1 id="test">Testing</h1>
     <p>
         To learn more about the testing used in this projct for components and
-        workflows, see <a href="matlab:web('TestFrameworkHome.html')">
+        workflows, see <a href="matlab:web('TestFrameworkHome.html','-new')">
         Testing Framework Documentation</a>. You can run different built in tests
         by going to MATLAB project tool strip and selecting Run Build.
     </p>
@@ -381,14 +409,6 @@
 function toggle(el) {
     el.classList.toggle('open');
     el.nextElementSibling.classList.toggle('open');
-}
-
-function copyCommand(btn, cmd) {
-    navigator.clipboard.writeText(cmd).then(function() {
-        var original = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(function() { btn.textContent = original; }, 1500);
-    });
 }
 </script>
 

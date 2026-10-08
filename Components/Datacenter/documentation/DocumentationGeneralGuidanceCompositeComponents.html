@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><meta name="generator" content="MATLAB 2025b"><title>General Guidance on Composite Component Usage</title><style type="text/css">.rtcContent { padding: 30px; } .S0 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 28.8px; min-height: 0px; white-space: pre-wrap; color: rgb(192, 76, 11); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 24px; font-weight: 400; text-align: left;  }
+.S1 { margin-bottom: 20px; padding-bottom: 4px;  }
+.S2 { margin: 0px; padding: 10px 0px 10px 5px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 700; text-align: start;  }
+.S3 { margin: -1px 0px 0px; padding: 10px 0px 10px 7px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: start;  }
+.S4 { margin: 2px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S5 { margin: 10px 0px 20px; padding-left: 0px; font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-size: 14px;  }
+.S6 { margin-left: 56px; line-height: 21px; min-height: 0px; text-align: left; white-space: pre-wrap;  }
+.S7 { margin: 20px 10px 5px 4px; padding: 0px; line-height: 25px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: 700; text-align: left;  }
+.S8 { margin: 3px; border: 1px solid rgb(191, 191, 191); border-collapse: collapse;  }
+.S9 { background-color: rgba(0, 0, 0, 0);  }
+.S10 { border: 1px solid rgb(191, 191, 191); vertical-align: top;  }
+.S11 { margin: 2px 10px 2px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: break-spaces; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }</style></head><body><div class = rtcContent><h1  class = 'S0' id = 'TMP_58be' ><span>General Guidance on Composite Component Usage</span></h1><div  class = 'S1'><div  class = 'S2'><span style=' font-weight: bold;'>Table of Contents</span></div><div  class = 'S3'><a href = "#TMP_79fd"><span>Data Center / Assemblies
+</span></a><a href = "#TMP_6d7e"><span>Data Center / PDU
+</span></a><a href = "#TMP_0dcc"><span>Data Center / CDU</span></a></div></div><div  class = 'S4' id = 'TMP_88bc' ><span style=' font-weight: bold;'>Acronyms</span></div><ul  class = 'S5'><li  class = 'S6'><span>PDU - Power Distribution Unit</span></li><li  class = 'S6'><span>CDU - Coolant Distribution Unit in a liquid cooled data center</span></li></ul><h2  class = 'S7' id = 'TMP_79fd' ><span>Data Center / Assemblies</span></h2><table  class = 'S8'><col style="width: 204px;" /><col style="width: 543px;" /><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><span style=' font-weight: bold; font-family: monospace;'>Block</span></div></td><td  class = 'S10'><div  class = 'S11'><span style=' font-weight: bold; font-family: monospace;'>General Guidance for Usage</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationAirCooledPDUAssembly.html"><span>Air Cooled PDU Assembly</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block to design air cooled data centers. This composite block models </span><span style=' font-weight: bold;'>PDU Racks</span><span> with </span><span style=' font-weight: bold;'>Rack Air Cooling</span><span> block. </span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationPDUCDUAssemblyLUT.html"><span>PDU + CDU Assembly (LUT)</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block to model liquid cooled data centers using typical supplier data sheets or limited test data for the PDU and CDU components. This is the preferred block for long duration analysis, any optimization analysis etc.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationPDUCDUAssemblyTL.html"><span>PDU + CDU Assembly (TL)</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block to model liquid cooled data center using individual component data sheets for the CDU (eg: pumps, heat exchanger). This is the preferred block when designing controls for the PDU + CDU assembly.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationPDUCDUAssemblyTLTL.html"><span>PDU + CDU Assembly (TL-TL)</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block when you plan to design a detailed cold plate for your liquid cooled data center application. This block combines </span><span style=' font-weight: bold;'>PDU Racks (TL)</span><span> with the </span><span style=' font-weight: bold;'>CDU (TL) Detailed</span><span> block from data center composite library.</span></div></td></tr></table><h2  class = 'S7' id = 'TMP_6d7e' ><span>Data Center / PDU</span></h2><table  class = 'S8'><col style="width: 204px;" /><col style="width: 543px;" /><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><span style=' font-weight: bold; font-family: monospace;'>Block</span></div></td><td  class = 'S10'><div  class = 'S11'><span style=' font-weight: bold; font-family: monospace;'>General Guidance for Usage</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationColdPlate.html"><span>Cold Plate</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block to model IT tray liquid cooling using cold plate. You will need this block if you model liquid cooled data centers with each IT tray modelled with separate set of parameters, either for the </span><span style=' font-weight: bold;'>IT Tray</span><span> or the </span><span style=' font-weight: bold;'>Cold Plate</span><span> composite component.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationServerTray.html"><span>Server Tray</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block to model an IT server tray. Use this component when your IT tray gpu/cpu utilization changes between different trays for the same set of racks of a PDU.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationServerTrayTL.html"><span>Server Tray (TL)</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Similar as </span><span style=' font-weight: bold;'>Server Tray</span><span>; helps you customize </span><span style=' font-weight: bold;'>Cold Plate</span><span> per server tray, based on modelling needs.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationPDURacks.html"><span>PDU Racks</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this component when all IT server trays in a PDU have the same gpu/cpu utilization.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationPDURacksTL.html"><span>PDU Racks (TL)</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Same as </span><span style=' font-weight: bold;'>PDU Racks</span><span>, but with a TL node.</span></div></td></tr></table><h2  class = 'S7' id = 'TMP_0dcc' ><span>Data Center / CDU</span></h2><table  class = 'S8'><col style="width: 204px;" /><col style="width: 543px;" /><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><span style=' font-weight: bold; font-family: monospace;'>Block</span></div></td><td  class = 'S10'><div  class = 'S11'><span style=' font-weight: bold; font-family: monospace;'>General Guidance for Usage</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationRackAirCooling.html"><span>Rack Air Cooling</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this component with </span><span style=' font-weight: bold;'>PDU Racks</span><span> to simulate air cooled PDU units.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationCDULUT.html"><span>CDU (LUT)</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block to simulate CDU for liquid cooling applications. Use this component when you have limited performance data for the CDU. It is well suited to be used with </span><span style=' font-weight: bold;'>PDU Racks</span><span> composite component, as in the </span><span style=' font-weight: bold;'>PDU + CDU Assembly (LUT)</span><span> block.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationCDUTL.html"><span>CDU (TL)</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block to simulate CDU for liquid cooling applications and when you want to model the TL domain on CDU heat exchanger external side, ie. the side that connects to other facilities components. The internal liquid cooling loop is exposed as a thermal node to connect to the </span><span style=' font-weight: bold;'>PDU Racks</span><span> block.</span></div></td></tr><tr  class = 'S9'><td  class = 'S10'><div  class = 'S11'><a href = "./DocumentationCDUTLDetailed.html"><span>CDU (TL) Detailed</span></a></div></td><td  class = 'S10'><div  class = 'S11'><span>Use this block to simulate CDU for liquid cooling applications and when you want to model the TL domain on CDU heat exchanger external as well as internal coolant loops. This block can be used only with </span><span style=' font-weight: bold;'>PDU Racks (TL)</span><span> block.</span></div></td></tr></table><div  class = 'S4'></div>
+<br>
+<!-- 
+##### SOURCE BEGIN #####
+%% General Guidance on Composite Component Usage
+%% 
+% *Acronyms*
+%% 
+% * PDU - Power Distribution Unit
+% * CDU - Coolant Distribution Unit in a liquid cooled data center
+%% Data Center / Assemblies
+%% 
+% |*Block*|
+%% 
+% |*General Guidance for Usage*|
+%% 
+% <./DocumentationAirCooledPDUAssembly.html Air Cooled PDU Assembly>
+%% 
+% Use this block to design air cooled data centers. This composite block models 
+% *PDU Racks* with *Rack Air Cooling* block. 
+%% 
+% <./DocumentationPDUCDUAssemblyLUT.html PDU + CDU Assembly (LUT)>
+%% 
+% Use this block to model liquid cooled data centers using typical supplier 
+% data sheets or limited test data for the PDU and CDU components. This is the 
+% preferred block for long duration analysis, any optimization analysis etc.
+%% 
+% <./DocumentationPDUCDUAssemblyTL.html PDU + CDU Assembly (TL)>
+%% 
+% Use this block to model liquid cooled data center using individual component 
+% data sheets for the CDU (eg: pumps, heat exchanger). This is the preferred block 
+% when designing controls for the PDU + CDU assembly.
+%% 
+% <./DocumentationPDUCDUAssemblyTLTL.html PDU + CDU Assembly (TL-TL)>
+%% 
+% Use this block when you plan to design a detailed cold plate for your liquid 
+% cooled data center application. This block combines *PDU Racks (TL)* with the 
+% *CDU (TL) Detailed* block from data center composite library.
+%% Data Center / PDU
+%% 
+% |*Block*|
+%% 
+% |*General Guidance for Usage*|
+%% 
+% <./DocumentationColdPlate.html Cold Plate>
+%% 
+% Use this block to model IT tray liquid cooling using cold plate. You will 
+% need this block if you model liquid cooled data centers with each IT tray modelled 
+% with separate set of parameters, either for the *IT Tray* or the *Cold Plate* 
+% composite component.
+%% 
+% <./DocumentationServerTray.html Server Tray>
+%% 
+% Use this block to model an IT server tray. Use this component when your IT 
+% tray gpu/cpu utilization changes between different trays for the same set of 
+% racks of a PDU.
+%% 
+% <./DocumentationServerTrayTL.html Server Tray (TL)>
+%% 
+% Similar as *Server Tray*; helps you customize *Cold Plate* per server tray, 
+% based on modelling needs.
+%% 
+% <./DocumentationPDURacks.html PDU Racks>
+%% 
+% Use this component when all IT server trays in a PDU have the same gpu/cpu 
+% utilization.
+%% 
+% <./DocumentationPDURacksTL.html PDU Racks (TL)>
+%% 
+% Same as *PDU Racks*, but with a TL node.
+%% Data Center / CDU
+%% 
+% |*Block*|
+%% 
+% |*General Guidance for Usage*|
+%% 
+% <./DocumentationRackAirCooling.html Rack Air Cooling>
+%% 
+% Use this component with *PDU Racks* to simulate air cooled PDU units.
+%% 
+% <./DocumentationCDULUT.html CDU (LUT)>
+%% 
+% Use this block to simulate CDU for liquid cooling applications. Use this component 
+% when you have limited performance data for the CDU. It is well suited to be 
+% used with *PDU Racks* composite component, as in the *PDU + CDU Assembly (LUT)* 
+% block.
+%% 
+% <./DocumentationCDUTL.html CDU (TL)>
+%% 
+% Use this block to simulate CDU for liquid cooling applications and when you 
+% want to model the TL domain on CDU heat exchanger external side, ie. the side 
+% that connects to other facilities components. The internal liquid cooling loop 
+% is exposed as a thermal node to connect to the *PDU Racks* block.
+%% 
+% <./DocumentationCDUTLDetailed.html CDU (TL) Detailed>
+%% 
+% Use this block to simulate CDU for liquid cooling applications and when you 
+% want to model the TL domain on CDU heat exchanger external as well as internal 
+% coolant loops. This block can be used only with *PDU Racks (TL)* block.
+%% 
+%
+##### SOURCE END #####
+-->
+</div></body></html>

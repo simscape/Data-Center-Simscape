@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>DAB Generalized Average Model</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-09-22">
+<meta name="DC.source" content="DocumentationDABGeneralizedAvgModel.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>DAB Generalized Average Model</h1>
+<!--introduction-->
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">Transformer</a>
+</li>
+<li>
+<a href="#3">Output</a>
+</li>
+<li>
+<a href="#4">Initial Conditions</a>
+</li>
+<li>
+<a href="#5">ESR</a>
+</li>
+<li>
+<a href="#6">Equations</a>
+</li>
+<li>
+<a href="#7">References</a>
+</li>
+</ul>
+</div>
+<p>
+<img vspace="5" hspace="5" src="docImageDAB.png" alt=""> </p>
+<p>Continuous-time generalized average model of a Dual Active Bridge (DAB) isolated DC-DC converter with phase-shift modulation. The model tracks Fourier coefficients of the converter states rather than the switching waveforms, so it reproduces the large-signal DC behaviour and the dominant dynamics without resolving the switching period.</p>
+<p>The component has an input port <i>d</i>, two input electrical ports <b>V+</b> and <b>V-</b>, and two output electrical ports <b>Vo+</b> and <b>Vo-</b>. The control input <i>d</i> is the phase shift ratio. A positive <i>d</i> transfers power from the input port to the output port.</p>
+<p>As the figure shows, the two bridges switch at the same frequency and the only control handle is the lag between them. The leakage inductance of the transformer is the energy transfer element rather than a parasitic: current builds in it while the two bridge voltages disagree, and that current is what carries power across the isolation barrier.</p>
+<p>State variables are the 0th Fourier coefficient of the output capacitor voltage and the real and imaginary parts of the 1st Fourier coefficient of the transformer current. Selecting <b>Include capacitor ESR</b> extends the model from 3rd to 6th order by adding the 0th harmonic of the transformer current and the 1st harmonic of the capacitor voltage.</p>
+<h2 id="2">Transformer</h2>
+<div>
+<ul>
+<li>
+<b>Transformer turns ratio (-)</b>, <tt>N</tt>, specified as a scalar value. Default is <tt>1</tt>.</li>
+<li>
+<b>Primary leakage inductance (H)</b>, <tt>L1</tt>, specified as a scalar value. Default is <tt>68.2e-6</tt>.</li>
+<li>
+<b>Secondary leakage inductance (H)</b>, <tt>L2</tt>, specified as a scalar value. Default is <tt>68.2e-6</tt>.</li>
+<li>
+<b>Equivalent winding + switch resistance (referred to secondary) (Ohm)</b>, <tt>Rt</tt>, specified as a scalar value. Default is <tt>0.5</tt>.</li>
+</ul>
+</div>
+<p>The two leakage inductances enter the equations only through the single equivalent inductance</p>
+<pre>Lt = L1 / N^2 + L2</pre>
+<p>referred to the secondary side. If the datasheet or design gives a single total leakage inductance referred to the primary, put it in <tt>L1</tt> and set <tt>L2</tt> to zero, or refer it to the secondary and put it in <tt>L2</tt>. Splitting the same physical inductance across both parameters double-counts it.</p>
+<h2 id="3">Output</h2>
+<div>
+<ul>
+<li>
+<b>Output capacitance (F)</b>, <tt>Co</tt>, specified as a scalar value. Default is <tt>540e-6</tt>.</li>
+<li>
+<b>Switching frequency (Hz)</b>, <tt>fs</tt>, specified as a scalar value. Default is <tt>10000</tt>.</li>
+</ul>
+</div>
+<p>
+<tt>Co</tt> sets the output pole together with the load, and <tt>fs</tt> appears in the harmonic terms through the angular switching frequency <tt>ws = 2*pi*fs</tt>. Because the model is an averaged one, increasing <tt>fs</tt> does not increase the required solver step.</p>
+<h2 id="4">Initial Conditions</h2>
+<div>
+<ul>
+<li>
+<b>Initial output voltage (V)</b>, <tt>vo0_init</tt>, specified as a scalar value. Default is <tt>0</tt>.</li>
+<li>
+<b>Initial transformer current (real) (A)</b>, <tt>it1R_init</tt>, specified as a scalar value. Default is <tt>0</tt>.</li>
+<li>
+<b>Initial transformer current (imaginary) (A)</b>, <tt>it1I_init</tt>, specified as a scalar value. Default is <tt>0</tt>.</li>
+</ul>
+</div>
+<p>These three values set the starting point of the internal states <tt>vo0</tt>, <tt>it1R</tt>, and <tt>it1I</tt>. All three are declared with priority <b>None</b>, so they seed the solve without being asserted as initial-condition targets. Set <tt>vo0_init</tt> to the intended output bus voltage when the converter feeds a precharged bus, otherwise the output ramps up from zero at the start of the simulation.</p>
+<h2 id="5">ESR</h2>
+<div>
+<ul>
+<li>
+<b>Include capacitor ESR (-)</b>, <tt>include_esr</tt>, specified as a logical value. Default is <tt>false</tt>.</li>
+<li>
+<b>Capacitor ESR (Ohm)</b>, <tt>Rc</tt>, specified as a scalar value. Default is <tt>0.25</tt>.</li>
+</ul>
+</div>
+<p>Leave <b>Include capacitor ESR</b> cleared for the 3rd-order model. Select it for the 6th-order model, in which the output voltage picks up a resistive term proportional to the rectified current and three additional states are integrated. The 6th-order form is more accurate near the switching frequency but is stiffer and slower to solve.</p>
+<h2 id="6">Equations</h2>
+<p>With the ESR option cleared, the component solves</p>
+<pre>Co * d(vo0)/dt  == i_rect + i_out
+Lt * d(it1R)/dt == 2*sin(pi*d)/pi * vo0 - Rt*it1R + ws*Lt*it1I
+Lt * d(it1I)/dt == 2*cos(pi*d)/pi * vo0 - ws*Lt*it1R - Rt*it1I + 2/pi * v_in/N
+v_out           == vo0
+i_in * v_in     == -i_out * v_out</pre>
+<p>where <tt>i_rect = 4/pi * (sin(pi*d)*it1R + cos(pi*d)*it1I)</tt> is the rectified current into the output capacitor. The last equation enforces power balance across an ideal transformer, so all conduction loss is represented by <tt>Rt</tt>.</p>
+<h2 id="7">References</h2>
+<p>L. Qin and J. W. Kimball, "Generalized Average Modeling of Dual Active Bridge DC-DC Converter," <i>IEEE Transactions on Power Electronics</i>, vol. 27, no. 4, pp. 2078-2084, April 2012. The 3rd-order model corresponds to Eq. (27) and the 6th-order model with ESR to Eq. (37) and Eq. (38) of that paper.</p>
+<p class="footer">Copyright 2026 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% DAB Generalized Average Model
+
+% Copyright 2026 The MathWorks, Inc.
+
+%%
+%
+% <<docImageDAB.png>>
+%
+% Continuous-time generalized average model of a Dual Active Bridge (DAB)
+% isolated DC-DC converter with phase-shift modulation. The model tracks
+% Fourier coefficients of the converter states rather than the switching
+% waveforms, so it reproduces the large-signal DC behaviour and the dominant
+% dynamics without resolving the switching period.
+%
+% The component has an input port _d_, two input electrical ports *V+* and
+% *V-*, and two output electrical ports *Vo+* and *Vo-*. The control input
+% _d_ is the phase shift ratio. A positive _d_ transfers power from the input
+% port to the output port.
+%
+% As the figure shows, the two bridges switch at the same frequency and the
+% only control handle is the lag between them. The leakage inductance of the
+% transformer is the energy transfer element rather than a parasitic: current
+% builds in it while the two bridge voltages disagree, and that current is
+% what carries power across the isolation barrier.
+%
+% State variables are the 0th Fourier coefficient of the output capacitor
+% voltage and the real and imaginary parts of the 1st Fourier coefficient of
+% the transformer current. Selecting *Include capacitor ESR* extends the
+% model from 3rd to 6th order by adding the 0th harmonic of the transformer
+% current and the 1st harmonic of the capacitor voltage.
+
+%% Transformer
+% * *Transformer turns ratio (-)*, |N|, specified as a scalar value. Default is |1|.
+% * *Primary leakage inductance (H)*, |L1|, specified as a scalar value. Default is |68.2e-6|.
+% * *Secondary leakage inductance (H)*, |L2|, specified as a scalar value. Default is |68.2e-6|.
+% * *Equivalent winding + switch resistance (referred to secondary) (Ohm)*, |Rt|, specified as a scalar value. Default is |0.5|.
+%
+% The two leakage inductances enter the equations only through the single
+% equivalent inductance
+%
+%  Lt = L1 / N^2 + L2
+%
+% referred to the secondary side. If the datasheet or design gives a single
+% total leakage inductance referred to the primary, put it in |L1| and set
+% |L2| to zero, or refer it to the secondary and put it in |L2|. Splitting
+% the same physical inductance across both parameters double-counts it.
+
+%% Output
+% * *Output capacitance (F)*, |Co|, specified as a scalar value. Default is |540e-6|.
+% * *Switching frequency (Hz)*, |fs|, specified as a scalar value. Default is |10000|.
+%
+% |Co| sets the output pole together with the load, and |fs| appears in the
+% harmonic terms through the angular switching frequency
+% |ws = 2*pi*fs|. Because the model is an averaged one, increasing |fs| does
+% not increase the required solver step.
+
+%% Initial Conditions
+% * *Initial output voltage (V)*, |vo0_init|, specified as a scalar value. Default is |0|.
+% * *Initial transformer current (real) (A)*, |it1R_init|, specified as a scalar value. Default is |0|.
+% * *Initial transformer current (imaginary) (A)*, |it1I_init|, specified as a scalar value. Default is |0|.
+%
+% These three values set the starting point of the internal states |vo0|,
+% |it1R|, and |it1I|. All three are declared with priority *None*, so they
+% seed the solve without being asserted as initial-condition targets. Set
+% |vo0_init| to the intended output bus voltage when the converter feeds a
+% precharged bus, otherwise the output ramps up from zero at the start of the
+% simulation.
+
+%% ESR
+% * *Include capacitor ESR (-)*, |include_esr|, specified as a logical value. Default is |false|.
+% * *Capacitor ESR (Ohm)*, |Rc|, specified as a scalar value. Default is |0.25|.
+%
+% Leave *Include capacitor ESR* cleared for the 3rd-order model. Select it
+% for the 6th-order model, in which the output voltage picks up a resistive
+% term proportional to the rectified current and three additional states are
+% integrated. The 6th-order form is more accurate near the switching
+% frequency but is stiffer and slower to solve.
+
+%% Equations
+% With the ESR option cleared, the component solves
+%
+%  Co * d(vo0)/dt  == i_rect + i_out
+%  Lt * d(it1R)/dt == 2*sin(pi*d)/pi * vo0 - Rt*it1R + ws*Lt*it1I
+%  Lt * d(it1I)/dt == 2*cos(pi*d)/pi * vo0 - ws*Lt*it1R - Rt*it1I + 2/pi * v_in/N
+%  v_out           == vo0
+%  i_in * v_in     == -i_out * v_out
+%
+% where |i_rect = 4/pi * (sin(pi*d)*it1R + cos(pi*d)*it1I)| is the rectified
+% current into the output capacitor. The last equation enforces power balance
+% across an ideal transformer, so all conduction loss is represented by |Rt|.
+
+%% References
+% L. Qin and J. W. Kimball, "Generalized Average Modeling of Dual Active
+% Bridge DC-DC Converter," _IEEE Transactions on Power Electronics_, vol. 27,
+% no. 4, pp. 2078-2084, April 2012. The 3rd-order model corresponds to
+% Eq. (27) and the 6th-order model with ESR to Eq. (37) and Eq. (38) of that
+% paper.
+
+##### SOURCE END #####
+-->
+</body>
+</html>

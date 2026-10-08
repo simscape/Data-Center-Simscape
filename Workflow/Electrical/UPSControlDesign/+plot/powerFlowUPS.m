@@ -1,4 +1,4 @@
-function powerFlowUPS(logsout,zoomRange,timeRange)
+function powerFlowUPS(logsout,zoomRange,opts)
 % powerFlowUPS  Plot active power flow for each UPS unit.
 %
 %   plot.powerFlowUPS(logsout) plots active power for UPS1, UPS2, and
@@ -12,6 +12,13 @@ function powerFlowUPS(logsout,zoomRange,timeRange)
 %   plot.powerFlowUPS(logsout, zoomRange, 'tStart', val, 'tStop', val)
 %   overrides the default full-range plotting limits.
 %
+%   plot.powerFlowUPS(..., 'moduleRating', val) plots absolute power in MW
+%   instead of per-unit. val is the nameplate rating of a single UPS module
+%   in MW, for example ups.rating/1000. Supply this whenever the figure sits
+%   next to a plot in MW: the logged signals are per-unit on each module's
+%   own rating, so 1 pu is one module and not the facility load, and leaving
+%   the two normalizations side by side invites a misread.
+%
 %   Required logsout signals: 'activePowerUPS1', 'activePowerUPS2',
 %   'activePowerUPS3'
 %
@@ -19,14 +26,16 @@ function powerFlowUPS(logsout,zoomRange,timeRange)
 %     plot.powerFlowUPS(logsout)
 %     plot.powerFlowUPS(logsout, [2 4])
 %     plot.powerFlowUPS(logsout, [2 4], 'tStart', 0.1, 'tStop', 10)
+%     plot.powerFlowUPS(logsout, [2 4], 'moduleRating', ups.rating/1000)
 
 % Copyright 2026 The MathWorks, Inc.
 
 arguments
     logsout
     zoomRange double = [];
-    timeRange.tStart double = 0.1;
-    timeRange.tStop double = 10;
+    opts.tStart double = 0.1;
+    opts.tStop double = 10;
+    opts.moduleRating double = [];
 end
 
 fig = figure('Name', 'UPS Power Flow');
@@ -43,7 +52,7 @@ colors = [
 ];
 
 timeData = logsout.get('activePowerUPS1').Values.Time;
-[tPlot, timeIdx] = plot.utils.sliceTime(timeData, timeRange.tStart, timeRange.tStop);
+[tPlot, timeIdx] = plot.utils.sliceTime(timeData, opts.tStart, opts.tStop);
 tStart = tPlot(1);
 tStop = tPlot(end);
 
@@ -61,6 +70,16 @@ for unitIdx = 1:length(upsNames)
     powerVar = strcat('activePower', upsNames{unitIdx});
     raw = logsout.get(powerVar).Values.Data;
     powerData(unitIdx,:) = reshape(raw(timeIdx), 1, []);
+end
+
+% The logged signals are per-unit on one module's nameplate. Convert to MW
+% when that nameplate is supplied, so the figure can be read against the
+% facility-level plots without re-basing.
+if isempty(opts.moduleRating)
+    powerUnit = 'pu';
+else
+    powerData = powerData * opts.moduleRating;
+    powerUnit = 'MW';
 end
 
 [tPd, pPd] = plot.utils.downsample(tPlot, maxPts, powerData);
@@ -85,7 +104,7 @@ for unitIdx = 1:length(upsNames)
     plot(tPd, pData, 'LineWidth', 1.5, 'Color', colors(unitIdx,:));
 end
 title('Active Power')
-ylabel('Power (pu)')
+ylabel(sprintf('Power (%s)', powerUnit))
 xlabel('Time (s)')
 legend(upsNames, 'Location', 'best');
 xlim([tStart, tStop]);
@@ -109,7 +128,7 @@ if hasZoom
 
     [zpMin, zpMax] = plot.utils.autoMargin(pZd);
     title(sprintf('Active Power (%.1fs - %.1fs)', zoomRange(1), zoomRange(2)))
-    ylabel('Power (pu)')
+    ylabel(sprintf('Power (%s)', powerUnit))
     xlabel('Time (s)')
     legend(upsNames, 'Location', 'best');
     xlim([zoomRange(1), zoomRange(2)]);

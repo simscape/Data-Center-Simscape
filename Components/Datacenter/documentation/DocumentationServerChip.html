@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>Server Chip Block</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-10-05">
+<meta name="DC.source" content="DocumentationServerChip.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>Server Chip Block</h1>
+<!--introduction-->
+<p>This block models GPU or CPU die(s) as a signal-level power source with a thermal port. It has no electrical ports and is intended for system-level thermal or energy studies.</p>
+<p>
+<img vspace="5" hspace="5" src="icon_serverChip.png" alt="Server Chip block icon" width="120"> </p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">Overview</a>
+</li>
+<li>
+<a href="#2">Ports</a>
+</li>
+<li>
+<a href="#3">Parameters</a>
+</li>
+<li>
+<a href="#4">See Also</a>
+</li>
+</ul>
+</div>
+<h2 id="1">Overview</h2>
+<p>Use the Processor Type parameter to select GPU or CPU mode. Both modes include temperature-dependent leakage power and reject heat through the thermal port <b>H</b>.</p>
+<p>
+<b>GPU mode:</b>
+</p>
+<pre class="language-matlab">P = P_idle + P_dyn * (2U - U^alpha)
+</pre>
+<p>This nonlinear model (Fan/Barroso 2007) captures the sublinear region at low utilization (memory/NVLink bound) and near-linear GEMM-bound behavior at high utilization. It includes HBM memory power scaled by memory utilization. Typical alpha values are 1.4 (NVIDIA), 1.6 (AMD), and 1.3 (Intel).</p>
+<p>
+<b>CPU mode:</b>
+</p>
+<pre class="language-matlab">P = P_idle + P_dyn * U^beta
+</pre>
+<p>This near-linear model captures CPU power as nearly proportional to utilization due to DVFS (frequency/voltage scaling with load). No HBM term is included. Typical beta is 1.1 for server-class x86/ARM.</p>
+<p>
+<b>Temperature-dependent leakage (both modes):</b>
+</p>
+<pre class="language-matlab">dP = k_leak * max(T - T_nom, 0)
+</pre>
+<p>This linear leakage model follows the Skadron/Stan 2004 HotSpot formulation.</p>
+<h2 id="2">Ports</h2>
+<div>
+<ul>
+<li>
+<b>H</b> --- Thermal (heat rejection to cooling network).</li>
+<li>
+<b>U</b> --- Utilization input (0 to 1).</li>
+<li>
+<b>P</b> --- Total processor power dissipation (signal, W).</li>
+<li>
+<b>T</b> --- Die junction temperature (signal, K).</li>
+</ul>
+</div>
+<h2 id="3">Parameters</h2>
+<p>
+<b>Processor Selection:</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Select processor type</b>, <tt>processorType</tt>, enumeration. Options: <tt>GPU</tt>, <tt>CPU</tt>. Default: <tt>GPU</tt>.</li>
+<li>
+<b>Number of GPU dies</b>, <tt>numGPUs</tt>, scalar. Default: <tt>4</tt>.</li>
+<li>
+<b>Number of CPU sockets</b>, <tt>numCPUs</tt>, scalar. Default: <tt>2</tt>.</li>
+</ul>
+</div>
+<p>
+<b>GPU Parameters (visible when processorType = GPU):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>GPU TDP per die</b>, <tt>gpuTDP</tt>, specified in W. Default: <tt>1200</tt>.</li>
+<li>
+<b>GPU idle power</b>, <tt>gpuIdlePower</tt>, specified in W. Leakage + memory baseline. Default: <tt>300</tt>.</li>
+<li>
+<b>GPU power-utilization exponent</b>, <tt>gpuPowerExponent</tt>, dimensionless. Default: <tt>1.4</tt>.</li>
+<li>
+<b>HBM power per GPU</b>, <tt>hbmPowPerGPU</tt>, specified in W. Default: <tt>80</tt>.</li>
+<li>
+<b>HBM utilization fraction</b>, <tt>hbmUtilizationFrac</tt>, dimensionless. Fraction of compute utilization used for memory. Default: <tt>0.7</tt>.</li>
+</ul>
+</div>
+<p>
+<b>CPU Parameters (visible when processorType = CPU):</b>
+</p>
+<div>
+<ul>
+<li>
+<b>CPU TDP per socket</b>, <tt>cpuTDP</tt>, specified in W. Default: <tt>350</tt>.</li>
+<li>
+<b>CPU idle power per socket</b>, <tt>cpuIdlePower</tt>, specified in W. Default: <tt>80</tt>.</li>
+<li>
+<b>CPU power-utilization exponent</b>, <tt>cpuPowerExponent</tt>, dimensionless. Default: <tt>1.1</tt>.</li>
+</ul>
+</div>
+<p>
+<b>Thermal:</b>
+</p>
+<div>
+<ul>
+<li>
+<b>Leakage increase per K above T_nom</b>, <tt>PleakageCoeff</tt>, specified in W/K. Default: <tt>1.5</tt>.</li>
+<li>
+<b>Nominal die temperature at TDP</b>, <tt>chipTnominal</tt>, specified in K. Default: <tt>350</tt>.</li>
+<li>
+<b>Die thermal capacitance (per die)</b>, <tt>chipCth</tt>, specified in J/K. Default: <tt>50</tt>.</li>
+</ul>
+</div>
+<h2 id="4">See Also</h2>
+<div>
+<ul>
+<li>
+<tt>datacenter.gpuPsuLoad</tt> --- GPU PSU Load model for impedance scan studies with AC electrical ports.</li>
+<li>
+<tt>datacenter.computeProfileSource</tt> --- Workload generator that drives the utilization input.</li>
+</ul>
+</div>
+<p class="footer">Copyright 2026 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% Server Chip Block
+% This block models GPU or CPU die(s) as a signal-level power source with
+% a thermal port. It has no electrical ports and is intended for
+% system-level thermal or energy studies.
+%
+% <<icon_serverChip.png>>
+
+% Copyright 2026 The MathWorks, Inc.
+
+%% Overview
+% Use the Processor Type parameter to select GPU or CPU mode. Both modes
+% include temperature-dependent leakage power and reject heat through
+% the thermal port *H*.
+%
+% *GPU mode:*
+%
+%   P = P_idle + P_dyn * (2U - U^alpha)
+%
+% This nonlinear model (Fan/Barroso 2007) captures the sublinear region at
+% low utilization (memory/NVLink bound) and near-linear GEMM-bound behavior
+% at high utilization. It includes HBM memory power scaled by memory
+% utilization. Typical alpha values are 1.4 (NVIDIA), 1.6 (AMD), and 1.3
+% (Intel).
+%
+% *CPU mode:*
+%
+%   P = P_idle + P_dyn * U^beta
+%
+% This near-linear model captures CPU power as nearly proportional to
+% utilization due to DVFS (frequency/voltage scaling with load). No HBM
+% term is included. Typical beta is 1.1 for server-class x86/ARM.
+%
+% *Temperature-dependent leakage (both modes):*
+%
+%   dP = k_leak * max(T - T_nom, 0)
+%
+% This linear leakage model follows the Skadron/Stan 2004 HotSpot
+% formulation.
+
+%% Ports
+% * *H* REPLACE_WITH_DASH_DASH- Thermal (heat rejection to cooling network).
+% * *U* REPLACE_WITH_DASH_DASH- Utilization input (0 to 1).
+% * *P* REPLACE_WITH_DASH_DASH- Total processor power dissipation (signal, W).
+% * *T* REPLACE_WITH_DASH_DASH- Die junction temperature (signal, K).
+
+%% Parameters
+% *Processor Selection:*
+%
+% * *Select processor type*, |processorType|, enumeration. Options: |GPU|,
+%   |CPU|. Default: |GPU|.
+% * *Number of GPU dies*, |numGPUs|, scalar. Default: |4|.
+% * *Number of CPU sockets*, |numCPUs|, scalar. Default: |2|.
+%
+% *GPU Parameters (visible when processorType = GPU):*
+%
+% * *GPU TDP per die*, |gpuTDP|, specified in W. Default: |1200|.
+% * *GPU idle power*, |gpuIdlePower|, specified in W. Leakage + memory
+%   baseline. Default: |300|.
+% * *GPU power-utilization exponent*, |gpuPowerExponent|, dimensionless.
+%   Default: |1.4|.
+% * *HBM power per GPU*, |hbmPowPerGPU|, specified in W. Default: |80|.
+% * *HBM utilization fraction*, |hbmUtilizationFrac|, dimensionless.
+%   Fraction of compute utilization used for memory. Default: |0.7|.
+%
+% *CPU Parameters (visible when processorType = CPU):*
+%
+% * *CPU TDP per socket*, |cpuTDP|, specified in W. Default: |350|.
+% * *CPU idle power per socket*, |cpuIdlePower|, specified in W.
+%   Default: |80|.
+% * *CPU power-utilization exponent*, |cpuPowerExponent|, dimensionless.
+%   Default: |1.1|.
+%
+% *Thermal:*
+%
+% * *Leakage increase per K above T_nom*, |PleakageCoeff|, specified in
+%   W/K. Default: |1.5|.
+% * *Nominal die temperature at TDP*, |chipTnominal|, specified in K.
+%   Default: |350|.
+% * *Die thermal capacitance (per die)*, |chipCth|, specified in J/K.
+%   Default: |50|.
+
+%% See Also
+% * |datacenter.gpuPsuLoad| REPLACE_WITH_DASH_DASH- GPU PSU Load model for impedance scan
+%   studies with AC electrical ports.
+% * |datacenter.computeProfileSource| REPLACE_WITH_DASH_DASH- Workload generator that drives
+%   the utilization input.
+
+##### SOURCE END #####
+-->
+</body>
+</html>

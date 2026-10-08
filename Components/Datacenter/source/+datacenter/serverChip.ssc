@@ -1,0 +1,137 @@
+component serverChip
+    % Server Chip:2
+    % Models GPU or CPU die(s) as a signal-level power source with thermal port.
+    % No electrical ports — use for system-level thermal or energy studies.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationServerChip.html">Documentation for Server Chip</a>
+    % <br/>
+
+    % Copyright 2026 The MathWorks, Inc.
+
+    annotations
+        UILayout = [UIGroup("Processor Selection",...
+            processorType,numGPUs,numCPUs)
+        UIGroup("GPU Parameters",...
+            gpuTDP,gpuIdlePower,gpuPowerExponent,...
+            hbmPowPerGPU,hbmUtilizationFrac)
+        UIGroup("CPU Parameters",...
+            cpuTDP,cpuIdlePower,cpuPowerExponent)
+        UIGroup("Thermal",...
+            PleakageCoeff,chipTnominal,chipCth)];
+    end
+
+    nodes
+        H = foundation.thermal.thermal; % H
+    end
+
+    annotations
+        U     : Side = left;
+        H     : Side = bottom;
+        Pow   : Side = right;
+        Tchip : Side = right;
+    end
+
+    inputs
+        U = {0.5, "1"}; % U
+    end
+
+    outputs
+        Pow   = {0, "W"};     % P
+        Tchip = {350, "K"};   % T
+    end
+
+    parameters
+        processorType = ProcessorType.GPU; % Select processor type
+        PleakageCoeff = {1.5, "W/K"};      % Leakage increase per K above T_nom
+        chipTnominal = {350, "K"};         % Nominal die temperature at TDP
+        chipCth = {50, "J/K"};             % Die thermal capacitance (per die)
+        % chipRth = {0.15, "K/W"};           % Die-to-heat sink thermal resistance (per die)
+        gpuTDP = {1200, "W"};              % GPU TDP per die
+        gpuIdlePower = {300, "W"};         % GPU idle power, leakage + memory
+        numGPUs = {4, "1"};                % Number of GPU dies
+        gpuPowerExponent = {1.4, "1"};     % GPU power-utilization exponent
+        hbmPowPerGPU = {80, "W"};          % HBM power per GPU
+        hbmUtilizationFrac = {0.7, "1"};   % HBM util as fraction of compute util
+        cpuTDP = {350, "W"};               % CPU TDP per socket
+        cpuIdlePower = {80, "W"};          % CPU idle power per socket
+        numCPUs = {2, "1"};                % Number of CPU sockets
+        cpuPowerExponent = {1.1, "1"};     % CPU power-utilization exponent
+        % 
+        % serverMass = {5, "kg"};            % Mass of each server
+        % serverSpHeat = {2500, "J/(kg*K)"}; % Specific heat capacity of the server
+    end
+
+    % Conditional parameter visibility based on processor type
+    if processorType == ProcessorType.GPU
+        annotations
+            Icon = "icon_gpu.png";
+            [cpuTDP, cpuIdlePower, numCPUs, cpuPowerExponent] : ExternalAccess=none;
+        end
+    else % processorType == ProcessorType.CPU
+        annotations
+            Icon = "icon_cpu.png";
+            [gpuTDP, gpuIdlePower, numGPUs, gpuPowerExponent, hbmPowPerGPU, hbmUtilizationFrac] : ExternalAccess=none;
+        end
+    end
+   
+    variables
+        T = {value = {350, "K"}, priority = priority.high}; % Initial temperature
+        Q = {0, "W"};                                       % Initial heat load
+    end
+
+    branches
+        Q : H.Q -> *;
+    end
+
+    intermediates
+        % Utilization clamped
+        util = min(max(U, {0, "1"}), {1, "1"});
+
+        % === GPU POWER MODEL ===
+        % Nonlinear: P = P_idle + P_dyn * (2U - U^alpha)
+        powGPUdyn   = (gpuTDP - gpuIdlePower) * (2*util - util^gpuPowerExponent);
+        utilMemory  = min(util * hbmUtilizationFrac + {0.1, "1"}, {1, "1"});
+        powGPUhbm   = hbmPowPerGPU * utilMemory * numGPUs;
+        powGPUtotal = (gpuIdlePower + powGPUdyn) * numGPUs + powGPUhbm;
+
+        % === CPU POWER MODEL ===
+        % Near-linear with DVFS: P = P_idle + P_dyn * U^beta
+        powCPUdyn   = (cpuTDP - cpuIdlePower) * util^cpuPowerExponent;
+        powCPUtotal = (cpuIdlePower + powCPUdyn) * numCPUs;
+
+        % === SELECT BASED ON ENUM ===
+        powCompute = ...
+            if processorType == ProcessorType.GPU
+                powGPUtotal
+            else
+                powCPUtotal
+            end;
+
+        % Leakage (temperature dependent, applies to both)
+        deltaT = T - chipTnominal;
+        nChips = ...
+            if processorType == ProcessorType.GPU
+                numGPUs
+            else
+                numCPUs
+            end;
+        powLeakage = PleakageCoeff * max(deltaT, {0, "K"}) * nChips;
+
+        % Total power
+        powTotal = powCompute + powLeakage;
+    end
+
+    equations
+        % Thermal dynamics (scaled by number of dies: C_total = N*C, R_total = R/N)
+        chipCth * nChips * T.der == powTotal + Q; % - (T - H.T) * nChips / chipRth;
+        % Q == (T - H.T) * nChips / chipRth;
+        T == H.T;
+        % 
+        % T == H.T;
+        % Q + powTotal == nChips*serverMass*serverSpHeat*T.der;
+        % Outputs
+        Pow == powTotal;
+        Tchip == T;
+    end
+end

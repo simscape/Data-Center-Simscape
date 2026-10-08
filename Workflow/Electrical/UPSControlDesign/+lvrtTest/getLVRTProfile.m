@@ -41,16 +41,23 @@ function gridCode = getLVRTProfile(codeName)
             gridCode.voltagePu     = [0.15, 0.50, 0.80, 0.90, 1.0];
             gridCode.interpolation = 'step';
 
-        case 'RTEFrance'
-            gridCode.name          = 'RTEFrance';
+        case 'RTE France'
+            % Segment 2 ramps linearly from the 0.15 pu floor up to 0.9 pu,
+            % reached one sample before t = 1.2 s and then held. Each entry is
+            % the target voltage at its breakpoint, not a ramp rate:
+            % buildLvrtProfile interpolates between breakpoint values, so a rate
+            % written here overshoots. The earlier
+            % 0.15+0.9*(1.2-sampleTime-0.15) evaluated to 1.094955 pu, giving a
+            % 9.5% swell and then a 0.195 pu step back down to 0.9.
+            gridCode.name          = 'RTE France';
             gridCode.faultTime     = [0, 0.15, 1.2-sampleTime, 1.2, 4.0];
-            gridCode.voltagePu     = [0.15, 0.15, 0.15+0.9*(1.2-sampleTime-0.15), 0.9, 1.0];
+            gridCode.voltagePu     = [0.15, 0.15, 0.9, 0.9, 1.0];
             gridCode.interpolation = {'step', 'linear', 'step', 'step'};
 
-        case 'EirGrid'
-            gridCode.name          = 'EirGrid';
-            gridCode.faultTime     = [0, 0.15, 0.50, 2.0, 4.0];
-            gridCode.voltagePu     = [0.15, 0.50, 0.80, 0.90, 1.0];
+        case 'Eir Grid'
+            gridCode.name          = 'Eir Grid';
+            gridCode.faultTime     = [0, 0.45, 0.50, 2.0, 4.0];
+            gridCode.voltagePu     = [0.15, 0.50, 0.90, 0.90, 1.0];
             gridCode.interpolation = 'step';
 
         case 'ATC'
@@ -78,7 +85,7 @@ function gridCode = getLVRTProfile(codeName)
 
         otherwise
             error('getLVRTProfile:unknownCode', ...
-                'Unknown grid code: %%s. Available: None, ERCOT, RTEFrance, EirGrid, ATC, AESO, SevereSag', codeName); %#ok<*CTPCT>
+                'Unknown grid code: %s. Available: None, ERCOT, RTE France, Eir Grid, ATC, AESO, SevereSag', codeName); %#ok<*CTPCT>
     end
 
 end

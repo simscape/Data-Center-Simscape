@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>Solid State Transformer (CHB-DAB)</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-09-22">
+<meta name="DC.source" content="DocumentationSolidStateTransformer.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>Solid State Transformer (CHB-DAB)</h1>
+<!--introduction-->
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">General</a>
+</li>
+<li>
+<a href="#3">DAB</a>
+</li>
+<li>
+<a href="#4">Parameters Not Shown on a Tab</a>
+</li>
+<li>
+<a href="#5">Which Parameters Are Live and Which Are Display Only</a>
+</li>
+<li>
+<a href="#6">Structure</a>
+</li>
+</ul>
+</div>
+<p>
+<img vspace="5" hspace="5" src="docImageSolidStateTrasnformer.png" alt=""> </p>
+<p>Composite model of a medium-voltage Solid State Transformer that replaces the line-frequency transformer, the AC switchgear, and the rectifier stage of a conventional datacenter power train with a single power-electronic conversion chain.</p>
+<p>Each of the three phases carries one Cascaded H-Bridge phase leg of series-connected cells. Every cell has its own DC link capacitor and its own Dual Active Bridge module, and all of the DAB outputs are paralleled onto the common low-voltage DC bus that feeds the IT racks. Both converter stages use averaged models, so the simulation resolves the control dynamics and the DC link behaviour without resolving switching events.</p>
+<p>The block has one three-phase electrical port <b>ABC</b> on the left, two DC electrical ports <b>+</b> and <b>-</b> on the right, and one signal output <b>Out1</b> that carries the PFC controller flag.</p>
+<p>The internal component models are documented separately:</p>
+<div>
+<ul>
+<li>
+<a href="matlab:open('DocumentationCHBPhaseLeg.html')">CHB Phase Leg (Average Model)</a>
+</li>
+<li>
+<a href="matlab:open('DocumentationCHBModule.html')">CHB Module (Average Model)</a>
+</li>
+<li>
+<a href="matlab:open('DocumentationDABGeneralizedAvgModel.html')">DAB Generalized Average Model</a>
+</li>
+</ul>
+</div>
+<h2 id="2">General</h2>
+<div>
+<ul>
+<li>
+<b>Input Voltage - Phase to Phase RMS (V)</b>, <tt>inputVoltage</tt>, specified as a scalar value. Default is <tt>sst.inputVoltage</tt>.</li>
+<li>
+<b>DC Bus Voltage per Module (V)</b>, <tt>dcBusVoltage</tt>, specified as a scalar value. Default is <tt>sst.chb.dcBusVoltage</tt>.</li>
+<li>
+<b>DC Output Voltage (V)</b>, <tt>dcOutputVoltage</tt>, specified as a scalar value. Default is <tt>sst.dcOutputVoltage</tt>.</li>
+<li>
+<b>Grid Frequency (Hz)</b>, <tt>frequency</tt>, specified as a scalar value. Default is <tt>sst.frequency</tt>.</li>
+<li>
+<b>Number of CHB Modules per Phase</b>, <tt>numModules</tt>, specified as a scalar value. Default is <tt>sst.chb.numModules</tt>.</li>
+<li>
+<b>DC Bus Capacitance (F)</b>, <tt>dcBusCapacitance</tt>, specified as a scalar or a three-element vector. Default is <tt>sst.chb.dcBusCapacitance</tt>.</li>
+<li>
+<b>Filter Inductance (H)</b>, <tt>filterInductance</tt>, specified as a scalar value. Default is <tt>sst.filter.inductance</tt>.</li>
+<li>
+<b>Filter Resistance (Ohm)</b>, <tt>filterResistance</tt>, specified as a scalar value. Default is <tt>sst.filter.resistance</tt>.</li>
+</ul>
+</div>
+<p>
+<tt>dcBusCapacitance</tt> accepts either a scalar, applied to every cell, or a three-element vector <tt>[Ca Cb Cc]</tt> that sets a different capacitance per phase. A per-phase vector is useful for studying the effect of capacitor tolerance or of a partial capacitor bank failure on the DC voltage balancing loop.</p>
+<h2 id="3">DAB</h2>
+<div>
+<ul>
+<li>
+<b>Proportional Gain (Kp)</b>, <tt>Kp_dab</tt>, specified as a scalar value. Default is <tt>sst.dab.kp</tt>.</li>
+<li>
+<b>Integral Gain (Ki)</b>, <tt>Ki_dab</tt>, specified as a scalar value. Default is <tt>sst.dab.ki</tt>.</li>
+<li>
+<b>Phase Shift Upper Limit</b>, <tt>dab_sat_upper</tt>, specified as a scalar value. Default is <tt>sst.dab.upperLimit</tt>.</li>
+<li>
+<b>Phase Shift Lower Limit</b>, <tt>dab_sat_lower</tt>, specified as a scalar value. Default is <tt>sst.dab.lowerLimit</tt>.</li>
+</ul>
+</div>
+<p>The phase shift limits bound the PI output. A DAB transfers maximum power at a phase shift ratio of one half, so keeping the limits inside that value holds the converter on the monotonic part of the power transfer characteristic, where the control loop gain does not change sign.</p>
+<h2 id="4">Parameters Not Shown on a Tab</h2>
+<div>
+<ul>
+<li>
+<b>DAB sample time (s)</b>, <tt>dab_sampleTime</tt>, specified as a scalar value. Default is <tt>sst.dab.sampleTime</tt>.</li>
+<li>
+<b>Initial DC bus voltage (V)</b>, <tt>Vdc_init</tt>, specified as a scalar or a three-element vector. Default is <tt>sst.chb.Vdc_init</tt>.</li>
+</ul>
+</div>
+<p>These two parameters exist in the mask but are not assigned to the <b>General</b> or <b>DAB</b> tab, so they appear outside the tab container in the dialog. <tt>Vdc_init</tt> accepts a per-phase vector on the same rule as <tt>dcBusCapacitance</tt> and sets the <tt>vc</tt> initial-condition target of the DC link capacitors. Those targets are load-bearing: if they are not satisfied, the initial-condition solve falls back to ignoring all variable targets and the CHB DC links start from zero and diverge.</p>
+<h2 id="5">Which Parameters Are Live and Which Are Display Only</h2>
+<p>The mask initialization code propagates only four of the fourteen mask parameters to the child blocks:</p>
+<div>
+<ul>
+<li>
+<tt>dcBusCapacitance</tt> and <tt>Vdc_init</tt> are written to the <tt>c</tt> and <tt>vc</tt> dialogs of the DC link <b>Capacitor</b> blocks.</li>
+<li>
+<tt>filterInductance</tt> and <tt>filterResistance</tt> are written to the <tt>L</tt> and <tt>R</tt> dialogs of <tt>Filter &amp; AC measurements/RL filter</tt>.</li>
+</ul>
+</div>
+<p>
+<tt>frequency</tt> has exactly one consumer, the PLL inside <tt>Filter &amp; AC measurements</tt>, and that block is <b>commented out</b>, so the parameter currently has no effect.</p>
+<p>The remaining nine parameters -- <tt>inputVoltage</tt>, <tt>dcBusVoltage</tt>, <tt>dcOutputVoltage</tt>, <tt>numModules</tt>, <tt>Kp_dab</tt>, <tt>Ki_dab</tt>, <tt>dab_sat_upper</tt>, <tt>dab_sat_lower</tt>, and <tt>dab_sampleTime</tt> -- are <b>display only</b>. The child blocks that need those quantities do not read the mask parameter; they evaluate the corresponding <tt>sst.*</tt> variable from the base workspace directly, or use a literal:</p>
+<div>
+<ul>
+<li>
+<tt>PI_central</tt> reads <tt>sst.dab.kp</tt>, <tt>sst.dab.ki</tt>, <tt>sst.dab.upperLimit</tt>, <tt>sst.dab.lowerLimit</tt>, and <tt>sst.dab.sampleTime</tt>.</li>
+<li>The <b>DAB Generalized Average Model</b> blocks read <tt>sst.dab.turnsRatio</tt>, <tt>sst.dab.primaryLeakageInductance</tt>, and the rest of <tt>sst.dab.*</tt>.</li>
+<li>The <b>CHB Phase Leg</b> blocks use literal values for <tt>NumModules</tt>, <tt>OnResistance</tt>, <tt>InitialDCVoltage</tt>, <tt>GridVoltage</tt>, and <tt>TotalDCVoltage</tt> rather than reading the mask or <tt>sst.*</tt>.</li>
+</ul>
+</div>
+<p>The consequence is that the dialog shows the right number while editing the field changes nothing, because the mask parameter and the child block are both looking at the same base workspace variable. To change any of these nine quantities, edit <tt>SSTParam.m</tt> and re-run it. The comment at the top of the mask initialization code claims that the DAB PI gains are propagated to all of the DAB controllers, which is behaviour the code does not implement.</p>
+<h2 id="6">Structure</h2>
+<p>
+<b>Filter &amp; AC measurements</b> holds the series RL line filter, a three-phase current and voltage sensor, a three-phase power sensor, and the per-unit scaling and low-pass filtering of the measured signals. The PLL in this subsystem is commented out.</p>
+<p>
+<b>Converters</b> holds a Phase Splitter and three identical phase subsystems. Each phase subsystem contains one <b>CHB Phase Leg (Average Model)</b>, one DC link <b>Capacitor</b> block with an <b>Electrical Reference</b> per cell, one <b>DAB Generalized Average Model</b> per cell, voltage sensors, and a gain that normalises the DC output voltage for the per-unit DAB control loop. The per-phase DC voltage measurements are averaged to produce the bus average used by both balancing loops.</p>
+<p>
+<b>PFC Rectifier Controller</b> is the grid-side control: a PLL, a DC Voltage Controller that produces the current reference, a dq Current Controller, and a Reset Controller. Its gains come from <tt>sst.pfc.*</tt> -- <tt>kpVoltage</tt>, <tt>kiVoltage</tt>, <tt>kpId</tt> and <tt>kpIq</tt>, <tt>kiId</tt> and <tt>kiIq</tt> -- and it runs at <tt>sst.pfc.sampleTime</tt>. Its outputs are the three-phase modulation reference, a measurement bus, and the flag routed to <b>Out1</b>.</p>
+<p>
+<b>DC Voltage Balancing</b> adds a per-phase correction to the modulation reference. For each phase it forms the error between the phase DC voltage and the bus average, multiplies it by <tt>sst.chb.Kbal</tt>, and then by <tt>sign(m)</tt> for that phase, so the correction always acts in the direction that charges or discharges the link regardless of the polarity of the modulation. This is the horizontal balancing loop between the three phase legs. There is no vertical balancing between the cells of one leg, because the CHB Phase Leg broadcasts a single scalar modulation index to all of its cells.</p>
+<p>
+<b>DAB Controller</b> regulates the low-voltage DC bus. A single <tt>PI_central</tt> PI controller compares the per-unit bus voltage against a unity per-unit reference and produces the common phase shift command. <b>DAB Balancing</b> then adds a small per-phase trim: each phase DC voltage error is passed through a zero-order hold at <tt>sst.dab.bal_Ts</tt> and a first-order discrete low-pass filter whose pole <tt>sst.dab.bal_alpha</tt> follows from the corner frequency <tt>sst.dab.bal_fc</tt>, is scaled by <tt>sst.dab.Kp_bal</tt>, and is saturated to a small symmetric limit. The trim authority is deliberately small and slow so that the balancing loop cannot interact with the central voltage loop.</p>
+<p>Two supervisory elements gate the DAB controller. <tt>StartupDelay</tt> is a step that releases the controller shortly after the start of the simulation, holding the phase shift at zero while the CHB DC links precharge. <tt>VacLowRelay</tt> is a relay on the measured per-unit AC voltage, with the switch-on threshold set above the switch-off threshold. While the AC voltage is below that band the controller output is switched to zero, which stops power transfer during a deep voltage sag and resets the PI integrator. The hysteresis between the two thresholds prevents chattering at the edge of a ride-through event.</p>
+<p class="footer">Copyright 2026 The MathWorks, Inc.<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% Solid State Transformer (CHB-DAB)
+
+% Copyright 2026 The MathWorks, Inc.
+
+%%
+%
+% <<docImageSolidStateTrasnformer.png>>
+%
+% Composite model of a medium-voltage Solid State Transformer that replaces
+% the line-frequency transformer, the AC switchgear, and the rectifier stage
+% of a conventional datacenter power train with a single power-electronic
+% conversion chain.
+%
+% Each of the three phases carries one Cascaded H-Bridge phase leg of
+% series-connected cells. Every cell has its own DC link capacitor and its own
+% Dual Active Bridge module, and all of the DAB outputs are paralleled onto the
+% common low-voltage DC bus that feeds the IT racks. Both converter stages use
+% averaged models, so the simulation resolves the control dynamics and the DC
+% link behaviour without resolving switching events.
+%
+% The block has one three-phase electrical port *ABC* on the left, two DC
+% electrical ports *+* and *-* on the right, and one signal output *Out1* that
+% carries the PFC controller flag.
+%
+% The internal component models are documented separately:
+%
+% * <matlab:open('DocumentationCHBPhaseLeg.html') CHB Phase Leg (Average Model)>
+% * <matlab:open('DocumentationCHBModule.html') CHB Module (Average Model)>
+% * <matlab:open('DocumentationDABGeneralizedAvgModel.html') DAB Generalized Average Model>
+
+%% General
+% * *Input Voltage - Phase to Phase RMS (V)*, |inputVoltage|, specified as a scalar value. Default is |sst.inputVoltage|.
+% * *DC Bus Voltage per Module (V)*, |dcBusVoltage|, specified as a scalar value. Default is |sst.chb.dcBusVoltage|.
+% * *DC Output Voltage (V)*, |dcOutputVoltage|, specified as a scalar value. Default is |sst.dcOutputVoltage|.
+% * *Grid Frequency (Hz)*, |frequency|, specified as a scalar value. Default is |sst.frequency|.
+% * *Number of CHB Modules per Phase*, |numModules|, specified as a scalar value. Default is |sst.chb.numModules|.
+% * *DC Bus Capacitance (F)*, |dcBusCapacitance|, specified as a scalar or a three-element vector. Default is |sst.chb.dcBusCapacitance|.
+% * *Filter Inductance (H)*, |filterInductance|, specified as a scalar value. Default is |sst.filter.inductance|.
+% * *Filter Resistance (Ohm)*, |filterResistance|, specified as a scalar value. Default is |sst.filter.resistance|.
+%
+% |dcBusCapacitance| accepts either a scalar, applied to every cell, or a
+% three-element vector |[Ca Cb Cc]| that sets a different capacitance per
+% phase. A per-phase vector is useful for studying the effect of capacitor
+% tolerance or of a partial capacitor bank failure on the DC voltage
+% balancing loop.
+
+%% DAB
+% * *Proportional Gain (Kp)*, |Kp_dab|, specified as a scalar value. Default is |sst.dab.kp|.
+% * *Integral Gain (Ki)*, |Ki_dab|, specified as a scalar value. Default is |sst.dab.ki|.
+% * *Phase Shift Upper Limit*, |dab_sat_upper|, specified as a scalar value. Default is |sst.dab.upperLimit|.
+% * *Phase Shift Lower Limit*, |dab_sat_lower|, specified as a scalar value. Default is |sst.dab.lowerLimit|.
+%
+% The phase shift limits bound the PI output. A DAB transfers maximum power at
+% a phase shift ratio of one half, so keeping the limits inside that value
+% holds the converter on the monotonic part of the power transfer
+% characteristic, where the control loop gain does not change sign.
+
+%% Parameters Not Shown on a Tab
+% * *DAB sample time (s)*, |dab_sampleTime|, specified as a scalar value. Default is |sst.dab.sampleTime|.
+% * *Initial DC bus voltage (V)*, |Vdc_init|, specified as a scalar or a three-element vector. Default is |sst.chb.Vdc_init|.
+%
+% These two parameters exist in the mask but are not assigned to the *General*
+% or *DAB* tab, so they appear outside the tab container in the dialog.
+% |Vdc_init| accepts a per-phase vector on the same rule as
+% |dcBusCapacitance| and sets the |vc| initial-condition target of the DC link
+% capacitors. Those targets are load-bearing: if they are not satisfied, the
+% initial-condition solve falls back to ignoring all variable targets and the
+% CHB DC links start from zero and diverge.
+
+%% Which Parameters Are Live and Which Are Display Only
+% The mask initialization code propagates only four of the fourteen mask
+% parameters to the child blocks:
+%
+% * |dcBusCapacitance| and |Vdc_init| are written to the |c| and |vc| dialogs of the DC link *Capacitor* blocks.
+% * |filterInductance| and |filterResistance| are written to the |L| and |R| dialogs of |Filter & AC measurements/RL filter|.
+%
+% |frequency| has exactly one consumer, the PLL inside
+% |Filter & AC measurements|, and that block is *commented out*, so the
+% parameter currently has no effect.
+%
+% The remaining nine parameters REPLACE_WITH_DASH_DASH |inputVoltage|, |dcBusVoltage|,
+% |dcOutputVoltage|, |numModules|, |Kp_dab|, |Ki_dab|, |dab_sat_upper|,
+% |dab_sat_lower|, and |dab_sampleTime| REPLACE_WITH_DASH_DASH are *display only*. The child
+% blocks that need those quantities do not read the mask parameter; they
+% evaluate the corresponding |sst.*| variable from the base workspace
+% directly, or use a literal:
+%
+% * |PI_central| reads |sst.dab.kp|, |sst.dab.ki|, |sst.dab.upperLimit|, |sst.dab.lowerLimit|, and |sst.dab.sampleTime|.
+% * The *DAB Generalized Average Model* blocks read |sst.dab.turnsRatio|, |sst.dab.primaryLeakageInductance|, and the rest of |sst.dab.*|.
+% * The *CHB Phase Leg* blocks use literal values for |NumModules|, |OnResistance|, |InitialDCVoltage|, |GridVoltage|, and |TotalDCVoltage| rather than reading the mask or |sst.*|.
+%
+% The consequence is that the dialog shows the right number while editing the
+% field changes nothing, because the mask parameter and the child block are
+% both looking at the same base workspace variable. To change any of these
+% nine quantities, edit |SSTParam.m| and re-run it. The comment at the top of
+% the mask initialization code claims that the DAB PI gains are propagated to
+% all of the DAB controllers, which is behaviour the code does not implement.
+
+%% Structure
+% *Filter & AC measurements* holds the series RL line filter, a three-phase
+% current and voltage sensor, a three-phase power sensor, and the per-unit
+% scaling and low-pass filtering of the measured signals. The PLL in this
+% subsystem is commented out.
+%
+% *Converters* holds a Phase Splitter and three identical phase subsystems.
+% Each phase subsystem contains one *CHB Phase Leg (Average Model)*, one DC
+% link *Capacitor* block with an *Electrical Reference* per cell, one *DAB
+% Generalized Average Model* per cell, voltage sensors, and a gain that
+% normalises the DC output voltage for the per-unit DAB control loop. The
+% per-phase DC voltage measurements are averaged to produce the bus average
+% used by both balancing loops.
+%
+% *PFC Rectifier Controller* is the grid-side control: a PLL, a DC Voltage
+% Controller that produces the current reference, a dq Current Controller,
+% and a Reset Controller. Its gains come from |sst.pfc.*| REPLACE_WITH_DASH_DASH |kpVoltage|,
+% |kiVoltage|, |kpId| and |kpIq|, |kiId| and |kiIq| REPLACE_WITH_DASH_DASH and it runs at
+% |sst.pfc.sampleTime|. Its outputs are the three-phase modulation reference,
+% a measurement bus, and the flag routed to *Out1*.
+%
+% *DC Voltage Balancing* adds a per-phase correction to the modulation
+% reference. For each phase it forms the error between the phase DC voltage
+% and the bus average, multiplies it by |sst.chb.Kbal|, and then by
+% |sign(m)| for that phase, so the correction always acts in the direction
+% that charges or discharges the link regardless of the polarity of the
+% modulation. This is the horizontal balancing loop between the three phase
+% legs. There is no vertical balancing between the cells of one leg, because
+% the CHB Phase Leg broadcasts a single scalar modulation index to all of its
+% cells.
+%
+% *DAB Controller* regulates the low-voltage DC bus. A single |PI_central| PI
+% controller compares the per-unit bus voltage against a unity per-unit
+% reference and produces the common phase shift command. *DAB Balancing* then
+% adds a small per-phase trim: each phase DC voltage error is passed through a
+% zero-order hold at |sst.dab.bal_Ts| and a first-order discrete low-pass
+% filter whose pole |sst.dab.bal_alpha| follows from the corner frequency
+% |sst.dab.bal_fc|, is scaled by |sst.dab.Kp_bal|, and is saturated to a small
+% symmetric limit. The trim authority is deliberately small and slow so that
+% the balancing loop cannot interact with the central voltage loop.
+%
+% Two supervisory elements gate the DAB controller. |StartupDelay| is a step
+% that releases the controller shortly after the start of the simulation,
+% holding the phase shift at zero while the CHB DC links precharge.
+% |VacLowRelay| is a relay on the measured per-unit AC voltage, with the
+% switch-on threshold set above the switch-off threshold. While the AC voltage
+% is below that band the controller output is switched to zero, which stops
+% power transfer during a deep voltage sag and resets the PI integrator. The
+% hysteresis between the two thresholds prevents chattering at the edge of a
+% ride-through event.
+
+##### SOURCE END #####
+-->
+</body>
+</html>

@@ -1,0 +1,67 @@
+component CHBPhaseLeg
+% CHB Phase Leg (Average Model) :2.0
+% Cascaded H-Bridge phase leg with N series-connected average H-bridge
+% modules. Each module has isolated DC bus terminals, and the scalar
+% modulation index input m is broadcast to every module.
+%
+% Use one instance per phase of a Solid-State Transformer. Each module
+% exposes its own DC+/DC- port pair via node arrays.
+
+% Copyright 2026 The MathWorks, Inc.
+
+parameters
+    NumModules = 3; % Number of H-bridge modules
+    OnResistance = {1e-3, 'Ohm'}; % On-state resistance per module
+    InitialDCVoltage = {4400, 'V'}; % Initial DC bus voltage per module
+    GridVoltage = {13800, 'V'}; % Nominal grid voltage (L-L RMS) for modulation scaling
+    TotalDCVoltage = {13200, 'V'}; % Total DC voltage per phase leg
+end
+
+nodes
+    ACPositive = foundation.electrical.electrical; % AC+:left
+    ACNegative = foundation.electrical.electrical; % AC-:left
+end
+
+for i = 1:NumModules
+    nodes
+        DCPositive(i) = foundation.electrical.electrical; % DC+:right
+        DCNegative(i) = foundation.electrical.electrical; % DC-:right
+    end
+end
+
+inputs
+    m = {0, '1'}; % m:left
+end
+
+for i = 1:NumModules
+    components(ExternalAccess = observe)
+        module(i) = datacenter.CHBModule( ...
+            OnResistance = OnResistance, ...
+            GridVoltage = GridVoltage, ...
+            TotalDCVoltage = TotalDCVoltage, ...
+            vDC.value = InitialDCVoltage, ...
+            vDC.priority = priority.none);
+    end
+    connections
+        connect(module(i).DCPositive, DCPositive(i));
+        connect(module(i).DCNegative, DCNegative(i));
+        connect(m, module(i).m);
+    end
+end
+
+for i = 1:NumModules-1
+    connections
+        connect(module(i).ACNegative, module(i+1).ACPositive);
+    end
+end
+
+connections
+    connect(module(1).ACPositive, ACPositive);
+    connect(module(NumModules).ACNegative, ACNegative);
+end
+
+annotations
+    Icon = 'chb_phase_leg_icon.svg';
+end
+
+end

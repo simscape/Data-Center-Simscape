@@ -35,9 +35,11 @@ end
 maxPts = 2000;
 
 % --- Extract load voltage ---
+% rmsVoltage is logged as 1 x 3 x N (one RMS per phase), so it must be reduced
+% along the phase dimension before being indexed by time.
 rmsVoltage = logsout.get('rmsVoltage').Values;
 rmsTime = rmsVoltage.Time;
-rmsData = rmsVoltage.Data * sqrt(2);
+rmsData = mean(squeeze(rmsVoltage.Data), 1)' * sqrt(2);
 
 [tPlot, timeIdx] = plot.utils.sliceTime(rmsTime, timeRange(1), timeRange(2));
 rmsPlot = rmsData(timeIdx);
@@ -85,17 +87,12 @@ loadMaxDist = max(loadDuringDist);
 loadMeanDist = mean(loadDuringDist);
 
 % --- ITIC envelope (per ITI/CBEMA curve, IEEE Std 1100) ---
-% Lower: 0% for <=20ms, 70% to 0.5s, 80% to 10s, 90% steady state
-tIticLower = [1e-5  0.02  0.0201  0.5  0.501  10];
-vIticLower = [0.00  0.00  0.70    0.70 0.80   0.80];
-% Upper: 500% instantaneous, 200% at 1ms, 140% at 3ms, 120% to 0.5s, 110% steady state
-tIticUpper = [1e-5  0.001  0.003  0.5  0.501  10];
-vIticUpper = [5.00  2.00   1.40   1.20 1.10   1.10];
+% Shared with lvrtTest.iticCheck so this plot and the lvrtTest.evaluate table
+% always report the same verdict.
+[tIticLower, vIticLower, tIticUpper, vIticUpper] = lvrtTest.iticEnvelope();
 
 % --- ITIC pass/fail ---
-iticLowerAtDist = interp1(tIticLower, vIticLower, distDuration, 'previous', 0.9);
-iticUpperAtDist = interp1(tIticUpper, vIticUpper, distDuration, 'previous', 1.1);
-iticPass = loadMinDist >= iticLowerAtDist && loadMaxDist <= iticUpperAtDist;
+iticPass = lvrtTest.iticCheck(distDuration, loadMinDist, loadMaxDist);
 
 % Minimum load voltage
 [minV, minIdx] = min(rmsDs);

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Size Data Center Cooling System</title>
+    <!--
+    ============================================================
+    PAGE TEMPLATE - MathWorks Style
+    ============================================================
+
+    PURPOSE:
+    Reusable page skeleton matching the style of
+    projectDocumentationPage.html and ListOfComponents.html.
+
+    HOW TO USE:
+    1. Replace the <title> and the .title-text span with your page title.
+    2. Edit the h1 heading below the title bar.
+    3. Duplicate the "SECTION" block (h2 + paragraph + image) as many
+       times as needed. Each section is fully self-contained.
+    4. Replace IMG/placeholder.png with your actual image filename.
+
+    STYLE REFERENCE:
+    - Page title:    28px, orange (#c04c0b)
+    - Heading h1:    20px, bold, orange (#c04c0b)
+    - Body text:     12px, dark (#212121)
+    - Links:         blue (#0076a8), hover (#004c6d)
+    ============================================================
+    -->
+    <style>
+        /* Base */
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #212121; }
+        a { color: #0076a8; text-decoration: none; }
+        a:hover { color: #004c6d; text-decoration: underline; }
+
+        /* Fixed title bar */
+        .page-title {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: #fff; border-bottom: 1px solid #e0e0e0;
+            margin: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .page-title .title-text {
+            font-size: 28px; font-weight: 400; color: #c04c0b;
+            padding: 14px 20px;
+        }
+        .page-title .title-logo { padding: 6px 20px; }
+        .page-title .title-logo img { height: 50px; width: auto; }
+
+        /* Content area */
+        .content {
+            padding: 90px 40px 30px;
+            max-width: 1100px;
+        }
+        h1 { font-size: 20px; font-weight: 700; color: #c04c0b; margin: 30px 0 8px;
+             border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
+        p  { margin: 8px 0; line-height: 1.6; color: #212121; }
+
+        /* Section image — pair with a size class: img-small / img-medium / img-large */
+        .section-image {
+            display: block; margin: 12px 0 16px;
+            max-width: 100%; height: auto;
+            border: 1px solid #e0e0e0;
+        }
+        .section-image.img-small  { max-width: 300px; }
+        .section-image.img-medium { max-width: 500px; }
+        .section-image.img-large  { max-width: 800px; }
+
+        /* Intro row: paragraph left, open-example button right */
+        .intro-row { display: flex; align-items: flex-start; gap: 20px; margin: 8px 0; }
+        .intro-row > p { flex: 1; margin: 0; }
+        .btn-open-example {
+            padding: 8px 14px; border-radius: 4px;
+            background: #0076a8; color: #fff; font-size: 12px; font-weight: 600;
+            text-decoration: none; white-space: nowrap; flex-shrink: 0;
+            align-self: flex-start;
+        }
+        .btn-open-example:hover { background: #005a7c; color: #fff; text-decoration: none; }
+        .btn-stack {
+            display: flex; flex-direction: column; gap: 8px;
+            flex-shrink: 0; align-self: flex-start;
+        }
+        .btn-stack .btn-open-example {
+            align-self: stretch;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     TITLE BAR — edit title text below
+     ============================================================ -->
+<div class="page-title">
+    <span class="title-text">Size Data Center Cooling System</span>
+    <span class="title-logo"><img src="Images/MATLAB_VERSION.png" alt="MATLAB Version"></span>
+</div>
+
+<!-- ============================================================
+     CONTENT
+     ============================================================ -->
+<main class="content">
+    <div class="intro-row">
+        <p>
+           This example shows how to size the cooling system for MW 
+           liquid-cooled data center. The data center is built from multiple 
+           PDU + CDU Assembly (LUT) blocks, placed inside a modeled room 
+           with walls, windows, floor, and roof, and cooled by a chiller, 
+           cooling tower, and room HVAC. You can specify room dimensions and 
+           construction, chiller COP, HVAC and pump efficiencies, cooling 
+           tower parameters, and the geographical location, which drives 
+           yearly ambient temperature and solar load. Learn how to use 
+           Simscape to simulate the full year, log power at each subsystem, 
+           compute PUE, and estimate the cooling system size needed.
+        </p>
+        <div class="btn-stack">
+            <a class="btn-open-example" href="matlab:edit('SizeDataCenterCoolingSystemExample.m')">Open Live Script</a>
+            <a class="btn-open-example" href="matlab:open_system('SizeDataCenterCoolingSystem')">Open Model</a>
+        </div>
+    </div>
+    <!-- ─── SECTION (copy-paste this block to add more sections) ─── -->
+    <h1>Model</h1>
+    <!-- Size: swap img-medium with img-small (300px) or img-large (800px) as needed -->
+    <img class="section-image img-large" src="Images/docImageSizeCoolingSystem01.png" alt="Model">
+    <!-- ────────────────────────────────────────────────────────── -->
+
+    <!-- ─── SECTION (copy-paste this block to add more sections) ─── -->
+    <h1>Results</h1>
+    <!-- Size: swap img-medium with img-small (300px) or img-large (800px) as needed -->
+    <img class="section-image img-large" src="Images/docImageSizeCoolingSystem02.png" alt="Results">
+    <!-- ────────────────────────────────────────────────────────── -->
+
+    <p>
+        <br> <br>
+        <i>Copyright 2025 - 2026 The MathWorks, Inc.</i>
+    </p>
+
+</main>
+
+</body>
+</html>

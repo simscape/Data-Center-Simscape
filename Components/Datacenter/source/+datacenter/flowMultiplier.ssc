@@ -1,0 +1,43 @@
+component flowMultiplier
+% Flow Multiplier:2
+% This block changes the flow value based on input ports Na and Nb.
+
+% Copyright 2026 The MathWorks, Inc.
+
+    inputs
+        Na = {1, '1'}; % Na
+        Nb = {1, '1'}; % Nb
+    end
+    
+    nodes
+        A = foundation.thermal_liquid.thermal_liquid; % A:left
+        B = foundation.thermal_liquid.thermal_liquid; % B:right
+    end
+
+    annotations
+        Icon = 'icon_multiplierTL.png'
+        [Na,Nb]: Side=top;
+    end
+    
+    variables (Access=protected)
+        % Through variables
+        mdot_A = {1e-6, 'kg/s'}; % Mass flow rate into port A
+        mdot_B = {1e-6, 'kg/s'}; % Mass flow rate into port B
+        Phi_A  = {1e-6, 'kW'  }; % Energy flow rate into port A
+        Phi_B  = {1e-6, 'kW'  }; % Energy flow rate into port B     
+    end
+    
+    branches
+        mdot_A : A.mdot -> *;
+        mdot_B : B.mdot -> *;
+        Phi_A  : A.Phi  -> *;
+        Phi_B  : B.Phi  -> *;
+    end
+    
+    equations
+       A.p == B.p;
+       A.T == B.T;
+       Na*mdot_A + Nb*mdot_B == 0;
+       Na*Phi_A  + Nb*Phi_B  == 0;
+    end
+end

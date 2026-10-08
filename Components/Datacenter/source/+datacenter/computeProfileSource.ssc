@@ -1,0 +1,734 @@
+component computeProfileSource
+    % Compute Profile Source (LLM Workload Generator):2
+    % Generates a time-varying compute demand signal (TFLOPS) that
+    % replicates the training/inference cycle of large language models.
+    % Supports NVIDIA, AMD, Intel, and custom GPU specifications.
+    % <br/>
+    % <br/>
+    % <a href="matlab:open DocumentationComputeProfileSource.html">Documentation for Compute Profile Source</a>
+    % <br/>
+
+    % Copyright 2026 The MathWorks, Inc.
+
+    annotations
+        Icon = "computeProfileSource.png";
+        UILayout = [UIGroup("Configuration",...
+            gpuModel, numGPUs, workloadType, timeScale, tokenSource, showAdvanced)
+        UIGroup("Hardware",...
+            customPeakTFLOPS, customHbmBW, hbmBW, interNodeBW, ...
+            llmSize, customNumParams_B, customNumLayers, customPrecision, ...
+            parallelism, customTP, customPP)
+        UIGroup("Training",...
+            microBatch, globalBatch, seqLength, idleUtil, fwdUtil, bwdUtil, commSyncUtil)
+        UIGroup("Inference",...
+            prompt_tokens, output_tokens, num_concurrent, batch_size, allreduce_latency, baseInfUtil, baseInfFrac)
+        UIGroup("Efficiency",...
+            MFU, checkpointOverhead, stragglerOverhead)
+        UIGroup("Fine-Tuning",...
+            trainableParamFrac, evalInterval, evalBatches, ft_checkpointOverhead)
+        UIGroup("Output",...
+            enableNoise, noiseAmplitude, stepJitter, enableFilter, filterTimeConstant)];
+    end
+
+    inputs
+        prompt_len_in = {512, "1"};  % Tn(in):left
+    end
+
+    outputs
+        compute = {0, "1"}; % C:right
+        U = {0, "1"}; % U:right
+    end
+
+    parameters
+        % === Essential (always visible) ===
+        gpuModel = GPUModel.B200;                  % GPU model
+        numGPUs = {288, "1"};                                 % Total GPU count
+        workloadType = WorkloadType.Training;      % Workload type
+        timeScale = {1, "1"};                                % Time compression factor (1=real-time, 12=compress 178s cycle into ~15s)
+        tokenSource = TokenSource.Fixed;           % Token length source
+        showAdvanced = false;                                 % Show advanced parameters
+
+        % === Advanced: Hardware ===
+        customPeakTFLOPS = {1000, "1"};                       % Peak TFLOPS (BF16, used when GPU model = Custom)
+        customHbmBW = {4e12, "1/s"};                          % HBM bandwidth (bytes/s, used when GPU model = Custom)
+        hbmBW = {8e12, "1/s"};                               % HBM bandwidth override (bytes/s, used when GPU model = Custom)
+        interNodeBW = {50e9, "1/s"};                         % Inter-node BW override (bytes/s, used when GPU model = Custom)
+        llmSize = LLMModelSize.Llama_70B;          % LLM model size
+        customNumParams_B = {70, "1"};                    % Billion parameters (used when LLM = Custom)
+        customNumLayers = {80, "1"};                      % Transformer layers (used when LLM = Custom)
+        customPrecision = {2, "1"};                       % Bytes per param: 2=BF16, 1=FP8, 4=FP32 (used when LLM = Custom)
+        parallelism = ParallelismStrategy.TP8_PP4; % Parallelism strategy
+        customTP = {8, "1"};                              % Tensor parallelism (used when Parallelism = Custom)
+        customPP = {4, "1"};                              % Pipeline parallelism (used when Parallelism = Custom)
+
+        % === Advanced: Training ===
+        microBatch = {8, "1"};                                % Micro-batch size
+        globalBatch = {2048, "1"};                            % Global batch size
+        seqLength = {2048, "1"};                              % Sequence length (tokens per sample; 7B/13B: 4096, 70B+: 2048)
+        idleUtil = {0.05, "1"};                              % Stage 1: Data+idle utilization (pipeline bubble + data load)
+        fwdUtil = {0.85, "1"};                               % Stage 2: Forward pass utilization
+        bwdUtil = {0.92, "1"};                               % Stage 3: Backward pass utilization (peak)
+        commSyncUtil = {0.15, "1"};                          % Stage 4: Communication+sync weighted average (allreduce+optimizer+cleanup)
+
+        % === Advanced: Inference ===
+        prompt_tokens = {512, "1"};                           % Average prompt length (tokens, used when Fixed)
+        output_tokens = {256, "1"};                           % Average output length (tokens, used when Fixed)
+        num_concurrent = {8, "1"};                            % Concurrent requests (continuous batching)
+        batch_size = {8, "1"};                                % Batch size (continuous batching)
+        allreduce_latency = {5e-6, "s"};                     % AllReduce latency per layer (TP communication)
+        baseInfUtil = {0.08, "1"};                             % Inference Stage 1/4: Base load utilization (KV cache maint, background)
+        baseInfFrac = {0.10, "1"};                             % Fraction of inference period for base load (before prefill + after decode)
+
+        % === Advanced: Efficiency ===
+        MFU = {0.85, "1"};                                   % Model FLOP Utilization (compute-phase only)
+        checkpointOverhead = {0.03, "1"};                    % Checkpoint time fraction of total step
+        stragglerOverhead = {0.02, "1"};                     % Straggler/idle time fraction of total step
+
+        % === Advanced: Fine-Tuning ===
+        trainableParamFrac = {0.02, "1"};                    % Fraction of params trainable (LoRA ~2%)
+        evalInterval = {5, "1"};                             % Evaluate every N training steps
+        evalBatches = {2, "1"};                              % Number of eval micro-batches per eval pass
+        ft_checkpointOverhead = {0.05, "1"};                 % Checkpoint overhead (higher than training, captures best ckpt)
+
+        % === Advanced: Stochastic Variation ===
+        enableNoise = true;                                  % Add quasi-random variation (realistic jitter)
+        noiseAmplitude = {0.08, "1"};                        % Peak noise amplitude (fraction of nominal)
+        stepJitter = {0.15, "1"};                            % Step period jitter (fraction, 0=perfectly periodic)
+
+        % === Advanced: Output Filter ===
+        enableFilter = false;                                % Enable output smoothing filter
+        filterTimeConstant = {0.01, "s"};                    % Filter time constant (low-pass)
+    end
+
+    if showAdvanced == false
+        annotations
+            [customPeakTFLOPS, customHbmBW, hbmBW, interNodeBW, ...
+             customNumParams_B, customNumLayers, customPrecision, ...
+             customTP, customPP, ...
+             llmSize, parallelism, ...
+             microBatch, globalBatch, seqLength, idleUtil, fwdUtil, bwdUtil, commSyncUtil, ...
+             prompt_tokens, output_tokens, num_concurrent, batch_size, allreduce_latency, ...
+             baseInfUtil, baseInfFrac, ...
+             MFU, checkpointOverhead, stragglerOverhead, ...
+             trainableParamFrac, evalInterval, evalBatches, ft_checkpointOverhead, ...
+             enableNoise, noiseAmplitude, stepJitter, ...
+             enableFilter, filterTimeConstant] : ExternalAccess = none;
+        end
+    elseif gpuModel ~= GPUModel.Custom && llmSize ~= LLMModelSize.Custom && parallelism ~= ParallelismStrategy.Custom
+        annotations
+            [customPeakTFLOPS, customHbmBW, hbmBW, interNodeBW, ...
+             customNumParams_B, customNumLayers, customPrecision, ...
+             customTP, customPP] : ExternalAccess = none;
+        end
+    elseif gpuModel ~= GPUModel.Custom && llmSize ~= LLMModelSize.Custom
+        annotations
+            [customPeakTFLOPS, customHbmBW, hbmBW, interNodeBW, ...
+             customNumParams_B, customNumLayers, customPrecision] : ExternalAccess = none;
+        end
+    elseif gpuModel ~= GPUModel.Custom && parallelism ~= ParallelismStrategy.Custom
+        annotations
+            [customPeakTFLOPS, customHbmBW, hbmBW, interNodeBW, ...
+             customTP, customPP] : ExternalAccess = none;
+        end
+    elseif llmSize ~= LLMModelSize.Custom && parallelism ~= ParallelismStrategy.Custom
+        annotations
+            [customNumParams_B, customNumLayers, customPrecision, ...
+             customTP, customPP] : ExternalAccess = none;
+        end
+    elseif gpuModel ~= GPUModel.Custom
+        annotations
+            [customPeakTFLOPS, customHbmBW, hbmBW, interNodeBW] : ExternalAccess = none;
+        end
+    elseif llmSize ~= LLMModelSize.Custom
+        annotations
+            [customNumParams_B, customNumLayers, customPrecision] : ExternalAccess = none;
+        end
+    elseif parallelism ~= ParallelismStrategy.Custom
+        annotations
+            [customTP, customPP] : ExternalAccess = none;
+        end
+    end
+
+    parameters (Access = private)
+        % GPU peak TFLOPS (BF16 dense, no sparsity)
+        peakFLOPS_Rubin_Ultra = {4500, "1"};
+        peakFLOPS_B200 = {2250, "1"};
+        peakFLOPS_H200 = {990, "1"};
+        peakFLOPS_H100 = {990, "1"};
+        peakFLOPS_A100 = {312, "1"};
+        peakFLOPS_MI300X = {1307, "1"};
+        peakFLOPS_MI325X = {1307, "1"};
+        peakFLOPS_Gaudi3 = {1835, "1"};
+
+        % HBM bandwidth per GPU (bytes/s)
+        hbmBW_Rubin_Ultra = {12e12, "1/s"};
+        hbmBW_B200 = {8e12, "1/s"};
+        hbmBW_H200 = {4.8e12, "1/s"};
+        hbmBW_H100 = {3.35e12, "1/s"};
+        hbmBW_A100 = {2.0e12, "1/s"};
+        hbmBW_MI300X = {5.3e12, "1/s"};
+        hbmBW_MI325X = {6.0e12, "1/s"};
+        hbmBW_Gaudi3 = {3.7e12, "1/s"};
+
+        % Inter-node bandwidth per GPU (bytes/s)
+        interNodeBW_Rubin_Ultra = {3600e9, "1/s"};
+        interNodeBW_B200 = {1800e9, "1/s"};
+        interNodeBW_H200 = {900e9, "1/s"};
+        interNodeBW_H100 = {900e9, "1/s"};
+        interNodeBW_A100 = {600e9, "1/s"};
+        interNodeBW_MI300X = {896e9, "1/s"};
+        interNodeBW_MI325X = {896e9, "1/s"};
+        interNodeBW_Gaudi3 = {2400e9, "1/s"};
+
+        % T_ref: FLOPs per token pair = 6*params; T_ref = 6*params / 1e12 [s·TFlop/s]
+        % Normalized: time for 1 token at 1 TFLOP/s on 1 GPU
+        T_ref_7B = {42e-3, "s"};
+        T_ref_13B = {78e-3, "s"};
+        T_ref_70B = {420e-3, "s"};
+        T_ref_175B = {1050e-3, "s"};
+        T_ref_405B = {2430e-3, "s"};
+
+
+        % Gradient bytes (for ring-allreduce)
+        gradB_7B = {14e9, "1"};
+        gradB_13B = {26e9, "1"};
+        gradB_70B = {140e9, "1"};
+        gradB_175B = {350e9, "1"};
+        gradB_405B = {810e9, "1"};
+
+        % Layer counts (for roofline inference timing)
+        numLayers_7B = {32, "1"};
+        numLayers_13B = {40, "1"};
+        numLayers_70B = {80, "1"};
+        numLayers_175B = {96, "1"};
+        numLayers_405B = {126, "1"};
+
+        % Weight precision (bytes per parameter, 2 = FP16/BF16)
+        weightBytesPerParam = {2, "1"};
+
+    end
+
+    variables
+        % Free-running time (monotonic, never resets)
+        t_step = {value = {0, "s"}, priority = priority.low};
+    end
+
+    if enableFilter
+        variables
+            compute_filt = {value = {0, "1"}, priority = priority.low};
+        end
+    end
+
+    variables (ExternalAccess = observe)
+        phase_id = {0, "1"};    % Phase (1=fwd, 2=bwd, 3=boundary, 4=allreduce, 5=ckpt, 6=bubble, 7=prefill, 8=decode, 9=optimizer, 10=straggler, 11=comm)
+        utilization = {0, "1"}; % Utilization fraction
+        step_count = {0, "1"}; % Training step counter (approximate)
+        tc_utilization = {0, "1"};   % Tensor core utilization (inference roofline)
+        hbm_utilization = {0, "1"};  % HBM bandwidth utilization (inference roofline)
+        tokens_per_sec_obs = {0, "1/s"}; % Token throughput (inference)
+        ttft_obs = {0, "s"};         % Time to first token (inference)
+    end
+
+    intermediates
+        % === GPU PEAK FLOPS ===
+        gpuPeakTFLOPS = if gpuModel == GPUModel.Rubin_Ultra
+                peakFLOPS_Rubin_Ultra
+            elseif gpuModel == GPUModel.B200
+                peakFLOPS_B200
+            elseif gpuModel == GPUModel.H200
+                peakFLOPS_H200
+            elseif gpuModel == GPUModel.H100
+                peakFLOPS_H100
+            elseif gpuModel == GPUModel.A100
+                peakFLOPS_A100
+            elseif gpuModel == GPUModel.MI300X
+                peakFLOPS_MI300X
+            elseif gpuModel == GPUModel.MI325X
+                peakFLOPS_MI325X
+            elseif gpuModel == GPUModel.Gaudi3
+                peakFLOPS_Gaudi3
+            else
+                customPeakTFLOPS
+            end;
+
+        % Effective HBM bandwidth: lookup per GPU, user override via hbmBW when Custom
+        effHbmBW = if gpuModel == GPUModel.Rubin_Ultra
+                hbmBW_Rubin_Ultra
+            elseif gpuModel == GPUModel.B200
+                hbmBW_B200
+            elseif gpuModel == GPUModel.H200
+                hbmBW_H200
+            elseif gpuModel == GPUModel.H100
+                hbmBW_H100
+            elseif gpuModel == GPUModel.A100
+                hbmBW_A100
+            elseif gpuModel == GPUModel.MI300X
+                hbmBW_MI300X
+            elseif gpuModel == GPUModel.MI325X
+                hbmBW_MI325X
+            elseif gpuModel == GPUModel.Gaudi3
+                hbmBW_Gaudi3
+            else
+                customHbmBW
+            end;
+
+        % Effective inter-node bandwidth: lookup per GPU, user override when Custom
+        effInterNodeBW = if gpuModel == GPUModel.Rubin_Ultra
+                interNodeBW_Rubin_Ultra
+            elseif gpuModel == GPUModel.B200
+                interNodeBW_B200
+            elseif gpuModel == GPUModel.H200
+                interNodeBW_H200
+            elseif gpuModel == GPUModel.H100
+                interNodeBW_H100
+            elseif gpuModel == GPUModel.A100
+                interNodeBW_A100
+            elseif gpuModel == GPUModel.MI300X
+                interNodeBW_MI300X
+            elseif gpuModel == GPUModel.MI325X
+                interNodeBW_MI325X
+            elseif gpuModel == GPUModel.Gaudi3
+                interNodeBW_Gaudi3
+            else
+                interNodeBW
+            end;
+
+        peakCompute = numGPUs * gpuPeakTFLOPS;
+
+        % === PARALLELISM DEGREES ===
+        TP = if parallelism == ParallelismStrategy.TP8_PP4
+                {8, "1"}
+            elseif parallelism == ParallelismStrategy.TP4_PP8
+                {4, "1"}
+            elseif parallelism == ParallelismStrategy.TP8_PP8
+                {8, "1"}
+            elseif parallelism == ParallelismStrategy.TP4_PP4
+                {4, "1"}
+            else
+                customTP
+            end;
+
+        PP = if parallelism == ParallelismStrategy.TP8_PP4
+                {4, "1"}
+            elseif parallelism == ParallelismStrategy.TP4_PP8
+                {8, "1"}
+            elseif parallelism == ParallelismStrategy.TP8_PP8
+                {8, "1"}
+            elseif parallelism == ParallelismStrategy.TP4_PP4
+                {4, "1"}
+            else
+                customPP
+            end;
+
+        % Data parallelism degree
+        % Note: user should ensure numGPUs is divisible by TP*PP for integer DP.
+        % Fractional DP causes <5% timing error, acceptable for power simulation.
+        DP = max({1, "1"}, numGPUs / (TP * PP));
+
+        % === LLM PARAMETERS ===
+        % T_ref = 6 * numParams / 1e12 (seconds at 1 TFLOP/s per GPU)
+        T_ref = if llmSize == LLMModelSize.Llama_7B
+                T_ref_7B
+            elseif llmSize == LLMModelSize.Llama_13B
+                T_ref_13B
+            elseif llmSize == LLMModelSize.Llama_70B
+                T_ref_70B
+            elseif llmSize == LLMModelSize.GPT_175B
+                T_ref_175B
+            elseif llmSize == LLMModelSize.Llama_405B
+                T_ref_405B
+            else
+                customNumParams_B * {6e-3, "s"}
+            end;
+
+        seqLen = seqLength;
+
+        % gradBytes = precision * numParams (bytes for ring-allreduce)
+        gradBytes = if llmSize == LLMModelSize.Llama_7B
+                gradB_7B
+            elseif llmSize == LLMModelSize.Llama_13B
+                gradB_13B
+            elseif llmSize == LLMModelSize.Llama_70B
+                gradB_70B
+            elseif llmSize == LLMModelSize.GPT_175B
+                gradB_175B
+            elseif llmSize == LLMModelSize.Llama_405B
+                gradB_405B
+            else
+                customPrecision * customNumParams_B * {1e9, "1"}
+            end;
+
+        % === TIMING DERIVATION ===
+        % Micro-batch time: only TP GPUs work in parallel per stage
+        % T = T_ref * batch * seqLen / (TP * peakFLOPS * MFU)
+        rateNorm = TP * gpuPeakTFLOPS * MFU;
+        T_microbatch = T_ref * microBatch * seqLen / rateNorm;
+
+        % Pipeline bubble: (PP-1) micro-batch times at start of gradient accumulation
+        T_bubble = T_microbatch * max(PP - {1, "1"}, {0, "1"});
+
+        % Gradient accumulation steps
+        gradAccumSteps = max({1, "1"}, globalBatch / (microBatch * DP));
+
+        % Ring all-reduce: 2*(DP-1)/DP * gradBytes / (DP * BW_per_gpu)
+        % Uses inter-node bandwidth (InfiniBand/RoCE) since DP spans nodes
+        DP_safe = max(DP, {1, "1"});
+        allreduce_factor = {2, "1"} * (DP_safe - {1, "1"}) / DP_safe;
+        T_allreduce = allreduce_factor * gradBytes / (DP_safe * effInterNodeBW);
+        T_allreduce_clamped = max({0.001, "s"}, min(T_allreduce, T_microbatch));
+
+        % Optimizer step (Adam): 3 reads + 3 writes over gradient-sized buffers
+        T_optimizer = {6, "1"} * gradBytes / (TP * effHbmBW);
+
+        % Compute phase (forward + backward combined)
+        T_compute_phase = T_microbatch * gradAccumSteps;
+
+        % Communication+sync phase: allreduce + optimizer + overhead margin
+        T_comm_sync = T_allreduce_clamped + T_optimizer;
+
+        % 4-stage training step:
+        %   Stage 1 (Idle): pipeline bubble (data loading overlaps)
+        %   Stage 2+3 (Compute): forward + backward within each micro-batch
+        %   Stage 4 (Comm): allreduce + optimizer + cleanup
+        T_step_base = T_bubble + T_compute_phase + T_comm_sync;
+
+        % Apply overhead fractions (checkpoint + straggler expand total step)
+        overhead_denom = max({0.5, "1"}, {1, "1"} - checkpointOverhead - stragglerOverhead);
+        T_step_total = T_step_base / overhead_denom;
+
+        % Phase boundary timestamps within one training step
+        % Order: Idle(bubble) -> Compute(fwd+bwd) -> CommSync -> Overhead
+        T_end_idle = T_bubble;
+        T_end_compute = T_end_idle + T_compute_phase;
+        T_end_commsync = T_end_compute + T_comm_sync;
+        T_overhead_time = T_step_total - T_end_commsync;
+
+        % === INFERENCE: ROOFLINE MODEL ===
+        % Select token counts: fixed parameters or external input signals
+        eff_prompt_tokens = if tokenSource == TokenSource.External
+                prompt_len_in
+            else
+                prompt_tokens
+            end;
+        eff_output_tokens = output_tokens;
+
+        % Layer count lookup
+        numLayers = if llmSize == LLMModelSize.Llama_7B
+                numLayers_7B
+            elseif llmSize == LLMModelSize.Llama_13B
+                numLayers_13B
+            elseif llmSize == LLMModelSize.Llama_70B
+                numLayers_70B
+            elseif llmSize == LLMModelSize.GPT_175B
+                numLayers_175B
+            elseif llmSize == LLMModelSize.Llama_405B
+                numLayers_405B
+            else
+                customNumLayers
+            end;
+
+        % Per-GPU weight data after TP split (gradBytes = 2 * num_params for BF16)
+        weight_data_per_gpu = gradBytes / TP;
+
+        % Ridge point: peak FLOPS / HBM bandwidth (FLOP/byte, dimensionless)
+        % Ridge point = peakFLOPS / HBM_BW (arithmetic intensity threshold)
+        % AI > ridge ⟺ compute-bound; AI < ridge ⟺ memory-bound
+        ridge_flops_per_s = gpuPeakTFLOPS * {1e12, "1/s"};
+        ridge_point = ridge_flops_per_s / effHbmBW;
+
+        % Arithmetic intensity: prefill (GEMM) vs decode (GEMV)
+        % AI = FLOPs / bytes_loaded = 2*batch*seq / bytes_per_param (prefill)
+        AI_prefill = {2, "1"} * batch_size * eff_prompt_tokens / weightBytesPerParam;
+        AI_decode = {2, "1"} * batch_size / weightBytesPerParam;
+
+        % Tensor core utilization from roofline (capped at MFU)
+        tc_util_prefill = min(AI_prefill / max(ridge_point, {1, "1"}), MFU);
+        tc_util_decode = min(AI_decode / max(ridge_point, {1, "1"}), MFU);
+
+        % HBM bandwidth utilization
+        % Memory-bound: HBM saturated. Compute-bound: HBM proportional to demand.
+        AI_prefill_ratio = AI_prefill / max(ridge_point, {1, "1"});
+        AI_decode_ratio = AI_decode / max(ridge_point, {1, "1"});
+        hbm_util_prefill = min({0.95, "1"}, {1, "1"} / max(AI_prefill_ratio, {0.01, "1"}));
+        hbm_util_decode = min({0.95, "1"}, {1, "1"} / max(AI_decode_ratio, {0.01, "1"}));
+
+        % Composite utilization (calibrated for Fan/Barroso power model in gpuRackUnit)
+        % U = 0.90*tc + 0.358*hbm + 0.065 maps to ~93% TDP at prefill, ~60% at decode
+        U_prefill = min({0.90, "1"} * tc_util_prefill + {0.358, "1"} * hbm_util_prefill + {0.065, "1"}, {1, "1"});
+        U_decode = min({0.90, "1"} * tc_util_decode + {0.358, "1"} * hbm_util_decode + {0.065, "1"}, {1, "1"});
+        U_comm = {0.12, "1"};
+
+        % Timing: prefill (compute-bound path)
+        T_prefill = T_ref * eff_prompt_tokens / rateNorm;
+
+        % Timing: decode per token (roofline: max of memory time, compute time)
+        % Memory time: read all weights once per token
+        T_decode_memory = weight_data_per_gpu / effHbmBW;
+        % Compute time: 2*num_params*batch FLOPs per token / peak_FLOPS
+        % gradBytes/weightBytesPerParam = num_params; divide by TP for per-GPU
+        T_decode_compute = {2, "1"} * weight_data_per_gpu * batch_size / (weightBytesPerParam * ridge_flops_per_s);
+        T_decode_per_token = max(T_decode_memory, T_decode_compute);
+
+        % Timing: communication overhead per token (2 AllReduces per layer for TP)
+        T_comm_per_token = allreduce_latency * numLayers * {2, "1"};
+
+        % Total decode and communication
+        T_decode = T_decode_per_token * eff_output_tokens;
+        T_comm = T_comm_per_token * eff_output_tokens;
+        T_request = T_prefill + T_decode + T_comm;
+        T_inference_period = T_request / max(num_concurrent, {1, "1"});
+
+        % (Phase boundaries moved to 4-stage inference serving model below)
+
+        % === FINE-TUNING TIMING ===
+        % LoRA/adapter: only trainableParamFrac of gradient is communicated
+        ft_gradBytes = gradBytes * trainableParamFrac;
+        T_ft_allreduce = allreduce_factor * ft_gradBytes / (DP_safe * effInterNodeBW);
+        T_ft_allreduce_clamped = max({0.001, "s"}, min(T_ft_allreduce, T_microbatch));
+
+        % Fine-tune optimizer: smaller payload (only adapter params)
+        T_ft_optimizer = {6, "1"} * ft_gradBytes / (TP * effHbmBW);
+
+        % Fine-tune step: no pipeline bubble (model fits in TP group)
+        T_ft_compute_phase = T_microbatch * gradAccumSteps;
+        T_ft_step_base = T_ft_compute_phase + T_ft_allreduce_clamped + T_ft_optimizer;
+        ft_overhead_denom = max({0.5, "1"}, {1, "1"} - ft_checkpointOverhead - stragglerOverhead);
+        T_ft_step = T_ft_step_base / ft_overhead_denom;
+
+        % Eval pass: forward-only over evalBatches (no backward, no allreduce)
+        T_ft_eval = T_microbatch * evalBatches;
+
+        % Combined fine-tuning period: evalInterval training steps + 1 eval pass
+        T_ft_period = T_ft_step * evalInterval + T_ft_eval;
+
+        % Fine-tuning phase boundaries within one period
+        T_ft_end_train = T_ft_step * evalInterval;
+        % Within each training step:
+        T_ft_end_compute = T_ft_compute_phase;
+        T_ft_end_allreduce = T_ft_end_compute + T_ft_allreduce_clamped;
+        T_ft_end_optimizer = T_ft_end_allreduce + T_ft_optimizer;
+
+        % === STEP PERIOD ===
+        T_period_base = if workloadType == WorkloadType.Inference
+                T_inference_period
+            elseif workloadType == WorkloadType.FineTuning
+                T_ft_period
+            else
+                T_step_total
+            end;
+
+        % === QUASI-RANDOM NOISE (incommensurate oscillators) ===
+        % 7 sine waves at irrational frequency ratios create quasi-random band-limited noise.
+        % Frequencies chosen to avoid harmonics: based on primes and sqrt(prime).
+        % All arguments to sin() must be dimensionless: t_step/1s * freq_rad (unitless).
+        t_dimless = t_step / {1, "s"};
+        noise_raw = {0.30, "1"} * sin(t_dimless * {7.13, "1"}) ...
+                  + {0.25, "1"} * sin(t_dimless * {13.71, "1"}) ...
+                  + {0.20, "1"} * sin(t_dimless * {23.47, "1"}) ...
+                  + {0.15, "1"} * sin(t_dimless * {37.89, "1"}) ...
+                  + {0.10, "1"} * sin(t_dimless * {53.21, "1"}) ...
+                  + {0.08, "1"} * sin(t_dimless * {71.63, "1"}) ...
+                  + {0.06, "1"} * sin(t_dimless * {97.31, "1"});
+        % Normalize to [-1, 1] range (max sum of coefficients = 1.14)
+        noise_norm = noise_raw / {1.14, "1"};
+
+        % Step period with jitter (low-frequency modulation ~0.3-0.7 Hz)
+        jitter_mod = sin(t_dimless * {1.73, "1"}) * {0.6, "1"} ...
+                   + sin(t_dimless * {0.41, "1"}) * {0.4, "1"};
+        T_period = T_period_base * ({1, "1"} + stepJitter * jitter_mod);
+
+        % === PERIODIC POSITION (floor-based modulo) ===
+        % t_step is free-running. Derive periodic 0 to T_period position via mod.
+        T_period_safe = max(T_period, {0.001, "s"});
+        t_pos_clamp = t_step - T_period_safe * floor(t_step / T_period_safe);
+
+        % Position within compute phase (after idle/bubble)
+        t_in_compute = max(t_pos_clamp - T_end_idle, {0, "s"});
+
+        % Fractional position within current micro-batch (floor-based mod)
+        T_mb_safe = max(T_microbatch, {0.001, "s"});
+        frac_in_mb = (t_in_compute - T_mb_safe * floor(t_in_compute / T_mb_safe)) / T_mb_safe;
+
+        % === INFERENCE 4-STAGE SERVING MODEL ===
+        % Stage 1: Base Load — KV cache maintenance, background tasks, steady baseline
+        % Stage 2: Prefill   — full forward pass on prompt, compute-bound spike
+        % Stage 3: Decode    — iterative token generation, memory-bound plateau
+        % Stage 4: Teardown  — output flush, return to baseline (mirrors base load)
+        %
+        % baseInfFrac splits equally: half at start (Stage 1), half at end (Stage 4)
+        T_request_safe = max(T_request, {0.001, "s"});
+        U_serving = (T_prefill * U_prefill + T_decode * U_decode + T_comm * U_comm) / T_request_safe;
+
+        % Phase boundary timestamps within one inference period
+        T_inf_period_safe = max(T_inference_period, {0.001, "s"});
+        T_base_half = T_inf_period_safe * baseInfFrac / {2, "1"};
+        T_end_base_inf = T_base_half;
+        T_end_prefill_inf = T_base_half + T_prefill;
+        T_end_decode_inf = T_end_prefill_inf + T_decode + T_comm;
+
+        % === COMPUTE TARGET (NLR paper-informed profiles) ===
+        compute_target = if workloadType == WorkloadType.Inference
+                % 4-stage inference model:
+                %   Stage 1: Base Load   — KV cache maint, background (U=baseInfUtil)
+                %   Stage 2: Prefill     — compute-bound forward pass (U=U_prefill)
+                %   Stage 3: Decode      — memory-bound autoregressive (U=U_decode)
+                %   Stage 4: Teardown    — output flush, return to base (U=baseInfUtil)
+                if t_pos_clamp < T_end_base_inf
+                    peakCompute * baseInfUtil
+                elseif t_pos_clamp < T_end_prefill_inf
+                    peakCompute * U_prefill
+                elseif t_pos_clamp < T_end_decode_inf
+                    peakCompute * U_decode
+                else
+                    peakCompute * baseInfUtil
+                end
+            elseif workloadType == WorkloadType.FineTuning
+                % NLR paper (Llama-2 70B fine-tuning): high-frequency variations with
+                % distinct compute/communication phases. Communication dips more
+                % pronounced at higher node counts. Peak ~95% TDP during compute.
+                if t_pos_clamp < T_ft_end_train
+                    if frac_in_mb < {0.40, "1"}
+                        peakCompute * {0.92, "1"}
+                    elseif frac_in_mb < {0.82, "1"}
+                        peakCompute * {0.85, "1"}
+                    else
+                        peakCompute * {0.12, "1"}
+                    end
+                else
+                    peakCompute * {0.85, "1"}
+                end
+            else
+                % 4-stage training model (NLR paper + TokenPowerBench calibrated):
+                %   Stage 1: Idle        — pipeline bubble + data loading (GPU near idle)
+                %   Stage 2: Forward     — high GEMM utilization (steady power)
+                %   Stage 3: Backward    — peak power (activation recompute + memory)
+                %   Stage 4: Comm+Sync   — allreduce + optimizer + cleanup (network bursts)
+                %
+                % Within micro-batch: 45% forward, 55% backward
+                % This captures the 3 critical load transitions for electrical design.
+                if t_pos_clamp < T_end_idle
+                    peakCompute * idleUtil
+                elseif t_pos_clamp < T_end_compute
+                    if frac_in_mb < {0.45, "1"}
+                        peakCompute * fwdUtil
+                    else
+                        peakCompute * bwdUtil
+                    end
+                elseif t_pos_clamp < T_end_commsync
+                    peakCompute * commSyncUtil
+                else
+                    peakCompute * idleUtil
+                end
+            end;
+
+        % Phase ID for observability
+        % Training: 1=fwd, 2=bwd, 4=comm_sync, 6=idle
+        % Inference: 13=base, 7=prefill, 8=decode, 13=teardown(base)
+        % FineTuning: 1=fwd, 2=bwd, 11=comm, 12=ft_eval
+        phase_target = if workloadType == WorkloadType.Inference
+                if t_pos_clamp < T_end_base_inf
+                    {13, "1"}
+                elseif t_pos_clamp < T_end_prefill_inf
+                    {7, "1"}
+                elseif t_pos_clamp < T_end_decode_inf
+                    {8, "1"}
+                else
+                    {13, "1"}
+                end
+            elseif workloadType == WorkloadType.FineTuning
+                if t_pos_clamp < T_ft_end_train
+                    if frac_in_mb < {0.40, "1"}
+                        {1, "1"}
+                    elseif frac_in_mb < {0.82, "1"}
+                        {2, "1"}
+                    else
+                        {11, "1"}
+                    end
+                else
+                    {12, "1"}
+                end
+            else
+                if t_pos_clamp < T_end_idle
+                    {6, "1"}
+                elseif t_pos_clamp < T_end_compute
+                    if frac_in_mb < {0.45, "1"}
+                        {1, "1"}
+                    else
+                        {2, "1"}
+                    end
+                elseif t_pos_clamp < T_end_commsync
+                    {4, "1"}
+                else
+                    {6, "1"}
+                end
+            end;
+
+    end
+
+    equations
+        % Free-running timer (advances faster with timeScale)
+        t_step.der == timeScale;
+    end
+
+    if enableFilter && enableNoise
+        equations
+            let
+                noisy_target = compute_target * ({1, "1"} + noiseAmplitude * noise_norm);
+            in
+                compute_filt.der == (noisy_target - compute_filt) / filterTimeConstant;
+                compute == max(compute_filt, {0, "1"});
+                U == min(max(compute_filt / max(peakCompute, {1, "1"}), {0, "1"}), {1, "1"});
+            end
+        end
+    elseif enableFilter
+        equations
+            compute_filt.der == (compute_target - compute_filt) / filterTimeConstant;
+            compute == max(compute_filt, {0, "1"});
+            U == min(max(compute_filt / max(peakCompute, {1, "1"}), {0, "1"}), {1, "1"});
+        end
+    elseif enableNoise
+        equations
+            let
+                noisy_target = compute_target * ({1, "1"} + noiseAmplitude * noise_norm);
+            in
+                compute == max(noisy_target, {0, "1"});
+                U == min(max(noisy_target / max(peakCompute, {1, "1"}), {0, "1"}), {1, "1"});
+            end
+        end
+    else
+        equations
+            compute == max(compute_target, {0, "1"});
+            U == min(max(compute_target / max(peakCompute, {1, "1"}), {0, "1"}), {1, "1"});
+        end
+    end
+
+    equations
+
+        % Observables
+        phase_id == phase_target;
+        utilization == compute / max(peakCompute, {1, "1"});
+        step_count == t_pos_clamp / max(T_period, {0.001, "s"});
+
+        % Inference roofline observables
+        tc_utilization == if workloadType == WorkloadType.Inference
+                if t_pos_clamp < T_end_prefill_inf
+                    tc_util_prefill
+                else
+                    tc_util_decode
+                end
+            else
+                utilization
+            end;
+        hbm_utilization == if workloadType == WorkloadType.Inference
+                if t_pos_clamp < T_end_prefill_inf
+                    hbm_util_prefill
+                else
+                    hbm_util_decode
+                end
+            else
+                {0, "1"}
+            end;
+        tokens_per_sec_obs == eff_output_tokens / max(T_decode + T_comm, {0.001, "s"});
+        ttft_obs == T_prefill;
+    end
+end

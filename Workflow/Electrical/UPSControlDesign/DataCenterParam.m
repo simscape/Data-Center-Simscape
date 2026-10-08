@@ -6,6 +6,9 @@ UPSParam;
 %% Generator Parameters
 GeneratorParam;
 
+%% Server Rack Parameters
+ServerRackParam;
+
 %% Other Parameters
 grid.voltage = 132000;
 grid.frequency = 60;

@@ -1,0 +1,167 @@
+component DABGeneralizedAvgModel
+    % DAB Generalized Average Model: 2
+    % Continuous-time generalized average model of a Dual Active Bridge DC-DC
+    % converter using phase-shift modulation. Based on Qin & Kimball, IEEE
+    % Trans. Power Electronics, Vol. 27, No. 4, April 2012.
+    %
+    % Uses the 0th Fourier coefficient of output capacitor voltage and 1st
+    % Fourier coefficients (real/imaginary) of transformer current as state
+    % variables. A 6th-order model with capacitor ESR is available optionally.
+    %
+    % Phase shift ratio d is the control input. Positive d transfers power
+    % from input port to output port.
+
+    % Copyright 2026 The MathWorks, Inc.
+    
+    nodes
+        p_in = foundation.electrical.electrical;  % V+:left
+        n_in = foundation.electrical.electrical;  % V-:left
+        p_out = foundation.electrical.electrical; % Vo+:right
+        n_out = foundation.electrical.electrical; % Vo-:right
+    end
+    
+    inputs
+        d = {0.25, '1'}; % d:left
+    end
+    
+    parameters
+        N = {1, '1'};               % Transformer turns ratio
+        L1 = {68.2e-6, 'H'};        % Primary leakage inductance
+        L2 = {68.2e-6, 'H'};        % Secondary leakage inductance
+        Rt = {0.5, 'Ohm'};          % Equivalent winding + switch resistance (referred to secondary)
+        Co = {540e-6, 'F'};         % Output capacitance
+        fs = {10000, 'Hz'};         % Switching frequency
+        include_esr = false;        % Include capacitor ESR
+        Rc = {0.25, 'Ohm'};         % Capacitor ESR
+        vo0_init = {0, 'V'};        % Initial output voltage
+        it1R_init = {0, 'A'};       % Initial transformer current (real)
+        it1I_init = {0, 'A'};       % Initial transformer current (imaginary)
+    end
+    
+    parameters (Access = private)
+        Lt = L1 / N^2 + L2;
+    end
+    
+    variables
+        i_in = {0, 'A'};
+        i_out = {0, 'A'};
+        v_in = {0, 'V'};
+        v_out = {0, 'V'};
+    end
+    
+    variables (Access = private)
+        vo0 = {value = vo0_init, priority = priority.none};
+        it1R = {value = it1R_init, priority = priority.none};
+        it1I = {value = it1I_init, priority = priority.none};
+    end
+    
+    if include_esr == true
+        variables (Access = private)
+            it0 = {value = {0, 'A'}, priority = priority.low};
+            vo1R = {value = {0, 'V'}, priority = priority.low};
+            vo1I = {value = {0, 'V'}, priority = priority.low};
+        end
+    end
+    
+    branches
+        i_in : p_in.i -> n_in.i;
+        i_out : p_out.i -> n_out.i;
+    end
+    
+    equations
+        v_in == p_in.v - n_in.v;
+        v_out == p_out.v - n_out.v;
+    end
+    
+    if include_esr == false
+        equations
+            let
+                ws = {2 * pi, '1'} * fs;
+                Vi = v_in / N;
+                sd_sin = sin(d * {pi, '1'});
+                sd_cos = cos(d * {pi, '1'});
+                i_rect = {4, '1'} / {pi, '1'} * (sd_sin * it1R + sd_cos * it1I);
+            in
+                % Eq. (27): 3rd-order generalized average model
+                % Output capacitor: Co*dvo0/dt = i_rect - i_load
+                Co * der(vo0) == i_rect + i_out;
+    
+                % Transformer current real part (1st harmonic)
+                Lt * der(it1R) == {2, '1'} * sd_sin / {pi, '1'} * vo0 ...
+                                - Rt * it1R + ws * Lt * it1I;
+    
+                % Transformer current imaginary part (1st harmonic)
+                Lt * der(it1I) == {2, '1'} * sd_cos / {pi, '1'} * vo0 ...
+                                - ws * Lt * it1R - Rt * it1I ...
+                                + {2, '1'} / {pi, '1'} * Vi;
+    
+                % Output voltage equals capacitor DC voltage
+                v_out == vo0;
+    
+                % Input current from power balance (lossless transformer)
+                i_in * v_in == -i_out * v_out;
+            end
+        end
+    else
+        equations
+            let
+                ws = {2 * pi, '1'} * fs;
+                Vi = v_in / N;
+                sd_sin = sin(d * {pi, '1'});
+                sd_cos = cos(d * {pi, '1'});
+                K1 = {1, 'Ohm'} / ({1, 'Ohm'} + Rc);
+                K2 = Rc / ({1, 'Ohm'} + Rc);
+                i_rect_1 = {4, '1'} / {pi, '1'} * (sd_sin * it1R + sd_cos * it1I);
+            in
+                % Eq. (38): 6th-order model with ESR
+                % Capacitor voltage (0th harmonic)
+                Co * der(vo0) == K1 * i_rect_1 + i_out;
+    
+                % Transformer current (1st harmonic, real)
+                Lt * der(it1R) == {2, '1'} * K1 * sd_sin / {pi, '1'} * vo0 ...
+                                - Rt * it1R + ws * Lt * it1I ...
+                                + {2, '1'} * K2 * sd_sin / {pi, '1'} * vo1R;
+    
+                % Transformer current (1st harmonic, imaginary)
+                Lt * der(it1I) == {2, '1'} * K1 * sd_cos / {pi, '1'} * vo0 ...
+                                - ws * Lt * it1R - Rt * it1I ...
+                                + {2, '1'} * K2 * sd_cos / {pi, '1'} * vo1I ...
+                                + {2, '1'} / {pi, '1'} * Vi;
+    
+                % Transformer current (0th harmonic)
+                Lt * der(it0) == -Rt * it0 ...
+                               + {4, '1'} * K2 * sd_sin / {pi, '1'} * it1R ...
+                               + {4, '1'} * K2 * sd_cos / {pi, '1'} * it1I ...
+                               + {4, '1'} * K1 * sd_sin / {pi, '1'} * vo1R ...
+                               + {4, '1'} * K1 * sd_cos / {pi, '1'} * vo1I;
+    
+                % Capacitor voltage (1st harmonic, real)
+                Co * der(vo1R) == -{2, '1'} * K1 * sd_sin / {pi, '1'} * it0 ...
+                                + ws * Co * vo1I;
+    
+                % Capacitor voltage (1st harmonic, imaginary)
+                Co * der(vo1I) == -{2, '1'} * K1 * sd_cos / {pi, '1'} * it0 ...
+                                - ws * Co * vo1R;
+    
+                % Output voltage with ESR contribution (Eq. 37)
+                v_out == K1 * vo0 + K2 * i_rect_1;
+    
+                % Input current from power balance (lossless transformer)
+                i_in * v_in == -i_out * v_out;
+            end
+        end
+    end
+    
+    annotations
+        Icon = 'dab_icon.svg';
+        [p_in, n_in] : Side = left;
+        [p_out, n_out] : Side = right;
+        d : Side = left;
+        UILayout = [
+            UIGroup('Transformer', N, L1, L2, Rt)
+            UIGroup('Output', Co, fs)
+            UIGroup('Initial Conditions', vo0_init, it1R_init, it1I_init)
+            UIGroup('ESR', include_esr, Rc)]
+    end
+
+end
