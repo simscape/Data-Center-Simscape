@@ -12,7 +12,8 @@
         you in designing the data centers using Simscape. You start by 
         building and parameterizing liquid-cooled or air-cooled data center 
         plant models using the composite library blocks provided in this 
-        project.
+        project. The composite blocks let you select between model fidelities 
+        based on your application.
     </td>
   </tr>
 </table>
