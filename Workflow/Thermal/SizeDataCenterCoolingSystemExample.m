@@ -97,7 +97,7 @@ setDesignParameters(modelData.SLXModelName,modelData.ControlParam,string(datetim
 %[text] ### Simulate Model
 %[text] Run model and close.
 simRes = sim(modelData.SLXModelName);
-close_system(modelData.SLXModelName,1);
+close_system(modelData.SLXModelName,0);
 %%
 %[text] ## Analyze Results
 %[text] Extract results.
@@ -146,6 +146,9 @@ title("Temperature Profile"); %[output:38150ae3]
 %%
 %[text] Display cooling component rating required for the data center system.
 modelData.ComponentRating = getResultSummaryTbl(simResTblWeek); %[output:5aae1181]
+%[text] 
+%[text] Copyright 2026 The MathWorks, Inc.
+%[text] 
 
 %[appendix]{"version":"1.0"}
 %---

@@ -2,6 +2,8 @@
 % 8 MW double-conversion unit (AFE + DC Link + Inverter)
 % Tuned for stability assessment (AFE gains optimized for 17 Hz load cycling)
 
+% Copyright 2026 The MathWorks, Inc.
+
 ups.rating = 8000;            % kW (sized for 8 MW facility)
 ups.Vdc = 800;                % V DC bus
 ups.Vac = 480;                % V AC output

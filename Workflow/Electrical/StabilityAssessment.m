@@ -270,6 +270,8 @@ disp(T_conclusion) %[output:6b7a5d5e]
 %[text] **(2) Grid-load interaction (MIMO GNC, 7–20 Hz, PRBS-measured).** Eigenvalue instability at the 480V PCC — stable only at SCR $\\geq$ 10 ($d \\approx 0.5$), unstable at SCR $\\leq$ 5. Firmware-independent (measured with nominal $K\_p$).
 %[text] **(3) UPS controller health.** Degraded AFE amplifies PFC oscillations instead of absorbing them.
 %[text] **(4) Joint constraint.** Each analysis assumes the other's variable is nominal. The combined worst case (buggy firmware + weak grid) is uncharacterized — the individual thresholds (firmware $\<$ 80%, SCR $\\geq$ 10, healthy AFE) are necessary conditions, to be enforced simultaneously.
+%[text] 
+%[text] Copyright 2026 The MathWorks, Inc.
 
 %[appendix]{"version":"1.0"}
 %---

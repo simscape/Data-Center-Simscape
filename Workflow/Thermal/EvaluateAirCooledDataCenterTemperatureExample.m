@@ -29,7 +29,7 @@ airCooledDataCenter.SLXModelName = "AirCooledDataCenterTemperatureProfile";
 open_system(airCooledDataCenter.SLXModelName);
 %[text] Run model and close.
 sim(airCooledDataCenter.SLXModelName);
-close_system(airCooledDataCenter.SLXModelName,1);
+close_system(airCooledDataCenter.SLXModelName,0);
 %%
 %[text] ## Analyze Results
 %[text] Extract results.
@@ -41,6 +41,9 @@ disp(strcat("Server temperatures are between ",num2str(ceil(resData.ServerT.min)
             num2str(ceil(resData.ServerT.max))," K.")); %[output:group:23ac6e6a] %[output:0aa8d818]
 disp(strcat("Data center aisle temperature is maintained at ",num2str(ceil(resData.RoomT))," K")); %[output:303631a6]
 disp(strcat("Total electrical power consumption ~ ",num2str(round(sum(diff(resData.Table.Time(2:end)).*resData.Table.E(3:end))/(resData.Table.Time(end))))," kW.")); %[output:362b29f3]
+%[text] 
+%[text] Copyright 2026 The MathWorks, Inc.
+%[text] 
 
 %[appendix]{"version":"1.0"}
 %---

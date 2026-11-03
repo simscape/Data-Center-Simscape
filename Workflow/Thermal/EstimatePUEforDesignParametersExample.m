@@ -38,7 +38,7 @@ for i = 1:nCase %[output:group:402e1610]
     simResData{1,i} = getWeeklyAvgData(logsout_SizeDataCenterCoolingSystem,modelData);
     disp(strcat("Completed ",num2str(i),"/",num2str(nCase)," case(s).")); %[output:578bf5a3]
 end %[output:group:402e1610]
-close_system(modelData.SLXModelName,1);
+close_system(modelData.SLXModelName,0);
 clear i nCase modelData logsout_SizeDataCenterCoolingSystem
 %%
 %[text] ## Analyze Results
@@ -48,6 +48,9 @@ clear i nCase modelData logsout_SizeDataCenterCoolingSystem
                                  SimulationResults=simResData,... %[output:26649e05]
                                  MaxRoomTempPermissible=simscape.Value(294,"K"),... %[output:26649e05]
                                  MinRoomTempPermissible=simscape.Value(280,"K")); %[output:group:38429c46] %[output:26649e05]
+%[text] 
+%[text] Copyright 2026 The MathWorks, Inc.
+%[text] 
 
 %[appendix]{"version":"1.0"}
 %---

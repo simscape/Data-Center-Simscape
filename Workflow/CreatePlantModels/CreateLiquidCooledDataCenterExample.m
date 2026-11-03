@@ -53,7 +53,7 @@ modelParam.Name = "CreateLiquidCooledDataCenter";
 open_system(modelParam.Name);
 sim(modelParam.Name);
 %[text] Close model.
-close_system(modelParam.Name,1);
+close_system(modelParam.Name,0);
 %%
 %[text] ## Analyse Results
 %[text] Load the tabular data from the simulation results.
@@ -72,6 +72,9 @@ hold off %[output:667ea7b6]
 ylabel("Temperature (K)"); %[output:667ea7b6]
 legend("GPU","CPU"); %[output:667ea7b6]
 xlabel("Time (hr)"); %[output:667ea7b6]
+%[text] 
+%[text] Copyright 2026 The MathWorks, Inc.
+%[text] 
 
 %[appendix]{"version":"1.0"}
 %---

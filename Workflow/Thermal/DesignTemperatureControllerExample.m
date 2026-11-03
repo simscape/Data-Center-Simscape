@@ -62,7 +62,7 @@ for i = 1:size(designParam.desOptions,1)
                  round(mean(simResTbl.PUE),3)...
                 ];
 end
-close_system(modelParam.Model.Name,1);
+close_system(modelParam.Model.Name,0);
 %%
 %[text] ## Analyze Results
 %[text] Get result table for the full factorial set of simulation runs.
@@ -104,6 +104,8 @@ piechart([listOfRuns(id,:).("Power: CDU (kW)"),... %[output:group:2b6a948f] %[ou
           ["CDU","Cooling Tower Pump","CDU External Pump","Cooling Tower Fan","Chiller"],... %[output:78b36fb4]
           Title=strcat("CDU (",num2str(powerConsumptionCDU)," kW) & Facilities (",num2str(powerConsumptionFacilities)," kW) Power Consumption")); %[output:group:2b6a948f] %[output:78b36fb4]
 clear i id simResTbl logsout_DesignTemperatureControllerDataCenter listOfOpts listOfRuns
+%[text] 
+%[text] Copyright 2026 The MathWorks, Inc.
 %[text] 
 
 %[appendix]{"version":"1.0"}
